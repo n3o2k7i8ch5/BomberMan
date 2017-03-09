@@ -19,7 +19,7 @@ public class KeyAdapt extends KeyAdapter {
     }
 
     public void keyReleased(KeyEvent e) {
-        //player.keyRealised(e);
+        player.keyRealised(e);
     }
 
 

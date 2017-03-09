@@ -22,18 +22,14 @@ public class Main extends JFrame{
         main.setVisible(true);
     }
 
-    private void buildJFrame(){
-
-
-    }
-
-    void countFPS(){
+    void countFPS(Player player){
         if(System.currentTimeMillis() - CLOCK >= 1000) {
-            setTitle("Bomber Man FPS = " + FPS);
+            //setTitle("Bomber Man FPS = " + FPS + "/ up: " + player.isUpSolid(player.gameFrame.solids) + "/ down:" + player.isDownSolid(player.gameFrame.solids) + "/ left:" + player.isLeftSolid(player.gameFrame.solids) + "/ right:" + player.isRightSolid(player.gameFrame.solids));
             FPS = 0;
             CLOCK = System.currentTimeMillis();
         }else{
             FPS++;
+            setTitle("Bomber Man FPS = " + FPS + "X: " + player.X + ", Y: " + player.Y + "/ up: " + player.isUpSolid(player.gameFrame.solids) + "/ down:" + player.isDownSolid(player.gameFrame.solids) + "/ left:" + player.isLeftSolid(player.gameFrame.solids) + "/ right:" + player.isRightSolid(player.gameFrame.solids));
         }
     }
 

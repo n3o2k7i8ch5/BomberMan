@@ -1,5 +1,6 @@
 package com.bomber.man;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -8,12 +9,19 @@ import java.awt.*;
 public class Object extends Entity{
 
     public int x, y;
-    public Image image_set;
+    public int X, Y;
+    public Image image;
 
-    public Object(int x, int y, Image image_set){
-        this.x = x;
-        this.y = y;
-        this.image_set = image_set;
+    static final String GRASS_PATH = "res/drawables/grass.png";
+
+    public Object(int X, int Y, String image_string){
+        this.X = X;
+        this.Y = Y;
+        this.x = X*Main.RESOLUTION;
+        this.y = Y*Main.RESOLUTION;
+
+        ImageIcon ic = new ImageIcon(image_string);
+        image = ic.getImage();
     }
 
     @Override
@@ -23,6 +31,6 @@ public class Object extends Entity{
 
     @Override
     public void draw(Graphics2D g2d) {
-        g2d.drawImage(image_set, x, y, null);
+        g2d.drawImage(image, x, y, null);
     }
 }

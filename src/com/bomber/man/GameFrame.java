@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import static com.bomber.man.Main.MAP_SIZE;
-import static com.bomber.man.Main.RESOLUTION;
 
 /**
  * Created by Kisiel on 08.03.2017.
@@ -15,7 +14,8 @@ public class GameFrame extends JPanel implements ActionListener {
 
     Player player;
 
-    static Tile[][] tiles = new Tile[MAP_SIZE][MAP_SIZE];
+    static Object[][] tiles = new Object[MAP_SIZE][MAP_SIZE];
+    static Wall[][] solids = new Wall[MAP_SIZE][MAP_SIZE];
 
     Main main;
 
@@ -25,18 +25,22 @@ public class GameFrame extends JPanel implements ActionListener {
     {
         this.main = main;
 
-        player = new Player(0, 0, null, 4);
+        player = new Player(0, 0, Player.PLAYER_PATH, 2, this);
 
         for(int i = 0; i< MAP_SIZE; i++)
             for(int j = 0; j< MAP_SIZE; j++)
                 if((i+j)%2==0)
-                    tiles[i][j] = new Tile(i*RESOLUTION, j*RESOLUTION, Tile.GRASS_PATH);
-                else
-                    tiles[i][j] = new Tile(i*RESOLUTION, j*RESOLUTION, null);
+                    tiles[i][j] = new Object(i, j, Object.GRASS_PATH);
+
+        addWall(3, 4);
+        addWall(3, 5);
+        addWall(3, 6);
+        addWall(3, 8);
+        addWall(3, 9);
 
         setFocusable(true);
         addKeyListener(new KeyAdapt(player));
-        timer = new Timer(10, this::actionPerformed);
+        timer = new Timer(20, this::actionPerformed);
         timer.setRepeats(true);
         timer.start();
 
@@ -55,18 +59,32 @@ public class GameFrame extends JPanel implements ActionListener {
 
         for(int i = 0; i< MAP_SIZE; i++)
             for(int j = 0; j< MAP_SIZE; j++){
-                tiles[i][j].draw(g2d);
+                if(tiles[i][j]!=null)
+                    tiles[i][j].draw(g2d);
+                if(solids[i][j]!=null)
+                    solids[i][j].draw(g2d);
             }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        main.countFPS();
+        main.countFPS(player);
+
         player.update();
 
-        if(player.x != player.old_x || player.y != player.old_y)
+        if(player.x != player.old_x || player.y != player.old_y) {
+            player.beforePositionChanged();
+            player.update();
             player.onPositionChanged();
+        }
+        else
+            player.update();
 
         repaint();
+    }
+
+    void addWall(int X, int Y){
+        solids[X][Y] = new Wall(X, Y);
+
     }
 }

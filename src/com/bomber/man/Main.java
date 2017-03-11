@@ -51,8 +51,8 @@ public class Main extends JFrame{
                 for(Object tile : gameFrame.tile_list) {
                     tile.scaleImage();
                 }
-                for(Wall wall : gameFrame.solid_list) {
-                    wall.scaleImage();
+                for(Solid solid : gameFrame.solid_list) {
+                    solid.scaleImage();
                 }
 
             }
@@ -70,12 +70,11 @@ public class Main extends JFrame{
 
     void countFPS(Player player){
         if(System.currentTimeMillis() - CLOCK >= 1000) {
-            //setTitle("Bomber Man FPS = " + FPS + "/ up: " + player.isUpSolid(player.gameFrame.solids) + "/ down:" + player.isDownSolid(player.gameFrame.solids) + "/ left:" + player.isLeftSolid(player.gameFrame.solids) + "/ right:" + player.isRightSolid(player.gameFrame.solids));
+            setTitle("Bomber Man FPS = " + FPS);
             FPS = 0;
             CLOCK = System.currentTimeMillis();
         }else{
             FPS++;
-            setTitle("Bomber Man FPS = " + FPS + "X: " + player.X + ", Y: " + player.Y + "|scale w: " + w_scale_rate + "|scale h: " + h_scale_rate + " |x_shift = " + gameFrame.x_map_shift + " |y_shift = " + gameFrame.y_map_shift);
         }
     }
 

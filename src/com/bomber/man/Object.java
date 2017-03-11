@@ -15,6 +15,9 @@ public class Object extends Entity{
     GameFrame frame;
 
     static final String GRASS_PATH = "res/drawables/grass.png";
+    static final String GRASS_LIGHT_PATH = "res/drawables/grass_light.png";
+
+    public enum direction{UP, DOWN, RIGHT, LEFT, NULL}
 
     public Object(GameFrame frame, int X, int Y, String image_string){
         this.frame = frame;
@@ -53,5 +56,55 @@ public class Object extends Entity{
         g2.dispose();
 
         image = resizedImg;
+    }
+
+    public boolean isLeftObject(Object[][] map){
+        if(X-1>0){
+            if (isAlignedY())
+                return map[X - 1][Y] != null;
+            else if (Y + 1 < Main.ABS_MAP_SIZE)
+                return map[X - 1][Y] != null || map[X - 1][Y + 1] != null;
+        }
+        return true;
+    }
+
+    public boolean isRightObject(Object[][] map){
+        if(X + 1 < Main.ABS_MAP_SIZE) {
+            if (isAlignedY())
+                return map[X + 1][Y] != null;
+            else if (Y + 1 < Main.ABS_MAP_SIZE)
+                return map[X + 1][Y] != null || map[X + 1][Y + 1] != null;
+        }
+        return true;
+    }
+
+    public boolean isUpObject(Object[][] map){
+
+        if(Y-1>0) {
+            if (isAlignedX())
+                return map[X][Y - 1] != null;
+            else if (X + 1 < Main.ABS_MAP_SIZE)
+                return map[X][Y - 1] != null || map[X + 1][Y - 1] != null;
+        }
+        return true;
+    }
+
+    public boolean isDownObject(Object[][] map){
+
+        if(Y+1<Main.ABS_MAP_SIZE) {
+            if (isAlignedX())
+                return map[X][Y + 1] != null;
+            else if (X + 1 < Main.ABS_MAP_SIZE)
+                return map[X][Y + 1] != null || map[X + 1][Y + 1] != null;
+        }
+        return true;
+    }
+
+    protected boolean isAlignedY(){
+        return y % Main.RESOLUTION == 0;
+    }
+
+    protected boolean isAlignedX() {
+        return x % Main.RESOLUTION == 0;
     }
 }

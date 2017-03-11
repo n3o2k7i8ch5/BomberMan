@@ -6,7 +6,7 @@ import java.lang.*;
 
 import static com.bomber.man.Main.CENTER_MAP;
 import static com.bomber.man.Main.RESOLUTION;
-import static com.bomber.man.MovingObject.direction.*;
+import static com.bomber.man.Object.direction.*;
 
 /**
  * Created by Kisiel on 07.03.2017.
@@ -19,6 +19,8 @@ public class Player extends MovingObject {
 
     private direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
+
+    int fire_rate = 10;
 
     Player(GameFrame frame, int x, int y, String image_string, double speed, int align_factor) {
         super(frame, x, y, image_string, speed, align_factor);
@@ -162,6 +164,6 @@ public class Player extends MovingObject {
         else
             Y = this.Y + 1;
 
-        frame.addBomb(X, Y);
+        frame.addBomb(X, Y, fire_rate);
     }
 }

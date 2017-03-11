@@ -149,7 +149,7 @@ public class GameFrame extends JPanel implements ActionListener {
     void addBomb(int X, int Y, int fire_length){
         if(bombs[X][Y]!=null)
             return;
-        
+
         Bomb bomb = new Bomb(this, X, Y, fire_length);
         bomb_list.add(bomb);
         bombs[X][Y] = bomb;

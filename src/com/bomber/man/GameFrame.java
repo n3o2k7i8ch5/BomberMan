@@ -4,8 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import static com.bomber.man.Main.MAP_SIZE;
+import static com.bomber.man.Main.ABS_MAP_SIZE;
+import static com.bomber.man.Main.RESOLUTION;
+import static com.bomber.man.Main.VISIB_MAP_SIZE;
 
 /**
  * Created by Kisiel on 08.03.2017.
@@ -14,33 +17,44 @@ public class GameFrame extends JPanel implements ActionListener {
 
     Player player;
 
-    static Object[][] tiles = new Object[MAP_SIZE][MAP_SIZE];
-    static Wall[][] solids = new Wall[MAP_SIZE][MAP_SIZE];
+    ArrayList<Bomb> bomb_list = new ArrayList<>();
+    ArrayList<Object> tile_list = new ArrayList<>();
+    ArrayList<Wall> solid_list = new ArrayList<>();
+    static Bomb[][] bombs = new Bomb[ABS_MAP_SIZE][ABS_MAP_SIZE];
+    static Object[][] tiles = new Object[ABS_MAP_SIZE][ABS_MAP_SIZE];
+    static Wall[][] solids = new Wall[ABS_MAP_SIZE][ABS_MAP_SIZE];
+
+    int x_map_shift = 0;
+    int y_map_shift = 0;
+
+    private Timer timer;
 
     Main main;
 
-    Timer timer;
-
     public GameFrame(Main main)
     {
+
+        setPreferredSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION, VISIB_MAP_SIZE*RESOLUTION));
+
         this.main = main;
 
-        player = new Player(0, 0, Player.PLAYER_PATH, 2, this);
+        player = new Player(this, 5, 5, Player.PLAYER_PATH, 2, 4);
 
-        for(int i = 0; i< MAP_SIZE; i++)
-            for(int j = 0; j< MAP_SIZE; j++)
+        for(int i = 0; i< ABS_MAP_SIZE; i++)
+            for(int j = 0; j< ABS_MAP_SIZE; j++)
                 if((i+j)%2==0)
-                    tiles[i][j] = new Object(i, j, Object.GRASS_PATH);
+                    tile_list.add(new Object(this, i, j, Object.GRASS_PATH));
 
         addWall(3, 4);
         addWall(3, 5);
         addWall(3, 6);
-        addWall(3, 8);
-        addWall(3, 9);
+        addWall(3, 8); addWall(4, 8);
+
+
 
         setFocusable(true);
         addKeyListener(new KeyAdapt(player));
-        timer = new Timer(20, this::actionPerformed);
+        timer = new Timer(10, this::actionPerformed);
         timer.setRepeats(true);
         timer.start();
 
@@ -53,24 +67,25 @@ public class GameFrame extends JPanel implements ActionListener {
 
         paintMap(g2d);
         player.draw(g2d);
+
+        for(int i=0; i<bomb_list.size(); i++)
+            bomb_list.get(i).draw(g2d);
+
     }
 
-    public void paintMap(Graphics2D g2d){
+    private void paintMap(Graphics2D g2d){
 
-        for(int i = 0; i< MAP_SIZE; i++)
-            for(int j = 0; j< MAP_SIZE; j++){
-                if(tiles[i][j]!=null)
-                    tiles[i][j].draw(g2d);
-                if(solids[i][j]!=null)
-                    solids[i][j].draw(g2d);
-            }
+        for(Object tile : tile_list)
+            tile.draw(g2d);
+
+        for(Wall wall : solid_list)
+            wall.draw(g2d);
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         main.countFPS(player);
-
-        player.update();
 
         if(player.x != player.old_x || player.y != player.old_y) {
             player.beforePositionChanged();
@@ -84,7 +99,15 @@ public class GameFrame extends JPanel implements ActionListener {
     }
 
     void addWall(int X, int Y){
-        solids[X][Y] = new Wall(X, Y);
-
+        Wall wall = new Wall(this, X, Y);
+        solid_list.add(wall);
+        solids[X][Y] = wall;
     }
+
+    void addBomb(int X, int Y){
+        Bomb bomb = new Bomb(this, X, Y);
+        bomb_list.add(bomb);
+        bombs[X][Y] = bomb;
+    }
+
 }

@@ -7,47 +7,70 @@ import static com.bomber.man.MovingObject.direction.*;
  */
 public class MovingObject extends Object {
 
-    int old_x, old_y;
-    int old_X, old_Y;
-    int speed;
+    double old_x, old_y;
+    private int old_X, old_Y;
+    double speed;
+    int align_factor;
     enum direction{UP, DOWN, RIGHT, LEFT, NULL}
     direction current_direction, new_direction;
 
-    protected GameFrame gameFrame;
-
-    public MovingObject(int X, int Y, String image_string, int speed, GameFrame gameFrame) {
-        super(X, Y, image_string);
+    public MovingObject(GameFrame frame, int X, int Y, String image_string, double speed) {
+        super(frame, X, Y, image_string);
         this.speed = speed;
-        this.gameFrame = gameFrame;
+        this.align_factor = 1;
+    }
+
+    public MovingObject(GameFrame frame, int X, int Y, String image_string, double speed, int align_factor) {
+        super(frame, X, Y, image_string);
+        this.speed = speed;
+        this.align_factor = align_factor;
     }
 
     public void beforePositionChanged(){
         old_x = x;
         old_y = y;
-        old_X = old_x/Main.RESOLUTION;
-        old_Y = old_y/Main.RESOLUTION;
+        old_X = (int)(old_x/Main.RESOLUTION);
+        old_Y = (int)(old_y/Main.RESOLUTION);
     }
 
     public void onPositionChanged(){
-        X = x/Main.RESOLUTION;
-        Y = y/Main.RESOLUTION;
+        X = (int)(x/Main.RESOLUTION);
+        Y = (int)(y/Main.RESOLUTION);
+    }
+
+    @Override
+    void update() {
+        super.update();
+
+        if(x % (Main.RESOLUTION/align_factor) == 0 && y % (Main.RESOLUTION/align_factor) == 0)
+            if(new_direction != current_direction)
+                current_direction = new_direction;
+
+        if(current_direction==UP)
+            y -= speed;
+        else if (current_direction==DOWN)
+            y += speed;
+        else if(current_direction==LEFT)
+            x -= speed;
+        else if (current_direction==RIGHT)
+            x += speed;
     }
 
     public Boolean isLeftSolid(Object[][] map){
         if(X-1>0){
             if (isAlignedY())
                 return map[X - 1][Y] != null;
-            else if (Y + 1 < Main.MAP_SIZE)
+            else if (Y + 1 < Main.ABS_MAP_SIZE)
                 return map[X - 1][Y] != null || map[X - 1][Y + 1] != null;
         }
         return true;
     }
 
     public Boolean isRightSolid(Object[][] map){
-        if(X + 1 < Main.MAP_SIZE) {
+        if(X + 1 < Main.ABS_MAP_SIZE) {
             if (isAlignedY())
                 return map[X + 1][Y] != null;
-            else if (Y + 1 < Main.MAP_SIZE)
+            else if (Y + 1 < Main.ABS_MAP_SIZE)
                 return map[X + 1][Y] != null || map[X + 1][Y + 1] != null;
         }
         return true;
@@ -58,18 +81,18 @@ public class MovingObject extends Object {
         if(Y-1>0) {
             if (isAlignedX())
                 return map[X][Y - 1] != null;
-            else if (X + 1 < Main.MAP_SIZE)
+            else if (X + 1 < Main.ABS_MAP_SIZE)
                 return map[X][Y - 1] != null || map[X + 1][Y - 1] != null;
         }
         return true;
     }
 
-    public Boolean isDownSolid(Object[][] map){
+    public boolean isDownSolid(Object[][] map){
 
-        if(Y+1<Main.MAP_SIZE) {
+        if(Y+1<Main.ABS_MAP_SIZE) {
             if (isAlignedX())
                 return map[X][Y + 1] != null;
-            else if (X + 1 < Main.MAP_SIZE)
+            else if (X + 1 < Main.ABS_MAP_SIZE)
                 return map[X][Y + 1] != null || map[X + 1][Y + 1] != null;
         }
         return true;
@@ -85,13 +108,15 @@ public class MovingObject extends Object {
 
     public Boolean isDirectionFreeToGo(direction direction){
         if(direction==UP)
-            return !isUpSolid(gameFrame.solids) || !isAlignedY();
+            return !isUpSolid(frame.solids) || !isAlignedY();
         else if(direction==DOWN)
-            return !isDownSolid(gameFrame.solids) || !isAlignedY();
+            return !isDownSolid(frame.solids) || !isAlignedY();
         else if(direction==LEFT)
-            return !isLeftSolid(gameFrame.solids) || !isAlignedX();
+            return !isLeftSolid(frame.solids) || !isAlignedX();
         else if(direction==RIGHT)
-            return !isRightSolid(gameFrame.solids) || !isAlignedX();
+            return !isRightSolid(frame.solids) || !isAlignedX();
+        else if(direction==NULL)
+            return true;
 
         return null;
     }

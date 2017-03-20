@@ -1,6 +1,5 @@
 package com.bomber.man;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.lang.*;
 
@@ -20,10 +19,10 @@ public class Player extends MovingObject {
     private direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
 
-    int fire_rate = 10;
+    private int fire_length = 10;
 
-    Player(GameFrame frame, int x, int y, String image_string, double speed, int align_factor) {
-        super(frame, x, y, image_string, speed, align_factor);
+    Player(GameFrame frame, int x, int y, int speed, int align_factor, String... image_string) {
+        super(frame, x, y, speed, align_factor, image_string);
     }
 
     public void keyPressed(KeyEvent e)
@@ -58,8 +57,8 @@ public class Player extends MovingObject {
                 key2_pressed = RIGHT;
         }
         else if(key==KeyEvent.VK_SPACE){
-            putBomb();
-
+            if(getMain().gamestate==0)
+                putBomb();
         }
     }
 
@@ -107,8 +106,34 @@ public class Player extends MovingObject {
     }
 
     @Override
-    void update() {
+    public void onPositionChanged() {
+        super.onPositionChanged();
+        getDirectionFromKey();
+    }
 
+    @Override
+    void update(long time) {
+
+        if(current_direction==NULL)
+            getDirectionFromKey();
+
+        if(X + Main.CENTER_MAP < getMain().ABS_W_MAP_SIZE-1 && X >= Main.CENTER_MAP) {
+            move_player_x = false;
+            frame.x_map_shift = x - CENTER_MAP*RESOLUTION;
+        }else
+            move_player_x = true;
+
+        if(Y + Main.CENTER_MAP < getMain().ABS_H_MAP_SIZE-1 && Y >= Main.CENTER_MAP) {
+            move_player_y = false;
+            frame.y_map_shift = y - CENTER_MAP*RESOLUTION;
+        }else
+            move_player_y = true;
+
+        super.update(time);
+
+    }
+
+    private void getDirectionFromKey(){
         if(key2_pressed==NULL){
             if(isDirectionFreeToGo(key1_pressed))
                 new_direction = key1_pressed;
@@ -133,21 +158,6 @@ public class Player extends MovingObject {
                     new_direction = NULL;
             }
         }
-
-        if(X + Main.CENTER_MAP < getMain().ABS_MAP_SIZE-1 && X >= Main.CENTER_MAP) {
-            move_player_x = false;
-            frame.x_map_shift = (int)x - CENTER_MAP*RESOLUTION;
-        }else
-            move_player_x = true;
-
-        if(Y + Main.CENTER_MAP < getMain().ABS_MAP_SIZE-1 && Y >= Main.CENTER_MAP) {
-            move_player_y = false;
-            frame.y_map_shift = (int)y - CENTER_MAP*RESOLUTION;
-        }else
-            move_player_y = true;
-
-        super.update();
-
     }
 
     public void putBomb(){
@@ -164,6 +174,6 @@ public class Player extends MovingObject {
         else
             Y = this.Y + 1;
 
-        frame.addBomb(X, Y, fire_rate);
+        frame.addBomb(X, Y, fire_length);
     }
 }

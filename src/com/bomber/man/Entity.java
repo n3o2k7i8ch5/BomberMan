@@ -9,7 +9,7 @@ public abstract class Entity {
 
     void handleEvents(Event e){}
 
-    void update(){}
+    void update(long time){}
 
     public void draw(Graphics2D g2d) {}
 }

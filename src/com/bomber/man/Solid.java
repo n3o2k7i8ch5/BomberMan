@@ -11,4 +11,5 @@ public class Solid extends Object {
         super(frame, x, y, image_path);
         this.isSoft = isSoft;
     }
+
 }

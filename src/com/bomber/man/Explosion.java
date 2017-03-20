@@ -1,7 +1,6 @@
 package com.bomber.man;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Iterator;
 
 import static com.bomber.man.GameFrame.*;
 import static com.bomber.man.Object.direction.*;
@@ -9,7 +8,7 @@ import static com.bomber.man.Object.direction.*;
 /**
  * Created by Kisiel on 11.03.2017.
  */
-public class Explosion extends Object implements ActionListener {
+public class Explosion extends Object {
 
     static final String EXPLOSION_PATH = "res/drawables/explosion.png";
     static final int LIFE_TIME = 500;
@@ -17,8 +16,6 @@ public class Explosion extends Object implements ActionListener {
     direction direction;
     int life_time;
     int delay;
-
-    private javax.swing.Timer timer;
 
     public Explosion(GameFrame frame, int X, int Y, int fire_length, direction direction) {
         super(frame, X, Y, EXPLOSION_PATH);
@@ -32,10 +29,16 @@ public class Explosion extends Object implements ActionListener {
         else
             delay = 30;
 
-        if(fire_length!=0) {
-            timer = new javax.swing.Timer(delay, this::actionPerformed);
-            timer.setRepeats(false);
-            timer.start();
+        if(frame.player.X == X && frame.player.Y == Y)
+            getMain().setGameState(-1);
+
+        if(bombs[X][Y] != null)
+            frame.detonate(bombs[X][Y]);
+
+        for (Iterator<Enemy> it = frame.enemy_list.iterator(); it.hasNext(); ) {
+            Enemy enemy = it.next();
+            if(enemy.X == X && enemy.Y == Y )
+                it.remove();
         }
     }
 
@@ -52,7 +55,7 @@ public class Explosion extends Object implements ActionListener {
     }
 
     public void tryPropataingDown(){
-        if(Y==getMain().ABS_MAP_SIZE-1)
+        if(Y==getMain().ABS_H_MAP_SIZE-1)
             return;
 
         if(frame.solids[X][Y+1] == null)
@@ -64,7 +67,7 @@ public class Explosion extends Object implements ActionListener {
     }
 
     public void tryPropataingRight() {
-        if(X==getMain().ABS_MAP_SIZE-1)
+        if(X==getMain().ABS_W_MAP_SIZE-1)
             return;
 
         if(frame.solids[X+1][Y] == null)
@@ -87,11 +90,10 @@ public class Explosion extends Object implements ActionListener {
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    public void tryPropagating(){
 
-        if(bombs[X][Y] != null)
-            frame.detonate(bombs[X][Y]);
+        if(fire_length==0)
+            return;
 
         if (direction == NULL) {
             tryPropataingUp();
@@ -109,4 +111,20 @@ public class Explosion extends Object implements ActionListener {
             tryPropataingLeft();
         }
     }
+
+
+    public boolean tick(){
+        if(delay==0)
+            tryPropagating();
+        if(delay>=0)
+            delay-=frame_time;
+
+        if(life_time == 0)
+            return true;
+
+        life_time -= frame_time;
+
+        return false;
+    }
+
 }

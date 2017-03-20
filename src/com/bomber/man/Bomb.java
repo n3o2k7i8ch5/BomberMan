@@ -6,7 +6,7 @@ package com.bomber.man;
 public class Bomb extends Solid {
 
     static final String BOMB_PATH = "res/drawables/bomb.png";
-    static final int BOMB_DESTRUCT_TIME = 4000;
+    static final int BOMB_DESTRUCT_TIME = 3000;
     int destruct_time;
     int fire_length;
 

@@ -18,8 +18,8 @@ public abstract class MovingObject extends Object {
     private double element;
     private boolean is_element_int;
 
-    public MovingObject(GameFrame frame, int X, int Y, int speed, String... image_strings) {
-        super(frame, X, Y, image_strings);
+    public MovingObject(GameFrame frame, int X, int Y, int speed) {
+        super(frame, X, Y);
         this.speed = speed;
         this.align_factor = 1;
         this.old_x = x;
@@ -29,8 +29,8 @@ public abstract class MovingObject extends Object {
 
     }
 
-    public MovingObject(GameFrame frame, int X, int Y, int speed, int align_factor, String... image_string) {
-        super(frame, X, Y, image_string);
+    public MovingObject(GameFrame frame, int X, int Y, int speed, int align_factor) {
+        super(frame, X, Y);
         this.speed = speed;
         this.align_factor = align_factor;
         this.old_x = x;

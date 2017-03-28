@@ -1,11 +1,14 @@
 package com.bomber.man;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.lang.*;
+import java.util.ArrayList;
 
 import static com.bomber.man.Main.CENTER_MAP;
 import static com.bomber.man.Main.RESOLUTION;
 import static com.bomber.man.Object.direction.*;
+import static java.awt.Frame.getFrames;
 
 /**
  * Created by Kisiel on 07.03.2017.
@@ -21,8 +24,8 @@ public class Player extends MovingObject {
 
     private int fire_length = 10;
 
-    Player(GameFrame frame, int x, int y, int speed, int align_factor, String... image_string) {
-        super(frame, x, y, speed, align_factor, image_string);
+    Player(GameFrame frame, int x, int y, int speed, int align_factor) {
+        super(frame, x, y, speed, align_factor);
     }
 
     public void keyPressed(KeyEvent e)
@@ -131,6 +134,11 @@ public class Player extends MovingObject {
 
         super.update(time);
 
+    }
+
+    @Override
+    protected ArrayList<Image> getImageList() {
+        return getMain().graphicsContainer.playerImages;
     }
 
     private void getDirectionFromKey(){

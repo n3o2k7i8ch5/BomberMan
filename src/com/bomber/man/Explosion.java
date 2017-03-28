@@ -1,5 +1,7 @@
 package com.bomber.man;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import static com.bomber.man.GameFrame.*;
@@ -10,7 +12,6 @@ import static com.bomber.man.Object.direction.*;
  */
 public class Explosion extends Object {
 
-    static final String EXPLOSION_PATH = "res/drawables/explosion.png";
     static final int LIFE_TIME = 500;
     int fire_length;
     direction direction;
@@ -18,7 +19,7 @@ public class Explosion extends Object {
     int delay;
 
     public Explosion(GameFrame frame, int X, int Y, int fire_length, direction direction) {
-        super(frame, X, Y, EXPLOSION_PATH);
+        super(frame, X, Y);
 
         this.life_time = LIFE_TIME;
         this.fire_length = fire_length;
@@ -127,4 +128,8 @@ public class Explosion extends Object {
         return false;
     }
 
+    @Override
+    protected ArrayList<Image> getImageList() {
+        return getMain().graphicsContainer.explosionImages;
+    }
 }

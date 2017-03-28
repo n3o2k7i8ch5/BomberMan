@@ -1,5 +1,7 @@
 package com.bomber.man;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static com.bomber.man.Object.direction.*;
@@ -8,11 +10,10 @@ import static com.bomber.man.Object.direction.*;
  * Created by Murspi on 10.03.2017.
  */
 public class Enemy extends MovingObject{
-    static final String ENEMY_PATH= "res/drawables/enemy.png";
 
     Enemy(GameFrame frame, int x, int y, int speed,int align_factor)
     {
-        super(frame,x,y,speed,align_factor, ENEMY_PATH);
+        super(frame,x,y,speed,align_factor);
     }
 
     @Override
@@ -38,6 +39,11 @@ public class Enemy extends MovingObject{
 
         super.update(time);
 
+    }
+
+    @Override
+    protected ArrayList<Image> getImageList() {
+        return getMain().graphicsContainer.enemyImages;
     }
 
 }

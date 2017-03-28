@@ -1,5 +1,9 @@
 package com.bomber.man;
 
+import com.bomber.man.tiles.GrassDark;
+import com.bomber.man.tiles.GrassLight;
+import com.bomber.man.tiles.Tile;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -21,14 +25,14 @@ public class GameFrame extends JPanel implements ActionListener {
     long time = 0;
 
     ArrayList<Bomb> bomb_list = new ArrayList<>();
-    ArrayList<Object> tile_list = new ArrayList<>();
+    ArrayList<Tile> tile_list = new ArrayList<>();
     ArrayList<Solid> solid_list = new ArrayList<>();
     ArrayList<Explosion> explosion_list = new ArrayList<>();
     ArrayList<Explosion> new_explosion_list = new ArrayList<>();
     ArrayList<Enemy> enemy_list = new ArrayList<>();
 
     static Bomb[][] bombs;
-    static Object[][] tiles;
+    static Tile[][] tiles;
     static Solid[][] solids;
     static Explosion[][] explosions;
 
@@ -46,7 +50,7 @@ public class GameFrame extends JPanel implements ActionListener {
 
         this.main = main;
 
-        player = new Player(this, 6, 5, 3, 3, Player.PLAYER_PATH, Bomb.BOMB_PATH, Explosion.EXPLOSION_PATH);
+        player = new Player(this, 6, 5, 3, 3);
 
         setFocusable(true);
         addKeyListener(new KeyAdapt(player));
@@ -62,7 +66,7 @@ public class GameFrame extends JPanel implements ActionListener {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        for(Object tile : tile_list)
+        for(Tile tile : tile_list)
             tile.draw(g2d);
 
         for(Solid solid : solid_list)
@@ -157,13 +161,14 @@ public class GameFrame extends JPanel implements ActionListener {
         explosions[X][Y] = explosion;
     }
 
-    void addTile(int X, int Y, String path){
-        tile_list.add(new Tile(this, X, Y, path));
+    void addGrassDark(int X, int Y){
+        tile_list.add(new GrassDark(this, X, Y));
     }
+    void addGrassLight(int X, int Y){tile_list.add(new GrassLight(this, X, Y)); }
 
     void setMapApsSize(){
         bombs = new Bomb[ABS_W_MAP_SIZE][ABS_H_MAP_SIZE];
-        tiles = new Object[ABS_W_MAP_SIZE][ABS_H_MAP_SIZE];
+        tiles = new Tile[ABS_W_MAP_SIZE][ABS_H_MAP_SIZE];
         solids = new Solid[ABS_W_MAP_SIZE][ABS_H_MAP_SIZE];
         explosions = new Explosion[ABS_W_MAP_SIZE][ABS_H_MAP_SIZE];
     }

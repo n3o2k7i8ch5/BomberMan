@@ -1,4 +1,7 @@
-package com.bomber.man;
+package com.bomber.man.enemies;
+
+import com.bomber.man.GameFrame;
+import com.bomber.man.MovingObject;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,11 +12,11 @@ import static com.bomber.man.Object.direction.*;
 /**
  * Created by Murspi on 10.03.2017.
  */
-public class Enemy extends MovingObject{
+public class RandomEnemy extends Enemy {
 
-    Enemy(GameFrame frame, int x, int y, int speed,int align_factor)
+    public RandomEnemy(GameFrame frame, int x, int y, int speed)
     {
-        super(frame,x,y,speed,align_factor);
+        super(frame,x,y,speed);
     }
 
     @Override

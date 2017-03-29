@@ -1,6 +1,9 @@
 package com.bomber.man;
 
-import static com.bomber.man.GameFrame.*;
+import java.util.Random;
+
+import static com.bomber.man.Main.ABS_H_MAP_SIZE;
+import static com.bomber.man.Main.ABS_W_MAP_SIZE;
 import static com.bomber.man.Main.RESOLUTION;
 import static com.bomber.man.Object.direction.*;
 
@@ -51,7 +54,7 @@ public abstract class MovingObject extends Object {
     }
 
     @Override
-    void update(long time) {
+    public void update(long time) {
         super.update(time);
         if (is_element_int){
             updateDirection();
@@ -102,23 +105,44 @@ public abstract class MovingObject extends Object {
                 (current_direction == UP && (y - 1) % element > (old_y - 1) % element) ||
                 (current_direction == DOWN && y % element < old_y % element) ||
                 current_direction == NULL)
-            if (new_direction != current_direction)
                 current_direction = new_direction;
     }
 
-    public Boolean isDirectionFreeToGo(direction direction){
-        if(direction==UP)
-            return (!isUpObject(solids) && !isUpObject(bombs)) || !isAlignedY();
-        else if(direction==DOWN)
-            return (!isDownObject(solids) && !isDownObject(bombs)) || !isAlignedY();
-        else if(direction==LEFT)
-            return (!isLeftObject(solids) && !isLeftObject(bombs)) || !isAlignedX();
-        else if(direction==RIGHT)
-            return (!isRightObject(solids) && !isRightObject(bombs)) || !isAlignedX();
+    public boolean isDirectionFreeToGo(direction direction){
+        if(direction==UP && y > 0)
+            return (upObject(frame.solid_list)==null && upObject(frame.bomb_list)==null) || !isAlignedY();
+        else if(direction==DOWN && y < ABS_H_MAP_SIZE*RESOLUTION)
+            return (downObject(frame.solid_list)==null && downObject(frame.bomb_list)==null) || !isAlignedY();
+        else if(direction==LEFT && x > 0)
+            return (leftObject(frame.solid_list)==null && leftObject(frame.bomb_list)==null) || !isAlignedX();
+        else if(direction==RIGHT && x < ABS_W_MAP_SIZE*RESOLUTION)
+            return (rightObject(frame.solid_list)==null && rightObject(frame.bomb_list)==null) || !isAlignedX();
         else if(direction==NULL)
             return true;
+        else
+            return false;
 
-        return null;
+    }
+
+    protected direction randomFreeDirection(){
+
+        Random random = new Random();
+
+        int r = random.nextInt() % 4;
+
+        if (r == 0 && isDirectionFreeToGo(UP))
+            return UP;
+        else if(r==1 && isDirectionFreeToGo(DOWN))
+            return DOWN;
+        else if(r==2 && isDirectionFreeToGo(RIGHT))
+            return RIGHT;
+        else if(r==3 && isDirectionFreeToGo(LEFT))
+            return LEFT;
+        else
+            return NULL;
+
+        //dopisać przypadek kiedy losowany jest null
+
     }
 
 }

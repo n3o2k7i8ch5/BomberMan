@@ -1,14 +1,16 @@
 package com.bomber.man;
 
+import com.bomber.man.power_ups.PowerUp;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.lang.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static com.bomber.man.Main.CENTER_MAP;
 import static com.bomber.man.Main.RESOLUTION;
 import static com.bomber.man.Object.direction.*;
-import static java.awt.Frame.getFrames;
 
 /**
  * Created by Kisiel on 07.03.2017.
@@ -112,10 +114,18 @@ public class Player extends MovingObject {
     public void onPositionChanged() {
         super.onPositionChanged();
         getDirectionFromKey();
+
+        for (Iterator<PowerUp> it = frame.powerup_list.iterator(); it.hasNext(); ) {
+            PowerUp powerUp = it.next();
+            if (powerUp.X == X && powerUp.Y == Y) {
+                powerUp.performBonus();
+                it.remove();
+            }
+        }
     }
 
     @Override
-    void update(long time) {
+    public void update(long time) {
 
         if(current_direction==NULL)
             getDirectionFromKey();
@@ -183,5 +193,13 @@ public class Player extends MovingObject {
             Y = this.Y + 1;
 
         frame.addBomb(X, Y, fire_length);
+    }
+
+    public void increaseSpeed(){
+        speed++;
+    }
+
+    public void increaseFlame(){
+        fire_length++;
     }
 }

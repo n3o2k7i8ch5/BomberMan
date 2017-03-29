@@ -1,8 +1,12 @@
 package com.bomber.man;
 
+import com.bomber.man.enemies.Enemy;
+import com.bomber.man.enemies.RandomEnemy;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import static com.bomber.man.GameFrame.*;
 import static com.bomber.man.Object.direction.*;
@@ -33,8 +37,9 @@ public class Explosion extends Object {
         if(frame.player.X == X && frame.player.Y == Y)
             getMain().setGameState(-1);
 
-        if(bombs[X][Y] != null)
-            frame.detonate(bombs[X][Y]);
+        Bomb bomb = (Bomb) hereObject(frame.bomb_list);
+        if(bomb!=null)
+            frame.detonate(bomb);
 
         for (Iterator<Enemy> it = frame.enemy_list.iterator(); it.hasNext(); ) {
             Enemy enemy = it.next();
@@ -47,11 +52,13 @@ public class Explosion extends Object {
         if(Y==0)
             return;
 
-        if(frame.solids[X][Y-1] == null)
+        Solid solid = (Solid) upObject(frame.solid_list);
+        if(solid == null)
             frame.addExplosion(X, Y-1, fire_length-1, UP);
-        else if(frame.solids[X][Y-1].isSoft) {
+        else if(solid.isSoft) {
             frame.addExplosion(X, Y - 1, 0, UP);
-            frame.removeSolid(frame.solids[X][Y-1]);
+            frame.removeSolid(solid);
+            randomPowerUp(solid.X, solid.Y);
         }
     }
 
@@ -59,11 +66,13 @@ public class Explosion extends Object {
         if(Y==getMain().ABS_H_MAP_SIZE-1)
             return;
 
-        if(frame.solids[X][Y+1] == null)
+        Solid solid = (Solid) downObject(frame.solid_list);
+        if(solid == null)
             frame.addExplosion(X, Y+1, fire_length-1, DOWN);
-        else if(frame.solids[X][Y+1].isSoft) {
+        else if(solid.isSoft) {
             frame.addExplosion(X, Y + 1, 0, DOWN);
-            frame.removeSolid(frame.solids[X][Y+1]);
+            frame.removeSolid(solid);
+            randomPowerUp(solid.X, solid.Y);
         }
     }
 
@@ -71,11 +80,13 @@ public class Explosion extends Object {
         if(X==getMain().ABS_W_MAP_SIZE-1)
             return;
 
-        if(frame.solids[X+1][Y] == null)
+        Solid solid = (Solid) rightObject(frame.solid_list);
+        if(solid == null)
             frame.addExplosion(X+1, Y, fire_length-1, RIGHT);
-        else if(frame.solids[X+1][Y].isSoft) {
+        else if(solid.isSoft) {
             frame.addExplosion(X+1, Y, 0, RIGHT);
-            frame.removeSolid(frame.solids[X+1][Y]);
+            frame.removeSolid(solid);
+            randomPowerUp(solid.X, solid.Y);
         }
     }
 
@@ -83,11 +94,13 @@ public class Explosion extends Object {
         if(X==0)
             return;
 
-        if(frame.solids[X-1][Y] == null)
+        Solid solid = (Solid) leftObject(frame.solid_list);
+        if(solid == null)
             frame.addExplosion(X-1, Y, fire_length-1, LEFT);
-        else if(frame.solids[X-1][Y].isSoft) {
+        else if(solid.isSoft) {
             frame.addExplosion(X-1, Y, 0, LEFT);
-            frame.removeSolid(frame.solids[X-1][Y]);
+            frame.removeSolid(solid);
+            randomPowerUp(solid.X, solid.Y);
         }
     }
 
@@ -132,4 +145,14 @@ public class Explosion extends Object {
     protected ArrayList<Image> getImageList() {
         return getMain().graphicsContainer.explosionImages;
     }
+
+    private void randomPowerUp(int X, int Y){
+        Random random = new Random();
+        int r = random.nextInt()%2;
+        if(r==0)
+            frame.addFlameUp(X, Y);
+        else if(r==1)
+            frame.addSpeedUp(X, Y);
+    }
+
 }

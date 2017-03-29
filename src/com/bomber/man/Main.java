@@ -43,12 +43,15 @@ public class Main extends JFrame{
             setTitle("Bomber Man FPS = " + FPS + " x:" + player.x + " y:" + player.y);
             FPS = 0;
             CLOCK = System.currentTimeMillis();
-        }else
+        }else {
+            setTitle("Bomber Man FPS = " + FPS + " x:" + player.x + " y:" + player.y + "d: " + player.new_direction );
+
             FPS++;
+        }
 
     }
 
-    void setGameState(int gamestate)
+    public void setGameState(int gamestate)
     {
         setGameState(gamestate, this);
     }
@@ -87,18 +90,19 @@ public class Main extends JFrame{
             main.setLocationRelativeTo(null);
             main.setVisible(true);
 
-            try(BufferedReader br = new BufferedReader(new FileReader("map1"))) {
-
-                Scanner in = new Scanner(new FileReader("map1"));
+            Scanner in = null;
+            try {
+                in = new Scanner(new FileReader("map1"));
                 String code = in.nextLine();
 
                 main.loadMap(code, gameFrame);
-                gameFrame.addEnemy(3, 3);
+                gameFrame.addRandomEnemy(3, 3);
+                gameFrame.addStraightEnemy(3, 5);
                 updateStaticImages();
-
-            } catch (IOException e) {
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+
         }
 
         main.addComponentListener(new ComponentListener() {
@@ -133,7 +137,6 @@ public class Main extends JFrame{
         String[] items = code.split("!");
         ABS_W_MAP_SIZE = Integer.parseInt(items[0]);
         ABS_H_MAP_SIZE = Integer.parseInt(items[1]);
-        frame.setMapApsSize();
 
         for(int i=2; i<items.length; i++){
             String elements[] = items[i].split(",");

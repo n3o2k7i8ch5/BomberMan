@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class FlameUp extends PowerUp {
     public FlameUp(GameFrame frame, int X, int Y) {
         super(frame, X, Y);
-        frame.player.increaseFlame();
     }
 
 

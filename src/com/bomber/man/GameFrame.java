@@ -52,7 +52,7 @@ public class GameFrame extends JPanel implements ActionListener {
 
         this.main = main;
 
-        player = new Player(this, 6, 5, 3, 3);
+        player = new Player(this, 6, 5, 2, 3);
 
         setFocusable(true);
         addKeyListener(new KeyAdapt(player));

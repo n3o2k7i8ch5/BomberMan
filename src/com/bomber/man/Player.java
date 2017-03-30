@@ -19,12 +19,11 @@ public class Player extends MovingObject {
 
     boolean move_player_x, move_player_y;
 
-    static final String PLAYER_PATH = "res/drawables/player.png";
-
     private direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
 
-    private int fire_length = 10;
+    private int fire_length = 1;
+
 
     Player(GameFrame frame, int x, int y, int speed, int align_factor) {
         super(frame, x, y, speed, align_factor);

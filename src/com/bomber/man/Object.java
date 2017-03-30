@@ -8,7 +8,7 @@ import static com.bomber.man.Object.direction.NULL;
 import static com.bomber.man.Object.direction.RIGHT;
 
 /**
- * Created by Kisiel on 07.03.2017.
+ * Created by Daniel on 07.03.2017.
  */
 public abstract class Object extends Entity{
 
@@ -28,8 +28,6 @@ public abstract class Object extends Entity{
         this.x = X*Main.RESOLUTION;
         this.y = Y*Main.RESOLUTION;
 
-        //scaleImages();
-
         current_image = getImageList().get(0);
     }
 
@@ -42,10 +40,19 @@ public abstract class Object extends Entity{
                 null);
     }
 
+    /**
+     * @return instancję klasy Main, która przechowuje aktualną grę.
+     */
     public Main getMain(){
         return frame.main;
     }
 
+    /**
+     * Zwraca Obiekt z podanej listy, o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
+     * @param list lista, w której wyszukiwany jest Obiekt o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
+     * @return Obiekt przechowywany w podanej liście o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
+     * @return null, jeżeli podana lista nie przechowuje Obiektu o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
+     */
     public Object hereObject(ArrayList list){
 
         boolean isObject = false;
@@ -60,6 +67,12 @@ public abstract class Object extends Entity{
         return null;
     }
 
+    /**
+     * Zwraca Obiekt z podanej listy, na lewo od Obiektu, z którego wywoływana jest metoda.
+     * @param list lista, w której wyszukiwany jest Obiekt na lewo od Obiektu, z którego wywoływana jest metoda.
+     * @return Obiekt przechowywany w podanej liście na lewo od Obiektu, którego wywoływana jest metoda.
+     * @return null, jeżeli podana lista nie przechowuje Obiektu na lewo od Obiektu, z którego wywoływana jest metoda.
+     */
     public Object leftObject(ArrayList list){
 
         boolean isObject = false;
@@ -79,6 +92,12 @@ public abstract class Object extends Entity{
         return null;
     }
 
+    /**
+     * Zwraca Obiekt z podanej listy, na prawo od Obiektu, z którego wywoływana jest metoda.
+     * @param list lista, w której wyszukiwany jest Obiekt na prawo od Obiektu, z którego wywoływana jest metoda.
+     * @return Obiekt przechowywany w podanej liście na prawo od Obiektu, którego wywoływana jest metoda.
+     * @return null, jeżeli podana lista nie przechowuje Obiektu na prawo od Obiektu, z którego wywoływana jest metoda.
+     */
     public Object rightObject(ArrayList list){
 
         boolean isObject = false;
@@ -98,6 +117,12 @@ public abstract class Object extends Entity{
         return null;
     }
 
+    /**
+     * Zwraca Obiekt z podanej listy, na górę od Obiektu, z którego wywoływana jest metoda.
+     * @param list lista, w której wyszukiwany jest Obiekt na górę od Obiektu, z którego wywoływana jest metoda.
+     * @return Obiekt przechowywany w podanej liście na górę od Obiektu, którego wywoływana jest metoda.
+     * @return null, jeżeli podana lista nie przechowuje Obiektu na górę od Obiektu, z którego wywoływana jest metoda.
+     */
     public Object upObject(ArrayList list){
 
         boolean isObject = false;
@@ -117,6 +142,12 @@ public abstract class Object extends Entity{
         return null;
     }
 
+    /**
+     * Zwraca Obiekt z podanej listy, na dół od Obiektu, z którego wywoływana jest metoda.
+     * @param list lista, w której wyszukiwany jest Obiekt na dół od Obiektu, z którego wywoływana jest metoda.
+     * @return Obiekt przechowywany w podanej liście na dół od Obiektu, którego wywoływana jest metoda.
+     * @return null, jeżeli podana lista nie przechowuje Obiektu na dół od Obiektu, z którego wywoływana jest metoda.
+     */
     public Object downObject(ArrayList list){
 
         boolean isObject = false;
@@ -154,11 +185,18 @@ public abstract class Object extends Entity{
         previous_sub_time = sub_time;
     }
 
+    /**
+     * ustawia obecnie wyświetlaną klatkę animacji obiektu na kolejną.
+     */
     public void updateImage(){
         current_image = getImageList().get(current_image_index);
         current_image_index = (current_image_index+ 1)%getImageList().size();
     }
 
+    /**
+     * @param direction kierunek wejściowy, od którego zwracany jest kierunek na prawo.
+     * @return kierunek na prawo od kierunku podanego.
+     */
     protected direction directionRightTo(direction direction)
     {
         switch (direction){
@@ -175,6 +213,10 @@ public abstract class Object extends Entity{
         }
     }
 
+    /**
+     * @param direction kierunek wejściowy, od którego zwracany jest kierunek na lewo.
+     * @return kierunek na prawo od kierunku podanego.
+     */
     protected direction directionLeftTo(direction direction)
     {
         switch (direction){
@@ -191,6 +233,10 @@ public abstract class Object extends Entity{
         }
     }
 
+    /**
+     * @param direction kierunek wejściowy, od którego zwracany jest kierunek przeciwny.
+     * @return kierunek przeciwny od kierunku podanego.
+     */
     protected direction directionReverse(direction direction)
     {
         switch (direction){
@@ -207,5 +253,9 @@ public abstract class Object extends Entity{
         }
     }
 
+    /**
+     * funkcja abstrakcyjna zwracająca listę kolejnych klatek animacji instancji Obiektu.
+     * @return listę kolejnych klatek animacji Obiektu.
+     */
     protected abstract ArrayList<Image> getImageList();
 }

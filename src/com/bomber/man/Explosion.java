@@ -2,6 +2,7 @@ package com.bomber.man;
 
 import com.bomber.man.enemies.Enemy;
 import com.bomber.man.enemies.RandomEnemy;
+import com.bomber.man.power_ups.PowerUp;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -41,11 +42,9 @@ public class Explosion extends Object {
         if(bomb!=null)
             frame.detonate(bomb);
 
-        for (Iterator<Enemy> it = frame.enemy_list.iterator(); it.hasNext(); ) {
-            Enemy enemy = it.next();
-            if(enemy.X == X && enemy.Y == Y )
-                it.remove();
-        }
+        frame.enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
+
+        frame.powerup_list.removeIf(powerUp -> powerUp.X == X && powerUp.Y == Y);
     }
 
     public void tryPropataingUp(){
@@ -148,7 +147,7 @@ public class Explosion extends Object {
 
     private void randomPowerUp(int X, int Y){
         Random random = new Random();
-        int r = random.nextInt()%2;
+        int r = random.nextInt()%10;
         if(r==0)
             frame.addFlameUp(X, Y);
         else if(r==1)

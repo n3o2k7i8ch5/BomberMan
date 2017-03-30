@@ -3,13 +3,20 @@ package com.bomber.man;
 import java.awt.*;
 
 /**
- * Created by Kisiel on 07.03.2017.
+ * Podstawowa klasa bazowa, będąca dziedziczona przez klasy pochodne.
  */
 public abstract class Entity {
 
     void handleEvents(Event e){}
 
+    /**
+     * Funkcja wywoływana przed wyświetleniem kolejnek klatki gry.
+     * @param time jest liczbą określajacą ilość dotychczasowych wywołań funkcji.
+     */
     public void update(long time){}
 
+    /**
+     * Funkcja rysująca obiekt w oknie programu.
+     */
     public void draw(Graphics2D g2d) {}
 }

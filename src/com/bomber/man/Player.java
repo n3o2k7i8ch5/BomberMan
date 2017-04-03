@@ -24,6 +24,7 @@ public class Player extends MovingObject {
 
     private int fire_length = 1;
 
+    public int max_bombs = 1;
 
     Player(GameFrame frame, int x, int y, int speed, int align_factor) {
         super(frame, x, y, speed, align_factor);
@@ -61,7 +62,7 @@ public class Player extends MovingObject {
                 key2_pressed = RIGHT;
         }
         else if(key==KeyEvent.VK_SPACE){
-            if(getMain().gamestate==0)
+            if(getMain().gamestate==1)
                 putBomb();
         }
     }
@@ -126,7 +127,7 @@ public class Player extends MovingObject {
     @Override
     public void update(long time) {
 
-        if(current_direction==NULL)
+        if(current_dir==NULL)
             getDirectionFromKey();
 
         if(X + Main.CENTER_MAP < getMain().ABS_W_MAP_SIZE-1 && X >= Main.CENTER_MAP) {
@@ -146,33 +147,56 @@ public class Player extends MovingObject {
     }
 
     @Override
-    protected ArrayList<Image> getImageList() {
-        return getMain().graphicsContainer.playerImages;
+    protected ArrayList<Image> getImageUpList() {
+        return getMain().graphicsContainer.playerUpImages;
     }
 
+    @Override
+    protected ArrayList<Image> getImageDownList() {
+        return getMain().graphicsContainer.playerDownImages;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageLeftList() {
+        return getMain().graphicsContainer.playerLeftImages;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageRightList() {
+        return getMain().graphicsContainer.playerRightImages;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageNullList() {
+        return getMain().graphicsContainer.playerUpImages;
+    }
+
+    /**
+     * Metoda, określająca nowy kierunek poruszania się gracza na podstawie kontekstu mapy, oraz wciśnietych klawiszy.
+     */
     private void getDirectionFromKey(){
         if(key2_pressed==NULL){
-            if(isDirectionFreeToGo(key1_pressed))
-                new_direction = key1_pressed;
+            if(isDirFreeToGo(key1_pressed))
+                new_dir = key1_pressed;
             else
-                new_direction = NULL;
+                new_dir = NULL;
         }
         else
         {
-            if(current_direction!=key2_pressed) {
-                if (isDirectionFreeToGo(key2_pressed))
-                    new_direction = key2_pressed;
-                else if (isDirectionFreeToGo(key1_pressed))
-                    new_direction = key1_pressed;
+            if(current_dir!=key2_pressed) {
+                if (isDirFreeToGo(key2_pressed))
+                    new_dir = key2_pressed;
+                else if (isDirFreeToGo(key1_pressed))
+                    new_dir = key1_pressed;
                 else
-                    new_direction = NULL;
-            }else if(current_direction!=key1_pressed) {
-                if (isDirectionFreeToGo(key1_pressed))
-                    new_direction = key1_pressed;
-                else if (isDirectionFreeToGo(key2_pressed))
-                    new_direction = key2_pressed;
+                    new_dir = NULL;
+            }else if(current_dir!=key1_pressed) {
+                if (isDirFreeToGo(key1_pressed))
+                    new_dir = key1_pressed;
+                else if (isDirFreeToGo(key2_pressed))
+                    new_dir = key2_pressed;
                 else
-                    new_direction = NULL;
+                    new_dir = NULL;
             }
         }
     }
@@ -191,14 +215,32 @@ public class Player extends MovingObject {
         else
             Y = this.Y + 1;
 
-        frame.addBomb(X, Y, fire_length);
+        boolean isBomb = false;
+        for(Bomb bomb : frame.bomb_list)
+            if(bomb.Y == Y && bomb.X == X)
+                isBomb = true;
+
+        if(!isBomb)
+            frame.addBomb(X, Y, fire_length);
+
     }
 
+    /**
+     * Metoda zwiększająca prędkość gracza
+     */
     public void increaseSpeed(){
         speed++;
     }
 
+    /**
+     *Metoda zwiekszająca promień wybuchu
+     */
     public void increaseFlame(){
         fire_length++;
     }
+
+    /**
+     * Metoda zwiększająca ilość bomb do położenia
+     */
+    public void increaseBomb() { max_bombs++;}
 }

@@ -1,12 +1,7 @@
 package com.bomber.man;
 
-import com.bomber.man.enemies.Enemy;
-import com.bomber.man.enemies.RandomEnemy;
-import com.bomber.man.power_ups.PowerUp;
-
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 import static com.bomber.man.GameFrame.*;
@@ -43,7 +38,6 @@ public class Explosion extends Object {
             frame.detonate(bomb);
 
         frame.enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
-
         frame.powerup_list.removeIf(powerUp -> powerUp.X == X && powerUp.Y == Y);
     }
 
@@ -125,7 +119,6 @@ public class Explosion extends Object {
         }
     }
 
-
     public boolean tick(){
         if(delay==0)
             tryPropagating();
@@ -137,11 +130,15 @@ public class Explosion extends Object {
 
         life_time -= frame_time;
 
+        frame.enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
+        if(frame.player.X == X && frame.player.Y == Y)
+            getMain().setGameState(-1);
+
         return false;
     }
 
     @Override
-    protected ArrayList<Image> getImageList() {
+    protected ArrayList<Image> getImageNullList() {
         return getMain().graphicsContainer.explosionImages;
     }
 
@@ -152,6 +149,8 @@ public class Explosion extends Object {
             frame.addFlameUp(X, Y);
         else if(r==1)
             frame.addSpeedUp(X, Y);
+        else if(r==2)
+            frame.addBombUp(X, Y);
     }
 
 }

@@ -22,20 +22,7 @@ public class RandomEnemy extends Enemy {
     @Override
     public void update(long time) {
 
-        Random random = new Random();
-
-        int a = random.nextInt() % 4;
-
-        if (a == 0 && isDirectionFreeToGo(UP))
-            new_direction = UP;
-        else if(a==1 && isDirectionFreeToGo(DOWN))
-            new_direction = DOWN;
-        else if(a==2 && isDirectionFreeToGo(RIGHT))
-            new_direction = RIGHT;
-        else if(a==3 && isDirectionFreeToGo(LEFT))
-            new_direction = LEFT;
-        else
-            new_direction = NULL;
+        new_dir = randomFreeDirection();
 
         if(frame.player.X == X && frame.player.Y == Y)
             getMain().setGameState(-1);
@@ -45,8 +32,29 @@ public class RandomEnemy extends Enemy {
     }
 
     @Override
-    protected ArrayList<Image> getImageList() {
+    protected ArrayList<Image> getImageUpList() {
         return getMain().graphicsContainer.enemyImages;
     }
+
+    @Override
+    protected ArrayList<Image> getImageDownList() {
+        return getMain().graphicsContainer.enemyImages;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageLeftList() {
+        return getMain().graphicsContainer.enemyImages;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageRightList() {
+        return getMain().graphicsContainer.enemyImages;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageNullList() {
+        return getMain().graphicsContainer.enemyImages;
+    }
+
 
 }

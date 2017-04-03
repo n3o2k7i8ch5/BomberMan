@@ -1,5 +1,7 @@
 package com.bomber.man;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static com.bomber.man.Main.ABS_H_MAP_SIZE;
@@ -8,7 +10,7 @@ import static com.bomber.man.Main.RESOLUTION;
 import static com.bomber.man.Object.direction.*;
 
 /**
- * Created by Kisiel on 07.03.2017.
+ * Klasa MovingObject dziedziczy po klasie Object. Jest klasą abstrakcyjną, po której dziedziczą wszystkie klasy poruszajace się po mapie.
  */
 public abstract class MovingObject extends Object {
 
@@ -16,11 +18,16 @@ public abstract class MovingObject extends Object {
     protected int old_X, old_Y;
     int speed;
     int align_factor;
-    protected direction current_direction = NULL;
-    public direction new_direction = NULL;
     private double element;
     private boolean is_element_int;
 
+    /**
+     * Konstruktor klasy.
+     * @param frame instancja klasy GameFrame, w jakiej przechowywane są parametry i stan gry.
+     * @param X pozycja obiektu liczona w ilości kratek.
+     * @param Y pozycja obiektu liczona w ilości kratek.
+     * @param speed prędkość porszania się obieku.
+     */
     public MovingObject(GameFrame frame, int X, int Y, int speed) {
         super(frame, X, Y);
         this.speed = speed;
@@ -41,6 +48,9 @@ public abstract class MovingObject extends Object {
         element = ((double)RESOLUTION/(double)align_factor);
     }
 
+    /**
+     * Metoda wywoływana przed tym, jak obiekt zmieni położenie.
+     */
     public void beforePositionChanged(){
         old_x = x;
         old_y = y;
@@ -48,6 +58,9 @@ public abstract class MovingObject extends Object {
         old_Y = (old_y/ RESOLUTION);
     }
 
+    /**
+     * Metoda, która wywoływana po tym, jak obiekt zmienił położenie.
+     */
     public void onPositionChanged(){
         X = x/ RESOLUTION;
         Y = y/ RESOLUTION;
@@ -58,19 +71,19 @@ public abstract class MovingObject extends Object {
         super.update(time);
         if (is_element_int){
             updateDirection();
-            if (current_direction == UP) {
+            if (current_dir == UP) {
                 beforePositionChanged();
                 y -= speed;
                 onPositionChanged();
-            } else if (current_direction == DOWN) {
+            } else if (current_dir == DOWN) {
                 beforePositionChanged();
                 y += speed;
                 onPositionChanged();
-            } else if (current_direction == LEFT) {
+            } else if (current_dir == LEFT) {
                 beforePositionChanged();
                 x -= speed;
                 onPositionChanged();
-            } else if (current_direction == RIGHT) {
+            } else if (current_dir == RIGHT) {
                 beforePositionChanged();
                 x += speed;
                 onPositionChanged();
@@ -78,19 +91,19 @@ public abstract class MovingObject extends Object {
         }else{
             for(int i = 0; i<speed; i++) {
                 updateDirection();
-                if (current_direction == UP) {
+                if (current_dir == UP) {
                     beforePositionChanged();
                     y--;
                     onPositionChanged();
-                } else if (current_direction == DOWN) {
+                } else if (current_dir == DOWN) {
                     beforePositionChanged();
                     y++;
                     onPositionChanged();
-                } else if (current_direction == LEFT) {
+                } else if (current_dir == LEFT) {
                     beforePositionChanged();
                     x--;
                     onPositionChanged();
-                } else if (current_direction == RIGHT) {
+                } else if (current_dir == RIGHT) {
                     beforePositionChanged();
                     x++;
                     onPositionChanged();
@@ -99,16 +112,24 @@ public abstract class MovingObject extends Object {
         }
     }
 
+    /**
+     * Metoda aktualizująca kierunek ruchu w momencie, kiedy obiekt znajduje na odpowiedniej części kratki.
+     */
     private void updateDirection(){
-        if ((current_direction == RIGHT && x % element < old_x % element) ||
-                (current_direction == LEFT && (x - 1) % element > (old_x - 1) % element) ||
-                (current_direction == UP && (y - 1) % element > (old_y - 1) % element) ||
-                (current_direction == DOWN && y % element < old_y % element) ||
-                current_direction == NULL)
-                current_direction = new_direction;
+        if ((current_dir == RIGHT && x % element < old_x % element) ||
+                (current_dir == LEFT && (x - 1) % element > (old_x - 1) % element) ||
+                (current_dir == UP && (y - 1) % element > (old_y - 1) % element) ||
+                (current_dir == DOWN && y % element < old_y % element) ||
+                current_dir == NULL) {
+            current_dir = new_dir;
+        }
     }
 
-    public boolean isDirectionFreeToGo(direction direction){
+    /**
+     * Metoda sprawdzająca czy wybrany kierunek jest możliwy do przejścia.
+     * @param direction kierunek sprawdzany.
+     */
+    public boolean isDirFreeToGo(direction direction){
         if(direction==UP && y > 0)
             return (upObject(frame.solid_list)==null && upObject(frame.bomb_list)==null) || !isAlignedY();
         else if(direction==DOWN && y < ABS_H_MAP_SIZE*RESOLUTION)
@@ -121,28 +142,77 @@ public abstract class MovingObject extends Object {
             return true;
         else
             return false;
-
     }
 
+    /**
+     * Metoda zwracająca losowy, wolny do przemieszczenia się kierunek ruchu.
+     * @return kierunek ruchu
+     */
     protected direction randomFreeDirection(){
 
-        Random random = new Random();
+        ArrayList<direction> free_dirs = new ArrayList<>();
+        if(isDirFreeToGo(UP))
+            free_dirs.add(UP);
 
-        int r = random.nextInt() % 4;
+        if(isDirFreeToGo(DOWN))
+            free_dirs.add(DOWN);
 
-        if (r == 0 && isDirectionFreeToGo(UP))
-            return UP;
-        else if(r==1 && isDirectionFreeToGo(DOWN))
-            return DOWN;
-        else if(r==2 && isDirectionFreeToGo(RIGHT))
-            return RIGHT;
-        else if(r==3 && isDirectionFreeToGo(LEFT))
-            return LEFT;
-        else
+        if(isDirFreeToGo(RIGHT))
+            free_dirs.add(RIGHT);
+
+        if(isDirFreeToGo(LEFT))
+            free_dirs.add(LEFT);
+
+        if(free_dirs.size()==0)
             return NULL;
-
-        //dopisać przypadek kiedy losowany jest null
-
+        else{
+            int r = Math.abs(new Random().nextInt()) % free_dirs.size();
+            return free_dirs.get(r);
+        }
     }
+
+    /**
+     * Metoda zmieniająca listę przechowującą elementy animacji, w zależności od kierunku ruchu.
+     */
+    @Override
+    protected void updateImageList() {
+        switch (current_dir) {
+            case UP:
+                if(current_image_list != getImageUpList()) {
+                    current_image_list = getImageUpList();
+                    updateImage();
+                }
+                break;
+            case DOWN:
+                if(current_image_list != getImageDownList()) {
+                    current_image_list = getImageDownList();
+                    updateImage();
+                }
+                break;
+            case RIGHT:
+                if(current_image_list != getImageRightList()) {
+                    current_image_list = getImageRightList();
+                    updateImage();
+                }
+                break;
+            case LEFT:
+                if(current_image_list != getImageLeftList()) {
+                    current_image_list = getImageLeftList();
+                    updateImage();
+                }
+                break;
+            case NULL:
+                if(current_image_list != getImageNullList()) {
+                    current_image_list = getImageNullList();
+                    updateImage();
+                }
+                break;
+        }
+    }
+
+    protected abstract ArrayList<Image> getImageUpList();
+    protected abstract ArrayList<Image> getImageDownList();
+    protected abstract ArrayList<Image> getImageLeftList();
+    protected abstract ArrayList<Image> getImageRightList();
 
 }

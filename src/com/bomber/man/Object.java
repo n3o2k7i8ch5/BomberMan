@@ -15,8 +15,12 @@ public abstract class Object extends Entity{
     public int x, y;
     public int X, Y;
 
-    Image current_image;
-    int current_image_index;
+    ArrayList<Image> current_image_list = new ArrayList<>();
+    private int current_image_index;
+
+    protected direction current_dir = NULL;
+    protected direction new_dir = NULL;
+
     protected GameFrame frame;
 
     public enum direction{UP, DOWN, RIGHT, LEFT, NULL}
@@ -28,13 +32,13 @@ public abstract class Object extends Entity{
         this.x = X*Main.RESOLUTION;
         this.y = Y*Main.RESOLUTION;
 
-        current_image = getImageList().get(0);
+        updateImageList();
     }
 
     @Override
     public void draw(Graphics2D g2d) {
 
-        g2d.drawImage(current_image,
+        g2d.drawImage(current_image_list.get(current_image_index),
                 (int)((x - frame.x_map_shift)*Main.w_scale_rate),
                 (int)((y - frame.y_map_shift)*Main.h_scale_rate),
                 null);
@@ -179,25 +183,27 @@ public abstract class Object extends Entity{
     @Override
     public void update(long time) {
         super.update(time);
-        double sub_time = time*frame.frame_time % ((double)1000/(double)getImageList().size());
-        if(previous_sub_time>sub_time)
+        double sub_time = time*frame.frame_time % ((double)500/(double)current_image_list.size());
+        updateImageList();
+        if(previous_sub_time>sub_time) {
             updateImage();
+        }
         previous_sub_time = sub_time;
     }
 
     /**
      * ustawia obecnie wyświetlaną klatkę animacji obiektu na kolejną.
      */
-    public void updateImage(){
-        current_image = getImageList().get(current_image_index);
-        current_image_index = (current_image_index+ 1)%getImageList().size();
+    protected void updateImage(){
+        if(current_image_list.size()!=0)
+            current_image_index = (current_image_index + 1)%current_image_list.size();
     }
 
     /**
      * @param direction kierunek wejściowy, od którego zwracany jest kierunek na prawo.
      * @return kierunek na prawo od kierunku podanego.
      */
-    protected direction directionRightTo(direction direction)
+    protected direction dirRightTo(direction direction)
     {
         switch (direction){
             case DOWN:
@@ -217,7 +223,7 @@ public abstract class Object extends Entity{
      * @param direction kierunek wejściowy, od którego zwracany jest kierunek na lewo.
      * @return kierunek na prawo od kierunku podanego.
      */
-    protected direction directionLeftTo(direction direction)
+    protected direction dirLeftTo(direction direction)
     {
         switch (direction){
             case DOWN:
@@ -237,7 +243,7 @@ public abstract class Object extends Entity{
      * @param direction kierunek wejściowy, od którego zwracany jest kierunek przeciwny.
      * @return kierunek przeciwny od kierunku podanego.
      */
-    protected direction directionReverse(direction direction)
+    protected direction dirReverse(direction direction)
     {
         switch (direction){
             case DOWN:
@@ -257,5 +263,13 @@ public abstract class Object extends Entity{
      * funkcja abstrakcyjna zwracająca listę kolejnych klatek animacji instancji Obiektu.
      * @return listę kolejnych klatek animacji Obiektu.
      */
-    protected abstract ArrayList<Image> getImageList();
+    protected abstract ArrayList<Image> getImageNullList();
+
+    protected void updateImageList(){
+        if(current_image_list != getImageNullList()) {
+            current_image_list = getImageNullList();
+            updateImage();
+        }
+    }
+
 }

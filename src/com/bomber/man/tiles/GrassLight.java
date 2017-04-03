@@ -14,7 +14,7 @@ public class GrassLight extends Tile {
     }
 
     @Override
-    protected ArrayList<Image> getImageList() {
+    protected ArrayList<Image> getImageNullList() {
         return getMain().graphicsContainer.grassLightImages;
     }
 }

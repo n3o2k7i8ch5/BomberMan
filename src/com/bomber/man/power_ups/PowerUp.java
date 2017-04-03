@@ -12,6 +12,9 @@ public abstract class PowerUp extends Object {
         super(frame, X, Y);
     }
 
+    /**
+     * Metoda abstrakcyjna wywoływania podczas zebrania PowerUpa przez gracza.
+     */
     public abstract void performBonus();
 }
 

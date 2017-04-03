@@ -1,7 +1,7 @@
 package com.bomber.man;
 
+import com.bomber.man.menu.Menu;
 import com.bomber.man.tiles.Tile;
-import sun.misc.IOUtils;
 
 import javax.swing.*;
 import java.awt.event.ComponentEvent;
@@ -24,6 +24,7 @@ public class Main extends JFrame{
     int gamestate = 0;
 
     private GameFrame gameFrame;
+    private Menu menuFrame;
 
     public static GraphicsContainer graphicsContainer;
 
@@ -35,20 +36,17 @@ public class Main extends JFrame{
 
         Main main = new Main();
         graphicsContainer = new GraphicsContainer(main);
-        main.setGameState(0, main);
+        main.setGameState(1, main);
     }
 
     void countFPS(Player player){
         if(System.currentTimeMillis() - CLOCK >= 1000) {
-            setTitle("Bomber Man FPS = " + FPS + " x:" + player.x + " y:" + player.y);
+            setTitle("Bomber Man FPS = " + FPS + player.current_dir);
             FPS = 0;
             CLOCK = System.currentTimeMillis();
-        }else {
-            setTitle("Bomber Man FPS = " + FPS + " x:" + player.x + " y:" + player.y + "d: " + player.new_direction );
-
+        }else{
             FPS++;
         }
-
     }
 
     public void setGameState(int gamestate)
@@ -56,6 +54,11 @@ public class Main extends JFrame{
         setGameState(gamestate, this);
     }
 
+    /**
+     * Metoda ustawiająca dany stan gry. Gdy stan gry jest równy 0 to jest menu gdy stan gry jest 1 to jest gra gdy stan gry wynosi -1 to gameover
+     * @param gamestate stan gry
+     * @param main
+     */
     private void setGameState(int gamestate, Main main)
     {
 
@@ -65,25 +68,20 @@ public class Main extends JFrame{
         this.gamestate = gamestate;
         if(gamestate == 0)
         {
-
-           /* Menu menu = new Menu(main);
-            JFrame framemenu = new JFrame();
-            framemenu.setTitle("BomberMan - Menu");
-            framemenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            framemenu.setSize(800,600);
-            framemenu.setLocationRelativeTo(null);
-
-            framemenu.setVisible(true);
-            framemenu.add(menu);
-            */
+            menuFrame = new Menu(main);
+            main.add(menuFrame);
+            main.setTitle("BomberMan - Menu");
+            main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            main.setSize(800,600);
+            main.setLocationRelativeTo(null);
+            main.setResizable(false);
+            main.setVisible(true);
         }
-
-        if(gamestate == -1)
+        else if(gamestate == -1)
         {
             gameFrame.player.speed = 0;
         }
-
-        if(gamestate == 0) {
+        else if(gamestate == 1) {
             gameFrame = new GameFrame(main);
             main.add(gameFrame);
             main.pack();
@@ -96,17 +94,19 @@ public class Main extends JFrame{
                 String code = in.nextLine();
 
                 main.loadMap(code, gameFrame);
-                gameFrame.addRandomEnemy(3, 3);
-                gameFrame.addStraightEnemy(3, 5);
                 updateStaticImages();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
 
+            gameFrame.pause = false;
         }
 
         main.addComponentListener(new ComponentListener() {
             public void componentResized(ComponentEvent e) {
+
+                if(gameFrame == null)
+                    return;
 
                 int init_win_size = VISIB_MAP_SIZE*RESOLUTION;
 
@@ -144,18 +144,28 @@ public class Main extends JFrame{
             int Y = Integer.parseInt(elements[1]);
 
             switch (elements[2].charAt(0)) {
-                case '1':
+                case '1': //z pliku wczytuje pozycje ciemnej trawy
                     frame.addGrassDark(X, Y);
                     break;
-                case '2':
+                case '2':   //z pliku wczytuje pozycje jasnej trawy
                     frame.addGrassLight(X, Y);
                     break;
-                case 'w':
+                case 'w':   //z pliku wczytuje niezniszczalną ściane
                     frame.addHardWall(X, Y);
                     break;
-                case 's':
+                case 's': // z pliku wczytuje ściane, którą można zniszczyć
                     frame.addSoftWall(X, Y);
                     break;
+                case 'r': // z pliku wczytuje prostego potwora
+                    frame.addStraightEnemy(X,Y);
+                    break;
+                case 'e': // z pliku wczytuje losowego potwora
+                    frame.addRandomEnemy(X,Y);
+                    break;
+                case 'p': // z pliku wczytuje gracza
+                    frame.addPlayer(X, Y);
+                    break;
+
             }
         }
     }

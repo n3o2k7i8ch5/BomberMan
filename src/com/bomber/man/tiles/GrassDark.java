@@ -14,7 +14,7 @@ public class GrassDark extends Tile {
     }
 
     @Override
-    protected ArrayList<Image> getImageList() {
+    protected ArrayList<Image> getImageNullList() {
         return getMain().graphicsContainer.grassDarkImages;
     }
 }

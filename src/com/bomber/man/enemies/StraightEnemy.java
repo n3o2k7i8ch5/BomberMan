@@ -19,25 +19,37 @@ public class StraightEnemy extends Enemy {
 
     @Override
     public void update(long time) {
-        Random random = new Random();
-        if(current_direction==NULL)
-            new_direction = randomFreeDirection();
 
-        if (!isDirectionFreeToGo(directionLeftTo(current_direction)) &&
-                !isDirectionFreeToGo(directionRightTo(current_direction)) &&
-                !isDirectionFreeToGo(current_direction)){
+        if(current_dir==NULL)
+            new_dir = randomFreeDirection();
 
-            if(isDirectionFreeToGo(directionReverse(current_direction)))
-                new_direction = directionReverse(current_direction);
+        else if (!isDirFreeToGo(dirLeftTo(current_dir)) &&
+                !isDirFreeToGo(dirRightTo(current_dir)) &&
+                !isDirFreeToGo(current_dir)){
+
+            if(isDirFreeToGo(dirReverse(current_dir)))
+                new_dir = dirReverse(current_dir);
             else
-                new_direction = NULL;
-        }else{
-            int r = random.nextInt()%3;
+                new_dir = NULL;
+        }else {
 
-            if(r==0 && isDirectionFreeToGo(directionRightTo(current_direction)))
-                new_direction= directionRightTo(current_direction);
-            if(r==1 && isDirectionFreeToGo(directionLeftTo(current_direction)))
-               new_direction = directionLeftTo(current_direction);
+            ArrayList<direction> free_dirs = new ArrayList<>();
+            if(isDirFreeToGo(current_dir))
+                free_dirs.add(current_dir);
+
+            if(isDirFreeToGo(dirRightTo(current_dir)))
+                free_dirs.add(dirRightTo(current_dir));
+
+            if(isDirFreeToGo(dirLeftTo(current_dir)))
+                free_dirs.add(dirLeftTo(current_dir));
+
+            if(free_dirs.size()==0)
+                new_dir = NULL;
+            else{
+                int r = Math.abs(new Random().nextInt() % free_dirs.size());
+                new_dir = free_dirs.get(r);
+            }
+
         }
 
         if(frame.player.X == X && frame.player.Y == Y)
@@ -47,7 +59,27 @@ public class StraightEnemy extends Enemy {
     }
 
     @Override
-    protected ArrayList<Image> getImageList() {
+    protected ArrayList<Image> getImageUpList() {
+        return getMain().graphicsContainer.straightEnemyPath;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageDownList() {
+        return getMain().graphicsContainer.straightEnemyPath;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageLeftList() {
+        return getMain().graphicsContainer.straightEnemyPath;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageRightList() {
+        return getMain().graphicsContainer.straightEnemyPath;
+    }
+
+    @Override
+    protected ArrayList<Image> getImageNullList() {
         return getMain().graphicsContainer.straightEnemyPath;
     }
 

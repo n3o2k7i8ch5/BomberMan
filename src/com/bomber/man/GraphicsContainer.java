@@ -1,18 +1,20 @@
 package com.bomber.man;
 
+import javax.lang.model.type.ArrayType;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 /**
- * Created by Kisiel on 27.03.2017.
+ * Klasa GraphicsContainer jest to klasa przetrzymująca wszystkie obrazki, wykorzysytwane do gry.
+ *
  */
 public class GraphicsContainer {
 
     Main main;
 
-    static final String[] BOMB_PATH = {"res/drawables/bomb.png"};
+    static final String[] BOMB_PATH = {"res/drawables/bomb1.png","res/drawables/bomb2.png","res/drawables/bomb3.png"};
     public ArrayList<Image> bombImages = new ArrayList<>();
 
     static final String[] GRASS_DARK_PATH = {"res/drawables/grass.png"};
@@ -21,16 +23,25 @@ public class GraphicsContainer {
     static final String[] GRASS_LIGHT_PATH = {"res/drawables/grass_light.png"};
     public ArrayList<Image> grassLightImages = new ArrayList<>();
 
-    static final String[] PLAYER_PATH = {"res/drawables/player.png", "res/drawables/bomb.png"};
-    public ArrayList<Image> playerImages = new ArrayList<>();
+    static final String[] PLAYER_UP_PATH = {"res/drawables/player_up.png"};
+    public ArrayList<Image> playerUpImages = new ArrayList<>();
 
-    static final String[] ENEMY_PATH = {"res/drawables/enemy.png"};
+    static final String[] PLAYER_DOWN_PATH = {"res/drawables/player_down.png","res/drawables/player2.png","res/drawables/player3.png"};
+    public ArrayList<Image> playerDownImages = new ArrayList<>();
+
+    static final String[] PLAYER_LEFT_PATH = {"res/drawables/player_left.png"};
+    public ArrayList<Image> playerLeftImages = new ArrayList<>();
+
+    static final String[] PLAYER_RIGHT_PATH = {"res/drawables/player_right.png"};
+    public ArrayList<Image> playerRightImages = new ArrayList<>();
+
+    static final String[] ENEMY_PATH = {"res/drawables/enemy1.png","res/drawables/enemy2.png","res/drawables/enemy3.png","res/drawables/enemy4.png"};
     public ArrayList<Image> enemyImages = new ArrayList<>();
 
     static final String SOFT_WALL_PATH[] = {"res/drawables/wall_soft.png"};
     public ArrayList<Image> softWallImages = new ArrayList<>();
 
-    static String HARD_WALL_PATH[] = {"res/drawables/wall.png"};
+    static final String HARD_WALL_PATH[] = {"res/drawables/wall.png"};
     public ArrayList<Image> hardWallImages = new ArrayList<>();
 
     static final String EXPLOSION_PATH[] = {"res/drawables/explosion.png"};
@@ -44,6 +55,13 @@ public class GraphicsContainer {
 
     public static String POWER_UP_SPEED[] = {"res/drawables/speed.png"};
     public ArrayList<Image> powerUpSpeedPath = new ArrayList<>();
+
+    public static String POWER_UP_BOMB[]={"res/drawables/bombup.png"};
+    public ArrayList<Image> powerUpBombPath = new ArrayList<>();
+
+    public static String LIVING_WALL[]={"res/drawables/livingwall.png"};
+    public ArrayList<Image>livingWallimages=new ArrayList<>();
+
 
 
     GraphicsContainer(Main main){
@@ -79,9 +97,18 @@ public class GraphicsContainer {
         } else if (paths.equals(GRASS_LIGHT_PATH)) {
             grassLightImages.clear();
             grassLightImages.addAll(images);
-        } else if (paths.equals(PLAYER_PATH)) {
-            playerImages.clear();
-            playerImages.addAll(images);
+        } else if (paths.equals(PLAYER_UP_PATH)) {
+            playerUpImages.clear();
+            playerUpImages.addAll(images);
+        } else if (paths.equals(PLAYER_DOWN_PATH)) {
+            playerDownImages.clear();
+            playerDownImages.addAll(images);
+        } else if (paths.equals(PLAYER_LEFT_PATH)) {
+            playerLeftImages.clear();
+            playerLeftImages.addAll(images);
+        } else if (paths.equals(PLAYER_RIGHT_PATH)) {
+            playerRightImages.clear();
+            playerRightImages.addAll(images);
         } else if (paths.equals(ENEMY_PATH)) {
             enemyImages.clear();
             enemyImages.addAll(images);
@@ -103,15 +130,25 @@ public class GraphicsContainer {
         } else if (paths.equals(POWER_UP_SPEED)){
             powerUpSpeedPath.clear();
             powerUpSpeedPath.addAll(images);
+        }else if(paths.equals(POWER_UP_BOMB)){
+            powerUpBombPath.clear();
+            powerUpBombPath.addAll(images);
+        }else if(paths.equals(LIVING_WALL)){
+            livingWallimages.clear();
+            livingWallimages.addAll(images);
         }
 
     }
 
     public void scaleAll(){
+        loadScaleImages(LIVING_WALL);
         loadScaleImages(BOMB_PATH);
         loadScaleImages(GRASS_DARK_PATH);
         loadScaleImages(GRASS_LIGHT_PATH);
-        loadScaleImages(PLAYER_PATH);
+        loadScaleImages(PLAYER_UP_PATH);
+        loadScaleImages(PLAYER_DOWN_PATH);
+        loadScaleImages(PLAYER_LEFT_PATH);
+        loadScaleImages(PLAYER_RIGHT_PATH);
         loadScaleImages(ENEMY_PATH);
         loadScaleImages(HARD_WALL_PATH);
         loadScaleImages(SOFT_WALL_PATH);
@@ -119,5 +156,6 @@ public class GraphicsContainer {
         loadScaleImages(STRAIGHT_ENEMY_PATH);
         loadScaleImages(POWER_UP_FLAME);
         loadScaleImages(POWER_UP_SPEED);
+        loadScaleImages(POWER_UP_BOMB);
     }
 }

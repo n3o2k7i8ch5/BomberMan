@@ -36,7 +36,7 @@ public class Main extends JFrame{
 
         Main main = new Main();
         graphicsContainer = new GraphicsContainer(main);
-        main.setGameState(3, main);
+        main.setGameState(4, main);
     }
 
     void countFPS(Player player){

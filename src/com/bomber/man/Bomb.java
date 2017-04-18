@@ -11,7 +11,7 @@ public class Bomb extends Solid {
      */
     static final int BOMB_DESTRUCT_TIME = 3000;
     int destruct_time;
-    int fire_length;
+    public int fire_length;
 
     /**
      * Klasa Bomb wybuchająca po określonym czasie i niszcząca wszystkie zniszczalne obiekty

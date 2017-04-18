@@ -25,6 +25,8 @@ public abstract class Object extends Entity{
 
     public enum direction{UP, DOWN, RIGHT, LEFT, NULL}
 
+    PlayerColisionListener playerColisionListener = null;
+
     public Object(GameFrame frame, int X, int Y){
         this.frame = frame;
         this.X = X;
@@ -51,144 +53,42 @@ public abstract class Object extends Entity{
         return frame.main;
     }
 
-    /**
-     * Zwraca Obiekt z podanej listy, o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
-     */
-    public Object hereObject(ArrayList list){
-
-        boolean isObject = false;
-
-        ArrayList<Object> arrayList = (ArrayList<Object>) list;
-        for(Object object : arrayList) {
-            isObject = object.X == X && object.Y == Y;
-
-            if(isObject)
-                return object;
-        }
-        return null;
-    }
-
-    /**
-     * Zwraca Obiekt z podanej listy, na lewo od Obiektu, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt na lewo od Obiektu, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście na lewo od Obiektu, którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu na lewo od Obiektu, z którego wywoływana jest metoda.
-     */
-    public Object leftObject(ArrayList list){
-
-        boolean isObject = false;
-
-        ArrayList<Object> arrayList = (ArrayList<Object>) list;
-        for(Object object : arrayList) {
-            if (X - 1 >= 0) {
-                if (isAlignedY())
-                    isObject = object.X == X - 1 && object.Y == Y;
-                else if (Y + 1 < Main.ABS_H_MAP_SIZE)
-                    isObject = object.X == X - 1 && object.Y == Y || object.X == X - 1 && object.Y == Y + 1;
-            }
-
-            if(isObject)
-                return object;
-        }
-        return null;
-    }
-
-    /**
-     * Zwraca Obiekt z podanej listy, na prawo od Obiektu, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt na prawo od Obiektu, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście na prawo od Obiektu, którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu na prawo od Obiektu, z którego wywoływana jest metoda.
-     */
-    public Object rightObject(ArrayList list){
-
-        boolean isObject = false;
-
-        ArrayList<Object> arrayList = (ArrayList<Object>) list;
-        for(Object object : arrayList) {
-            if (X + 1 < Main.ABS_W_MAP_SIZE) {
-                if (isAlignedY())
-                    isObject = object.X == X + 1 && object.Y == Y;
-                else if (Y + 1 < Main.ABS_H_MAP_SIZE)
-                    isObject = object.X == X + 1 && object.Y == Y || object.X == X + 1 && object.Y == Y + 1;
-            }
-
-            if(isObject)
-                return object;
-        }
-        return null;
-    }
-
-    /**
-     * Zwraca Obiekt z podanej listy, na górę od Obiektu, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt na górę od Obiektu, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście na górę od Obiektu, którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu na górę od Obiektu, z którego wywoływana jest metoda.
-     */
-    public Object upObject(ArrayList list){
-
-        boolean isObject = false;
-
-        ArrayList<Object> arrayList = (ArrayList<Object>) list;
-        for(Object object : arrayList) {
-            if (Y-1>=0) {
-                if (isAlignedX())
-                    isObject = object.X == X && object.Y == Y - 1;
-                else if (X + 1 < getMain().ABS_W_MAP_SIZE)
-                    isObject = object.X == X && object.Y == Y - 1 || object.X == X + 1 && object.Y == Y - 1;
-            }
-
-            if(isObject)
-                return object;
-        }
-        return null;
-    }
-
-    /**
-     * Zwraca Obiekt z podanej listy, na dół od Obiektu, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt na dół od Obiektu, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście na dół od Obiektu, którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu na dół od Obiektu, z którego wywoływana jest metoda.
-     */
-    public Object downObject(ArrayList list){
-
-        boolean isObject = false;
-
-        ArrayList<Object> arrayList = (ArrayList<Object>) list;
-        for(Object object : arrayList) {
-            if (Y+1<Main.ABS_H_MAP_SIZE) {
-                if (isAlignedX())
-                    isObject = object.X == X && object.Y == Y + 1;
-                else if (X + 1 < Main.ABS_W_MAP_SIZE)
-                    isObject = object.X == X && object.Y == Y + 1 || object.X == X + 1 && object.Y == Y + 1;
-            }
-
-            if(isObject)
-                return object;
-        }
-        return null;
-    }
-
-    protected boolean isAlignedY(){
+    public boolean isAlignedY(){
         return y % Main.RESOLUTION == 0;
     }
 
-    protected boolean isAlignedX() {
+    public boolean isAlignedX() {
         return x % Main.RESOLUTION == 0;
     }
 
     double previous_sub_time = 0;
     @Override
-    public void update(long time) {
+    protected void update(long time) {
         super.update(time);
+
         double sub_time = time*frame.frame_time % ((double)500/(double)current_image_list.size());
         updateImageList();
         if(previous_sub_time>sub_time) {
             updateImage();
         }
         previous_sub_time = sub_time;
+
+    }
+
+    public Solid leftSolid(){
+        return getObjectManager().leftSolid(this);
+    }
+
+    public Solid rightSolid(){
+        return getObjectManager().rightSolid(this);
+    }
+
+    public Solid upSolid(){
+        return getObjectManager().upSolid(this);
+    }
+
+    public Solid downSolid(){
+        return getObjectManager().downSolid(this);
     }
 
     /**
@@ -270,6 +170,15 @@ public abstract class Object extends Entity{
             current_image_list = getImageNullList();
             updateImage();
         }
+    }
+
+    protected ObjectManager getObjectManager(){
+        return frame.objectManager;
+    }
+
+    public void addPlayerColisionListener(PlayerColisionListener playerColisionListener){
+        this.playerColisionListener = playerColisionListener;
+        this.playerColisionListener.assignToObject(this);
     }
 
 }

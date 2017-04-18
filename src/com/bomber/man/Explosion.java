@@ -33,24 +33,25 @@ public class Explosion extends Object {
         if(frame.player.X == X && frame.player.Y == Y)
             getMain().setGameState(-1);
 
-        Bomb bomb = (Bomb) hereObject(frame.bomb_list);
+        Bomb bomb = (Bomb) getObjectManager().hereObject(getObjectManager().bomb_list, this);
         if(bomb!=null)
-            frame.detonate(bomb);
+            getObjectManager().detonate(bomb);
 
-        frame.enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
-        frame.powerup_list.removeIf(powerUp -> powerUp.X == X && powerUp.Y == Y);
+        getObjectManager().enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
+        getObjectManager().powerup_list.removeIf(powerUp -> powerUp.X == X && powerUp.Y == Y);
     }
 
     public void tryPropataingUp(){
         if(Y==0)
             return;
 
-        Solid solid = (Solid) upObject(frame.solid_list);
-        if(solid == null)
-            frame.addExplosion(X, Y-1, fire_length-1, UP);
-        else if(solid.isSoft) {
-            frame.addExplosion(X, Y - 1, 0, UP);
-            frame.removeSolid(solid);
+        Solid solid = upSolid();
+
+        if(solid==null)
+            getObjectManager().addExplosion(X, Y - 1, fire_length-1, UP);
+        else if(solid.isSoft){
+            getObjectManager().addExplosion(X, Y - 1, 0, UP);
+            getObjectManager().removeSolid(solid);
             randomPowerUp(solid.X, solid.Y);
         }
     }
@@ -59,12 +60,13 @@ public class Explosion extends Object {
         if(Y==getMain().ABS_H_MAP_SIZE-1)
             return;
 
-        Solid solid = (Solid) downObject(frame.solid_list);
-        if(solid == null)
-            frame.addExplosion(X, Y+1, fire_length-1, DOWN);
-        else if(solid.isSoft) {
-            frame.addExplosion(X, Y + 1, 0, DOWN);
-            frame.removeSolid(solid);
+        Solid solid = downSolid();
+
+        if(solid==null)
+            getObjectManager().addExplosion(X, Y+1, fire_length-1, DOWN);
+        else if(solid.isSoft){
+            getObjectManager().addExplosion(X, Y + 1, 0, DOWN);
+            getObjectManager().removeSolid(solid);
             randomPowerUp(solid.X, solid.Y);
         }
     }
@@ -73,12 +75,13 @@ public class Explosion extends Object {
         if(X==getMain().ABS_W_MAP_SIZE-1)
             return;
 
-        Solid solid = (Solid) rightObject(frame.solid_list);
-        if(solid == null)
-            frame.addExplosion(X+1, Y, fire_length-1, RIGHT);
-        else if(solid.isSoft) {
-            frame.addExplosion(X+1, Y, 0, RIGHT);
-            frame.removeSolid(solid);
+        Solid solid = rightSolid();
+
+        if(solid==null)
+            getObjectManager().addExplosion(X+1, Y, fire_length-1, RIGHT);
+        else if(solid.isSoft){
+            getObjectManager().addExplosion(X+1, Y, 0, RIGHT);
+            getObjectManager().removeSolid(solid);
             randomPowerUp(solid.X, solid.Y);
         }
     }
@@ -87,12 +90,13 @@ public class Explosion extends Object {
         if(X==0)
             return;
 
-        Solid solid = (Solid) leftObject(frame.solid_list);
-        if(solid == null)
-            frame.addExplosion(X-1, Y, fire_length-1, LEFT);
-        else if(solid.isSoft) {
-            frame.addExplosion(X-1, Y, 0, LEFT);
-            frame.removeSolid(solid);
+        Solid solid = leftSolid();
+
+        if(solid==null)
+            getObjectManager().addExplosion(X-1, Y, fire_length-1, LEFT);
+        else if(solid.isSoft){
+            getObjectManager().addExplosion(X-1, Y, 0, LEFT);
+            getObjectManager().removeSolid(solid);
             randomPowerUp(solid.X, solid.Y);
         }
     }
@@ -130,7 +134,7 @@ public class Explosion extends Object {
 
         life_time -= frame_time;
 
-        frame.enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
+        getObjectManager().enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
         if(frame.player.X == X && frame.player.Y == Y)
             getMain().setGameState(-1);
 
@@ -146,11 +150,11 @@ public class Explosion extends Object {
         Random random = new Random();
         int r = random.nextInt()%10;
         if(r==0)
-            frame.addFlameUp(X, Y);
+            getObjectManager().addFlameUp(X, Y);
         else if(r==1)
-            frame.addSpeedUp(X, Y);
+            getObjectManager().addSpeedUp(X, Y);
         else if(r==2)
-            frame.addBombUp(X, Y);
+            getObjectManager().addBombUp(X, Y);
     }
 
 }

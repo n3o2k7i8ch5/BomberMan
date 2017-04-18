@@ -13,7 +13,7 @@ public abstract class Entity {
      * Funkcja wywoływana przed wyświetleniem kolejnek klatki gry.
      * @param time jest liczbą określajacą ilość dotychczasowych wywołań funkcji.
      */
-    public void update(long time){}
+    protected void update(long time){}
 
     /**
      * Funkcja rysująca obiekt w oknie programu.

@@ -24,8 +24,8 @@ public class RandomEnemy extends Enemy {
 
         new_dir = randomFreeDirection();
 
-        if(frame.player.X == X && frame.player.Y == Y)
-            getMain().setGameState(-1);
+        //if(frame.player.X == X && frame.player.Y == Y)
+        //    getMain().setGameState(-1);
 
         super.update(time);
 

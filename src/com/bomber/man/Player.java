@@ -22,11 +22,11 @@ public class Player extends MovingObject {
     private direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
 
-    private int fire_length = 1;
+    private int fire_length = 2;
 
-    public int max_bombs = 1;
+    public int max_bombs = 3;
 
-    Player(GameFrame frame, int x, int y, int speed, int align_factor) {
+    public Player(GameFrame frame, int x, int y, int speed, int align_factor) {
         super(frame, x, y, speed, align_factor);
     }
 
@@ -114,18 +114,21 @@ public class Player extends MovingObject {
     public void onPositionChanged() {
         super.onPositionChanged();
         getDirectionFromKey();
-
-        for (Iterator<PowerUp> it = frame.powerup_list.iterator(); it.hasNext(); ) {
+/*
+        for (Iterator<PowerUp> it = getObjectManager().powerup_list.iterator(); it.hasNext(); ) {
             PowerUp powerUp = it.next();
             if (powerUp.X == X && powerUp.Y == Y) {
                 powerUp.performBonus();
                 it.remove();
             }
         }
+        */
     }
 
     @Override
     public void update(long time) {
+
+        checkNearbyCollisions();
 
         if(current_dir==NULL)
             getDirectionFromKey();
@@ -144,6 +147,71 @@ public class Player extends MovingObject {
 
         super.update(time);
 
+    }
+
+    private void checkNearbyCollisions(){
+
+        if(X!=0 && Y!=0)
+            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y-1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.playerColisionListener != null)
+                    object.playerColisionListener.checkColision(it);
+            }
+
+        if(Y!=0)
+            for (Iterator<Object> it = getObjectManager().all_objects[X][Y-1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.playerColisionListener != null)
+                    object.playerColisionListener.checkColision(it);
+            }
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=0)
+            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y-1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.playerColisionListener != null)
+                    object.playerColisionListener.checkColision(it);
+            }
+
+        if(X!=0)
+            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.playerColisionListener != null)
+                    object.playerColisionListener.checkColision(it);
+            }
+
+        for (Iterator<Object> it = getObjectManager().all_objects[X][Y].iterator(); it.hasNext(); ) {
+            Object object = it.next();
+            if (object.playerColisionListener != null)
+                object.playerColisionListener.checkColision(it);
+        }
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1)
+            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.playerColisionListener != null)
+                    object.playerColisionListener.checkColision(it);
+            }
+
+        if(X!=0 && Y!=getMain().ABS_H_MAP_SIZE-1)
+            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y+1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.playerColisionListener != null)
+                    object.playerColisionListener.checkColision(it);
+            }
+
+        if(Y!=getMain().ABS_H_MAP_SIZE-1)
+            for (Iterator<Object> it = getObjectManager().all_objects[X][Y+1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.playerColisionListener != null)
+                    object.playerColisionListener.checkColision(it);
+            }
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=getMain().ABS_H_MAP_SIZE-1)
+            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y+1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.playerColisionListener != null)
+                    object.playerColisionListener.checkColision(it);
+            }
     }
 
     @Override
@@ -216,12 +284,12 @@ public class Player extends MovingObject {
             Y = this.Y + 1;
 
         boolean isBomb = false;
-        for(Bomb bomb : frame.bomb_list)
+        for(Bomb bomb : getObjectManager().bomb_list)
             if(bomb.Y == Y && bomb.X == X)
                 isBomb = true;
 
         if(!isBomb)
-            frame.addBomb(X, Y, fire_length);
+            getObjectManager().addBomb(X, Y, fire_length);
 
     }
 

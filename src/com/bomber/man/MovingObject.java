@@ -23,9 +23,10 @@ public abstract class MovingObject extends Object {
 
     /**
      * Konstruktor klasy.
+     *
      * @param frame instancja klasy GameFrame, w jakiej przechowywane są parametry i stan gry.
-     * @param X pozycja obiektu liczona w ilości kratek.
-     * @param Y pozycja obiektu liczona w ilości kratek.
+     * @param X     pozycja obiektu liczona w ilości kratek.
+     * @param Y     pozycja obiektu liczona w ilości kratek.
      * @param speed prędkość porszania się obieku.
      */
     public MovingObject(GameFrame frame, int X, int Y, int speed) {
@@ -34,9 +35,8 @@ public abstract class MovingObject extends Object {
         this.align_factor = 1;
         this.old_x = x;
         this.old_y = y;
-        element = ((double)RESOLUTION/(double)align_factor);
+        element = ((double) RESOLUTION / (double) align_factor);
         is_element_int = element == Math.floor(element);
-
     }
 
     public MovingObject(GameFrame frame, int X, int Y, int speed, int align_factor) {
@@ -45,32 +45,40 @@ public abstract class MovingObject extends Object {
         this.align_factor = align_factor;
         this.old_x = x;
         this.old_y = y;
-        element = ((double)RESOLUTION/(double)align_factor);
+        element = ((double) RESOLUTION / (double) align_factor);
     }
 
     /**
      * Metoda wywoływana przed tym, jak obiekt zmieni położenie.
      */
-    public void beforePositionChanged(){
+    public void beforePositionChanged() {
         old_x = x;
         old_y = y;
-        old_X = (old_x/ RESOLUTION);
-        old_Y = (old_y/ RESOLUTION);
+        old_X = (old_x / RESOLUTION);
+        old_Y = (old_y / RESOLUTION);
     }
 
     /**
      * Metoda, która wywoływana po tym, jak obiekt zmienił położenie.
      */
-    public void onPositionChanged(){
-        X = x/ RESOLUTION;
-        Y = y/ RESOLUTION;
+    public void onPositionChanged() {
+        X = x / RESOLUTION;
+        Y = y / RESOLUTION;
+        if (X != old_X || Y != old_Y)
+            onTilePositionChanged();
+    }
+
+    public void onTilePositionChanged() {
+        frame.objectManager.all_objects[old_X][old_Y].remove(this);
+        frame.objectManager.all_objects[X][Y].add(this);
     }
 
     @Override
-    public void update(long time) {
+    protected void update(long time) {
         super.update(time);
-        if (is_element_int){
-            updateDirection();
+
+        if (is_element_int) {
+            updateCurrentDir();
             if (current_dir == UP) {
                 beforePositionChanged();
                 y -= speed;
@@ -88,9 +96,9 @@ public abstract class MovingObject extends Object {
                 x += speed;
                 onPositionChanged();
             }
-        }else{
-            for(int i = 0; i<speed; i++) {
-                updateDirection();
+        } else {
+            for (int i = 0; i < speed; i++) {
+                updateCurrentDir();
                 if (current_dir == UP) {
                     beforePositionChanged();
                     y--;
@@ -115,7 +123,7 @@ public abstract class MovingObject extends Object {
     /**
      * Metoda aktualizująca kierunek ruchu w momencie, kiedy obiekt znajduje na odpowiedniej części kratki.
      */
-    private void updateDirection(){
+    private void updateCurrentDir() {
         if ((current_dir == RIGHT && x % element < old_x % element) ||
                 (current_dir == LEFT && (x - 1) % element > (old_x - 1) % element) ||
                 (current_dir == UP && (y - 1) % element > (old_y - 1) % element) ||
@@ -127,18 +135,19 @@ public abstract class MovingObject extends Object {
 
     /**
      * Metoda sprawdzająca czy wybrany kierunek jest możliwy do przejścia.
+     *
      * @param direction kierunek sprawdzany.
      */
-    public boolean isDirFreeToGo(direction direction){
-        if(direction==UP && y > 0)
-            return (upObject(frame.solid_list)==null && upObject(frame.bomb_list)==null) || !isAlignedY();
-        else if(direction==DOWN && y < ABS_H_MAP_SIZE*RESOLUTION)
-            return (downObject(frame.solid_list)==null && downObject(frame.bomb_list)==null) || !isAlignedY();
-        else if(direction==LEFT && x > 0)
-            return (leftObject(frame.solid_list)==null && leftObject(frame.bomb_list)==null) || !isAlignedX();
-        else if(direction==RIGHT && x < ABS_W_MAP_SIZE*RESOLUTION)
-            return (rightObject(frame.solid_list)==null && rightObject(frame.bomb_list)==null) || !isAlignedX();
-        else if(direction==NULL)
+    public boolean isDirFreeToGo(direction direction) {
+        if (direction == UP && y > 0)
+            return !isAlignedY() || upSolid() == null;
+        else if (direction == DOWN && y < ABS_H_MAP_SIZE * RESOLUTION)
+            return !isAlignedY() || downSolid() == null;
+        else if (direction == LEFT && x > 0)
+            return !isAlignedX() || leftSolid() == null;
+        else if (direction == RIGHT && x < ABS_W_MAP_SIZE * RESOLUTION)
+            return !isAlignedX() || rightSolid() == null;
+        else if (direction == NULL)
             return true;
         else
             return false;
@@ -146,26 +155,27 @@ public abstract class MovingObject extends Object {
 
     /**
      * Metoda zwracająca losowy, wolny do przemieszczenia się kierunek ruchu.
+     *
      * @return kierunek ruchu
      */
-    protected direction randomFreeDirection(){
+    protected direction randomFreeDirection() {
 
         ArrayList<direction> free_dirs = new ArrayList<>();
-        if(isDirFreeToGo(UP))
+        if (isDirFreeToGo(UP))
             free_dirs.add(UP);
 
-        if(isDirFreeToGo(DOWN))
+        if (isDirFreeToGo(DOWN))
             free_dirs.add(DOWN);
 
-        if(isDirFreeToGo(RIGHT))
+        if (isDirFreeToGo(RIGHT))
             free_dirs.add(RIGHT);
 
-        if(isDirFreeToGo(LEFT))
+        if (isDirFreeToGo(LEFT))
             free_dirs.add(LEFT);
 
-        if(free_dirs.size()==0)
+        if (free_dirs.size() == 0)
             return NULL;
-        else{
+        else {
             int r = Math.abs(new Random().nextInt()) % free_dirs.size();
             return free_dirs.get(r);
         }
@@ -178,31 +188,31 @@ public abstract class MovingObject extends Object {
     protected void updateImageList() {
         switch (current_dir) {
             case UP:
-                if(current_image_list != getImageUpList()) {
+                if (current_image_list != getImageUpList()) {
                     current_image_list = getImageUpList();
                     updateImage();
                 }
                 break;
             case DOWN:
-                if(current_image_list != getImageDownList()) {
+                if (current_image_list != getImageDownList()) {
                     current_image_list = getImageDownList();
                     updateImage();
                 }
                 break;
             case RIGHT:
-                if(current_image_list != getImageRightList()) {
+                if (current_image_list != getImageRightList()) {
                     current_image_list = getImageRightList();
                     updateImage();
                 }
                 break;
             case LEFT:
-                if(current_image_list != getImageLeftList()) {
+                if (current_image_list != getImageLeftList()) {
                     current_image_list = getImageLeftList();
                     updateImage();
                 }
                 break;
             case NULL:
-                if(current_image_list != getImageNullList()) {
+                if (current_image_list != getImageNullList()) {
                     current_image_list = getImageNullList();
                     updateImage();
                 }
@@ -211,8 +221,10 @@ public abstract class MovingObject extends Object {
     }
 
     protected abstract ArrayList<Image> getImageUpList();
-    protected abstract ArrayList<Image> getImageDownList();
-    protected abstract ArrayList<Image> getImageLeftList();
-    protected abstract ArrayList<Image> getImageRightList();
 
+    protected abstract ArrayList<Image> getImageDownList();
+
+    protected abstract ArrayList<Image> getImageLeftList();
+
+    protected abstract ArrayList<Image> getImageRightList();
 }

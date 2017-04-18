@@ -16,8 +16,8 @@ public class Main extends JFrame{
 
     static final int VISIB_MAP_SIZE = 13;
     static final int CENTER_MAP = (int)Math.floor(VISIB_MAP_SIZE/2);
-    static int ABS_H_MAP_SIZE = 20;
-    static int ABS_W_MAP_SIZE = 20;
+    public static int ABS_H_MAP_SIZE = 20;
+    public static int ABS_W_MAP_SIZE = 20;
 
     static final int RESOLUTION = 64;
 
@@ -36,12 +36,12 @@ public class Main extends JFrame{
 
         Main main = new Main();
         graphicsContainer = new GraphicsContainer(main);
-        main.setGameState(4, main);
+        main.setGameState(1, main);
     }
 
     void countFPS(Player player){
         if(System.currentTimeMillis() - CLOCK >= 1000) {
-            setTitle("Bomber Man FPS = " + FPS + player.current_dir);
+            setTitle("Bomber Man FPS = " + FPS);
             FPS = 0;
             CLOCK = System.currentTimeMillis();
         }else{
@@ -145,25 +145,25 @@ public class Main extends JFrame{
 
             switch (elements[2].charAt(0)) {
                 case '1': //z pliku wczytuje pozycje ciemnej trawy
-                    frame.addGrassDark(X, Y);
+                    frame.objectManager.addGrassDark(X, Y);
                     break;
                 case '2':   //z pliku wczytuje pozycje jasnej trawy
-                    frame.addGrassLight(X, Y);
+                    frame.objectManager.addGrassLight(X, Y);
                     break;
                 case 'w':   //z pliku wczytuje niezniszczalną ściane
-                    frame.addHardWall(X, Y);
+                    frame.objectManager.addHardWall(X, Y);
                     break;
                 case 's': // z pliku wczytuje ściane, którą można zniszczyć
-                    frame.addSoftWall(X, Y);
+                    frame.objectManager.addSoftWall(X, Y);
                     break;
                 case 'r': // z pliku wczytuje prostego potwora
-                    frame.addStraightEnemy(X,Y);
+                    frame.objectManager.addStraightEnemy(X,Y);
                     break;
                 case 'e': // z pliku wczytuje losowego potwora
-                    frame.addRandomEnemy(X,Y);
+                    frame.objectManager.addRandomEnemy(X,Y);
                     break;
                 case 'p': // z pliku wczytuje gracza
-                    frame.addPlayer(X, Y);
+                    frame.objectManager.addPlayer(X, Y);
                     break;
 
             }
@@ -172,10 +172,10 @@ public class Main extends JFrame{
 
     private void updateStaticImages(){
 
-        for(Tile tile: gameFrame.tile_list)
+        for(Tile tile: gameFrame.objectManager.tile_list)
             tile.updateImage();
 
-        for(Solid solid: gameFrame.solid_list)
+        for(Solid solid: gameFrame.objectManager.solid_list)
             solid.updateImage();
     }
 

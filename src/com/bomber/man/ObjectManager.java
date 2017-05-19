@@ -12,6 +12,7 @@ import com.bomber.man.tiles.GrassLight;
 import com.bomber.man.tiles.Tile;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static com.bomber.man.Main.ABS_H_MAP_SIZE;
 import static com.bomber.man.Main.ABS_W_MAP_SIZE;

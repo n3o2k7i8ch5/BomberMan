@@ -2,8 +2,10 @@ package com.bomber.man;
 
 import com.bomber.man.menu.Menu;
 import com.bomber.man.tiles.Tile;
+import com.sun.org.apache.regexp.internal.RE;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
@@ -18,6 +20,8 @@ public class Main extends JFrame{
     static final int CENTER_MAP = (int)Math.floor(VISIB_MAP_SIZE/2);
     public static int ABS_H_MAP_SIZE = 20;
     public static int ABS_W_MAP_SIZE = 20;
+
+    public static int INFO_WIDTH = 200;
 
     static final int RESOLUTION = 64;
 
@@ -46,6 +50,7 @@ public class Main extends JFrame{
             CLOCK = System.currentTimeMillis();
         }else{
             FPS++;
+            //setTitle("Bomber Man FPS = " + FPS + " " + player.getObjectManager().all_objects[player.X][player.Y].toString());
         }
     }
 
@@ -82,10 +87,23 @@ public class Main extends JFrame{
             gameFrame.player.speed = 0;
         }
         else if(gamestate == 1) {
+            main.setSize(VISIB_MAP_SIZE*RESOLUTION + INFO_WIDTH, VISIB_MAP_SIZE*RESOLUTION);
             gameFrame = new GameFrame(main);
+            gameFrame.setPreferredSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION, VISIB_MAP_SIZE*RESOLUTION));
             main.add(gameFrame);
-            main.pack();
-            main.setLocationRelativeTo(null);
+            //main.setLocationRelativeTo(null);
+
+
+            JLabel label = new JLabel("Speed: ");
+            label.setLocation(200, 10);
+            label.setFont(label.getFont().deriveFont(20));
+            label.setVisible(true);
+            gameFrame.add(label);
+            gameFrame.setVisible(true);
+
+
+
+
             main.setVisible(true);
 
             Scanner in = null;
@@ -101,7 +119,7 @@ public class Main extends JFrame{
 
             gameFrame.pause = false;
         }
-
+/*
         main.addComponentListener(new ComponentListener() {
             public void componentResized(ComponentEvent e) {
 
@@ -113,7 +131,7 @@ public class Main extends JFrame{
                 double win_width = gameFrame.getBounds().width;
                 double win_height = gameFrame.getBounds().height;
 
-                w_scale_rate = win_width/init_win_size;
+                w_scale_rate = (win_width - INFO_WIDTH)/(init_win_size);
                 h_scale_rate = win_height/init_win_size;
 
                 graphicsContainer.scaleAll();
@@ -129,7 +147,7 @@ public class Main extends JFrame{
             @Override
             public void componentHidden(ComponentEvent e) {}
         });
-
+*/
 
     }
 
@@ -165,7 +183,6 @@ public class Main extends JFrame{
                 case 'p': // z pliku wczytuje gracza
                     frame.objectManager.addPlayer(X, Y);
                     break;
-
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.bomber.man;
 
-import javax.lang.model.type.ArrayType;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -60,13 +59,15 @@ public class GraphicsContainer {
     public ArrayList<Image> powerUpBombPath = new ArrayList<>();
 
     public static String LIVING_WALL[]={"res/drawables/livingwall.png"};
-    public ArrayList<Image>livingWallimages=new ArrayList<>();
+    public ArrayList<Image>livingWallPath=new ArrayList<>();
 
-
+    public static String INFO_BOX[]={"res/drawables/info.png"};
+    public ArrayList<Image>infoBoxPath=new ArrayList<>();
 
     GraphicsContainer(Main main){
         this.main = main;
         scaleAll();
+        infoBoxPath.add(new ImageIcon(INFO_BOX[0]).getImage());
     }
 
     public void loadScaleImages(String[] paths) {
@@ -134,8 +135,11 @@ public class GraphicsContainer {
             powerUpBombPath.clear();
             powerUpBombPath.addAll(images);
         }else if(paths.equals(LIVING_WALL)){
-            livingWallimages.clear();
-            livingWallimages.addAll(images);
+            livingWallPath.clear();
+            livingWallPath.addAll(images);
+        //}else if(paths.equals(INFO_BOX)){
+        //    infoBoxPath.clear();
+        //    infoBoxPath.addAll(images);
         }
 
     }
@@ -157,5 +161,6 @@ public class GraphicsContainer {
         loadScaleImages(POWER_UP_FLAME);
         loadScaleImages(POWER_UP_SPEED);
         loadScaleImages(POWER_UP_BOMB);
+        //loadScaleImages(INFO_BOX);//
     }
 }

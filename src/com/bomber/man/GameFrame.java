@@ -30,6 +30,8 @@ public class GameFrame extends JPanel implements ActionListener {
 
     public ObjectManager objectManager;
 
+    public InfoBox infoBox;
+
     /**
      * Klasa GameFrame klasa przechowujaca aktualny stan gry.
      * @param main
@@ -37,7 +39,7 @@ public class GameFrame extends JPanel implements ActionListener {
     public GameFrame(Main main)
     {
         //addPlayer(3,3);
-        setPreferredSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION, VISIB_MAP_SIZE*RESOLUTION));
+        setPreferredSize(new Dimension(100, VISIB_MAP_SIZE*RESOLUTION));
 
         this.main = main;
 
@@ -47,13 +49,16 @@ public class GameFrame extends JPanel implements ActionListener {
         timer.start();
 
         objectManager = new ObjectManager(this);
+        infoBox = new InfoBox(this);
     }
 
     @Override
     public void paint(Graphics g)
     {
+
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
+
 
         for(Tile tile : objectManager.tile_list)
             tile.draw(g2d);
@@ -76,6 +81,8 @@ public class GameFrame extends JPanel implements ActionListener {
         for(Bomb bomb : objectManager.bomb_list)
             bomb.draw(g2d);
 
+        if(infoBox!=null)
+            infoBox.draw(g2d);
     }
 
     @Override
@@ -108,6 +115,8 @@ public class GameFrame extends JPanel implements ActionListener {
             if (explosion.tick()) {
                 it.remove();
                 objectManager.all_objects[explosion.X][explosion.Y].remove(explosion);
+            }else{
+                explosion.checkNearbyCollisions();
             }
         }
 

@@ -15,7 +15,7 @@ public abstract class PlayerColisionListener {
     }
 
     public void checkColision(Iterator<Object> it){
-        if(Math.abs(frame.player.x - object.x)<Main.RESOLUTION && Math.abs(frame.player.y - object.y) < Main.RESOLUTION)
+        if(Math.abs(frame.player.x - object.x) < Main.RESOLUTION && Math.abs(frame.player.y - object.y) < Main.RESOLUTION)
             onColision(it);
     }
 

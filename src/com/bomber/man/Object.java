@@ -16,7 +16,7 @@ public abstract class Object extends Entity{
     public int X, Y;
 
     ArrayList<Image> current_image_list = new ArrayList<>();
-    private int current_image_index;
+    protected int current_image_index;
 
     protected direction current_dir = NULL;
     protected direction new_dir = NULL;
@@ -26,6 +26,7 @@ public abstract class Object extends Entity{
     public enum direction{UP, DOWN, RIGHT, LEFT, NULL}
 
     PlayerColisionListener playerColisionListener = null;
+    ExplosionColisionListener explosionColisionListener = null;
 
     public Object(GameFrame frame, int X, int Y){
         this.frame = frame;
@@ -179,6 +180,11 @@ public abstract class Object extends Entity{
     public void addPlayerColisionListener(PlayerColisionListener playerColisionListener){
         this.playerColisionListener = playerColisionListener;
         this.playerColisionListener.assignToObject(this);
+    }
+
+    public void addExplosionColisionListener(ExplosionColisionListener explosionColisionListener){
+        this.explosionColisionListener = explosionColisionListener;
+        this.explosionColisionListener.assignToObject(this);
     }
 
 }

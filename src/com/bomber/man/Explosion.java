@@ -2,6 +2,7 @@ package com.bomber.man;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import static com.bomber.man.GameFrame.*;
@@ -30,18 +31,22 @@ public class Explosion extends Object {
         else
             delay = 30;
 
-        if(frame.player.X == X && frame.player.Y == Y)
-            getMain().setGameState(-1);
+        addPlayerColisionListener(new PlayerColisionListener(frame) {
+            @Override
+            public void onColision(Iterator<Object> it) {
+                getMain().setGameState(-1);
+            }
+        });
 
         Bomb bomb = (Bomb) getObjectManager().hereObject(getObjectManager().bomb_list, this);
         if(bomb!=null)
             getObjectManager().detonate(bomb);
 
-        getObjectManager().enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
+        //getObjectManager().enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
         getObjectManager().powerup_list.removeIf(powerUp -> powerUp.X == X && powerUp.Y == Y);
     }
 
-    public void tryPropataingUp(){
+    private void tryPropataingUp(){
         if(Y==0)
             return;
 
@@ -56,14 +61,14 @@ public class Explosion extends Object {
         }
     }
 
-    public void tryPropataingDown(){
+    private void tryPropataingDown(){
         if(Y==getMain().ABS_H_MAP_SIZE-1)
             return;
 
         Solid solid = downSolid();
 
         if(solid==null)
-            getObjectManager().addExplosion(X, Y+1, fire_length-1, DOWN);
+            getObjectManager().addExplosion(X, Y + 1, fire_length-1, DOWN);
         else if(solid.isSoft){
             getObjectManager().addExplosion(X, Y + 1, 0, DOWN);
             getObjectManager().removeSolid(solid);
@@ -71,7 +76,7 @@ public class Explosion extends Object {
         }
     }
 
-    public void tryPropataingRight() {
+    private void tryPropataingRight() {
         if(X==getMain().ABS_W_MAP_SIZE-1)
             return;
 
@@ -86,7 +91,7 @@ public class Explosion extends Object {
         }
     }
 
-    public void tryPropataingLeft() {
+    private void tryPropataingLeft() {
         if(X==0)
             return;
 
@@ -101,7 +106,7 @@ public class Explosion extends Object {
         }
     }
 
-    public void tryPropagating(){
+    private void tryPropagating(){
 
         if(fire_length==0)
             return;
@@ -134,10 +139,6 @@ public class Explosion extends Object {
 
         life_time -= frame_time;
 
-        getObjectManager().enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
-        if(frame.player.X == X && frame.player.Y == Y)
-            getMain().setGameState(-1);
-
         return false;
     }
 
@@ -157,4 +158,68 @@ public class Explosion extends Object {
             getObjectManager().addBombUp(X, Y);
     }
 
+    public void checkNearbyCollisions(){
+
+        if(X!=0 && Y!=0)
+            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y-1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.explosionColisionListener != null)
+                    object.explosionColisionListener.checkColision(this, it);
+            }
+
+        if(Y!=0)
+            for (Iterator<Object> it = getObjectManager().all_objects[X][Y-1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.explosionColisionListener != null)
+                    object.explosionColisionListener.checkColision(this, it);
+            }
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=0)
+            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y-1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.explosionColisionListener != null)
+                    object.explosionColisionListener.checkColision(this, it);
+            }
+
+        if(X!=0)
+            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.explosionColisionListener != null)
+                    object.explosionColisionListener.checkColision(this, it);
+            }
+
+        for (Iterator<Object> it = getObjectManager().all_objects[X][Y].iterator(); it.hasNext(); ) {
+            Object object = it.next();
+            if (object.explosionColisionListener != null)
+                object.explosionColisionListener.checkColision(this, it);
+        }
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1)
+            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.explosionColisionListener != null)
+                    object.explosionColisionListener.checkColision(this, it);
+            }
+
+        if(X!=0 && Y!=getMain().ABS_H_MAP_SIZE-1)
+            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y+1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.explosionColisionListener != null)
+                    object.explosionColisionListener.checkColision(this, it);
+            }
+
+        if(Y!=getMain().ABS_H_MAP_SIZE-1)
+            for (Iterator<Object> it = getObjectManager().all_objects[X][Y+1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.explosionColisionListener != null)
+                    object.explosionColisionListener.checkColision(this, it);
+            }
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=getMain().ABS_H_MAP_SIZE-1)
+            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y+1].iterator(); it.hasNext(); ) {
+                Object object = it.next();
+                if (object.explosionColisionListener != null)
+                    object.explosionColisionListener.checkColision(this, it);
+            }
+    }
 }

@@ -1,7 +1,5 @@
 package com.bomber.man;
 
-import com.bomber.man.power_ups.PowerUp;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.lang.*;
@@ -22,7 +20,7 @@ public class Player extends MovingObject {
     private direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
 
-    private int fire_length = 2;
+    private int fire_length = 12;
 
     public int max_bombs = 3;
 
@@ -107,6 +105,10 @@ public class Player extends MovingObject {
             else if(key2_pressed==RIGHT)
                 key2_pressed = NULL;
         }
+        else if(key==KeyEvent.VK_P)
+        {
+            frame.pause = !frame.pause;
+        }
 
     }
 
@@ -114,15 +116,6 @@ public class Player extends MovingObject {
     public void onPositionChanged() {
         super.onPositionChanged();
         getDirectionFromKey();
-/*
-        for (Iterator<PowerUp> it = getObjectManager().powerup_list.iterator(); it.hasNext(); ) {
-            PowerUp powerUp = it.next();
-            if (powerUp.X == X && powerUp.Y == Y) {
-                powerUp.performBonus();
-                it.remove();
-            }
-        }
-        */
     }
 
     @Override

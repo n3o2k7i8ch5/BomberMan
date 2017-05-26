@@ -54,6 +54,12 @@ public class GameFrame extends JPanel implements ActionListener {
         objectManager.addForest(3, 8);
         objectManager.addForest(3, 9);
         objectManager.addForest(3, 10);
+
+        //objectManager.addFastStraightEnemy(5, 7);
+        //objectManager.addMagnetEnemy(9, 9);
+
+        objectManager.addSmartAssEnemy(1, 5);
+
     }
 
     @Override
@@ -116,7 +122,9 @@ public class GameFrame extends JPanel implements ActionListener {
 
         repaint();
 
-        main.infoBox.update(player);
+        if(main.infoBox!= null)
+            main.infoBox.update(player);
+
     }
 
     private void tickBombs(){

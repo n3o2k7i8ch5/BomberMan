@@ -47,25 +47,43 @@ public class GraphicsContainer {
     public ArrayList<Image> explosionImages = new ArrayList<>();
 
     public static String STRAIGHT_ENEMY_PATH[] = {"res/drawables/straightenemy.png", "res/drawables/straightenemy2.png"};
-    public ArrayList<Image> straightEnemyPath = new ArrayList<>();
+    public ArrayList<Image> straightEnemyImages = new ArrayList<>();
 
     public static String POWER_UP_FLAME_PATH[] = {"res/drawables/flame.png"};
-    public ArrayList<Image> powerUpFlamePath = new ArrayList<>();
+    public ArrayList<Image> powerUpFlameImages = new ArrayList<>();
 
     public static String POWER_UP_SPEED_PATH[] = {"res/drawables/speed.png"};
-    public ArrayList<Image> powerUpSpeedPath = new ArrayList<>();
+    public ArrayList<Image> powerUpSpeedImages = new ArrayList<>();
 
     public static String POWER_UP_BOMB_PATH[] = {"res/drawables/bombup.png"};
-    public ArrayList<Image> powerUpBombPath = new ArrayList<>();
+    public ArrayList<Image> powerUpBombImages = new ArrayList<>();
 
     public static String LIVING_WALL_PATH[] = {"res/drawables/livingwall.png"};
-    public ArrayList<Image>livingWallPath = new ArrayList<>();
+    public ArrayList<Image> livingWallImages = new ArrayList<>();
 
     public static String FOREST_PATH[] = {"res/drawables/forest.png"};
-    public ArrayList<Image>forestPath = new ArrayList<>();
+    public ArrayList<Image> forestImages = new ArrayList<>();
 
     public static String FOREST_TRANSP_PATH[]={"res/drawables/forest_transp.png"};
-    public ArrayList<Image>forestTranspPath = new ArrayList<>();
+    public ArrayList<Image> forestTranspImages = new ArrayList<>();
+
+    public static String FAST_STRAIGHT_ENEMY_UP_PATH[]={"res/drawables/fast_straight_enemy_up.png"};
+    public ArrayList<Image> fastStraightEnemyUpImages = new ArrayList<>();
+
+    public static String FAST_STRAIGHT_ENEMY_DOWN_PATH[]={"res/drawables/fast_straight_enemy_down.png"};
+    public ArrayList<Image> fastStraightEnemyDownImages = new ArrayList<>();
+
+    public static String FAST_STRAIGHT_ENEMY_LEFT_PATH[]={"res/drawables/fast_straight_enemy_left.png"};
+    public ArrayList<Image> fastStraightEnemyLeftImages = new ArrayList<>();
+
+    public static String FAST_STRAIGHT_ENEMY_RIGHT_PATH[]={"res/drawables/fast_straight_enemy_right.png"};
+    public ArrayList<Image> fastStraightEnemyRightImages = new ArrayList<>();
+
+    public static String MAGNET_ENEMY_PATH[]={"res/drawables/magnet_enemy_1.png", "res/drawables/magnet_enemy_2.png", "res/drawables/magnet_enemy_3.png", "res/drawables/magnet_enemy_2.png", "res/drawables/magnet_enemy_1.png"};
+    public ArrayList<Image> magnetEnemyImages = new ArrayList<>();
+
+    public static String SMARTASS_ENEMY_PATH[]={"res/drawables/smartass_enemy.png"};
+    public ArrayList<Image> smartAssEnemyImages = new ArrayList<>();
 
     GraphicsContainer(Main main){
         this.main = main;
@@ -125,26 +143,44 @@ public class GraphicsContainer {
             explosionImages.clear();
             explosionImages.addAll(images);
         } else if (paths.equals(STRAIGHT_ENEMY_PATH)){
-            straightEnemyPath.clear();
-            straightEnemyPath.addAll(images);
+            straightEnemyImages.clear();
+            straightEnemyImages.addAll(images);
         } else if (paths.equals(POWER_UP_FLAME_PATH)){
-            powerUpFlamePath.clear();
-            powerUpFlamePath.addAll(images);
+            powerUpFlameImages.clear();
+            powerUpFlameImages.addAll(images);
         } else if (paths.equals(POWER_UP_SPEED_PATH)){
-            powerUpSpeedPath.clear();
-            powerUpSpeedPath.addAll(images);
+            powerUpSpeedImages.clear();
+            powerUpSpeedImages.addAll(images);
         }else if(paths.equals(POWER_UP_BOMB_PATH)){
-            powerUpBombPath.clear();
-            powerUpBombPath.addAll(images);
+            powerUpBombImages.clear();
+            powerUpBombImages.addAll(images);
         }else if(paths.equals(LIVING_WALL_PATH)){
-            livingWallPath.clear();
-            livingWallPath.addAll(images);
+            livingWallImages.clear();
+            livingWallImages.addAll(images);
         }else if(paths.equals(FOREST_PATH)){
-            forestPath.clear();
-            forestPath.addAll(images);
+            forestImages.clear();
+            forestImages.addAll(images);
         }else if(paths.equals(FOREST_TRANSP_PATH)){
-            forestTranspPath.clear();
-            forestTranspPath.addAll(images);
+            forestTranspImages.clear();
+            forestTranspImages.addAll(images);
+        }else if(paths.equals(FAST_STRAIGHT_ENEMY_UP_PATH)){
+            fastStraightEnemyUpImages.clear();
+            fastStraightEnemyUpImages.addAll(images);
+        }else if(paths.equals(FAST_STRAIGHT_ENEMY_DOWN_PATH)) {
+            fastStraightEnemyDownImages.clear();
+            fastStraightEnemyDownImages.addAll(images);
+        }else if(paths.equals(FAST_STRAIGHT_ENEMY_RIGHT_PATH)) {
+            fastStraightEnemyRightImages.clear();
+            fastStraightEnemyRightImages.addAll(images);
+        }else if(paths.equals(FAST_STRAIGHT_ENEMY_LEFT_PATH)) {
+            fastStraightEnemyLeftImages.clear();
+            fastStraightEnemyLeftImages.addAll(images);
+        }else if(paths.equals(MAGNET_ENEMY_PATH)) {
+            magnetEnemyImages.clear();
+            magnetEnemyImages.addAll(images);
+        }else if(paths.equals(SMARTASS_ENEMY_PATH)) {
+            smartAssEnemyImages.clear();
+            smartAssEnemyImages.addAll(images);
         }
     }
 
@@ -167,6 +203,12 @@ public class GraphicsContainer {
         loadScaleImages(POWER_UP_BOMB_PATH);
         loadScaleImages(FOREST_PATH);
         loadScaleImages(FOREST_TRANSP_PATH);
+        loadScaleImages(FAST_STRAIGHT_ENEMY_UP_PATH);
+        loadScaleImages(FAST_STRAIGHT_ENEMY_DOWN_PATH);
+        loadScaleImages(FAST_STRAIGHT_ENEMY_LEFT_PATH);
+        loadScaleImages(FAST_STRAIGHT_ENEMY_RIGHT_PATH);
+        loadScaleImages(MAGNET_ENEMY_PATH);
+        loadScaleImages(SMARTASS_ENEMY_PATH);
 
     }
 }

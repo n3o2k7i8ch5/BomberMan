@@ -16,15 +16,12 @@ import java.util.Scanner;
 
 public class Main extends JFrame{
 
-    private static long CLOCK;
-    private static int FPS = 0;
-
     static final int VISIB_MAP_SIZE = 13;
     static final int CENTER_MAP = (int)Math.floor(VISIB_MAP_SIZE/2);
     public static int ABS_H_MAP_SIZE = 20;
     public static int ABS_W_MAP_SIZE = 20;
 
-    public static int INFO_WIDTH = 200;
+    public static int INFO_WIDTH = 300;
 
     static final int RESOLUTION = 64;
 
@@ -48,6 +45,9 @@ public class Main extends JFrame{
         main.setGameState(1, main);
     }
 
+
+    private static long CLOCK;
+    private static int FPS = 0;
     void countFPS(Player player){
         if(System.currentTimeMillis() - CLOCK >= 1000) {
             setTitle("Bomber Man FPS = " + FPS);
@@ -55,7 +55,6 @@ public class Main extends JFrame{
             CLOCK = System.currentTimeMillis();
         }else{
             FPS++;
-            //setTitle("Bomber Man FPS = " + FPS + " " + player.getObjectManager().all_objects[player.X][player.Y].toString());
         }
     }
 
@@ -93,11 +92,11 @@ public class Main extends JFrame{
         }
         else if(gamestate == 1) {
             main.setSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION + INFO_WIDTH, VISIB_MAP_SIZE*RESOLUTION));
-            FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
-            flowLayout.setHgap(0);
-            flowLayout.setVgap(0);
+
+            FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
             main.setLayout(flowLayout);
             main.setLocationRelativeTo(null);
+
             gameFrame = new GameFrame(main);
 
             Scanner in = null;
@@ -112,10 +111,8 @@ public class Main extends JFrame{
             }
 
             main.add(gameFrame);
-            infoBox = new InfoBox();
-            add(infoBox);
-
-            main.setVisible(true);
+            infoBox = new InfoBox(gameFrame);
+            main.add(infoBox);
 
             main.addWindowStateListener(event -> resize());
 
@@ -130,6 +127,8 @@ public class Main extends JFrame{
                 @Override
                 public void componentHidden(ComponentEvent e) {}
             });
+
+            main.setVisible(true);
 
             gameFrame.pause = false;
         }

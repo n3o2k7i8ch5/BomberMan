@@ -27,6 +27,6 @@ public class FlameUp extends PowerUp {
 
     @Override
     protected ArrayList<Image> getImageNullList() {
-        return getMain().graphicsContainer.powerUpFlamePath;
+        return getMain().graphicsContainer.powerUpFlameImages;
     }
 }

@@ -79,74 +79,48 @@ public abstract class MovingObject extends Object {
         frame.objectManager.all_objects[X][Y].add(this);
     }
 
+    protected void updateStep(long time){
+        updateCurrentDir();
+    }
+
     @Override
     protected void update(long time) {
         super.update(time);
 
-        if (is_element_int) {
-            updateCurrentDir();
+        for (int i = 0; i < speed; i++) {
+            updateStep(time);
             if (current_dir == UP) {
                 beforePositionChanged();
-                y -= speed;
+                if (i + 1 > speed)
+                    y -= (speed - (int) speed);
+                else
+                    y--;
                 onPositionChanged();
             } else if (current_dir == DOWN) {
                 beforePositionChanged();
-                y += speed;
+                if (i + 1 > speed)
+                    y += (speed - (int) speed);
+                else
+                    y++;
                 onPositionChanged();
             } else if (current_dir == LEFT) {
                 beforePositionChanged();
-                x -= speed;
+                if (i + 1 > speed)
+                    x -= (speed - (int)speed);
+                else
+                    x--;
                 onPositionChanged();
             } else if (current_dir == RIGHT) {
                 beforePositionChanged();
-                x += speed;
+                if (i + 1 > speed)
+                    x += (speed - (int) speed);
+                else
+                    x++;
                 onPositionChanged();
             }
-        } else {
-            for (int i = 0; i < speed; i++) {
-                updateCurrentDir();
-                if (current_dir == UP) {
-                    beforePositionChanged();
-                    if (i + 1 > speed)
-                        y -= (speed - (int) speed);
-                    else
-                        y--;
-                    onPositionChanged();
-                } else if (current_dir == DOWN) {
-                    beforePositionChanged();
-                    if (i + 1 > speed)
-                        y += (speed - (int) speed);
-                    else
-                        y++;
-                    onPositionChanged();
-                } else if (current_dir == LEFT) {
-                    beforePositionChanged();
-                    if (i + 1 > speed)
-                    //    x = round(x - (speed - (int) speed), 1);
-                        x -= (speed - (int)speed);
-                    else
-                        x--;
-                    onPositionChanged();
-                } else if (current_dir == RIGHT) {
-                    beforePositionChanged();
-                    if (i + 1 > speed)
-                        x += (speed - (int) speed);
-                    else
-                        x++;
-                    onPositionChanged();
-                }
-            }
         }
-    }
-/*
-    public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
 
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
     }
-*/
     /**
      * Metoda aktualizująca kierunek ruchu w momencie, kiedy obiekt znajduje na odpowiedniej części kratki.
      */

@@ -2,6 +2,7 @@ package com.bomber.man;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static com.bomber.man.Main.ABS_H_MAP_SIZE;
 import static com.bomber.man.Main.ABS_W_MAP_SIZE;
@@ -192,7 +193,12 @@ public abstract class Object extends Entity{
             return true;
         else
             return false;
-
+    }
+    public boolean touches(int X, int Y, double accuracy){
+        if(Math.abs(x() - X*RESOLUTION) < Main.RESOLUTION*accuracy && Math.abs(y() - Y*RESOLUTION) < Main.RESOLUTION*accuracy)
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -222,4 +228,36 @@ public abstract class Object extends Entity{
         this.explosionColisionListener.assignToObject(this);
     }
 
+    public ArrayList<Object> getSurroundingObjects(){
+
+        ArrayList<Object> objects = new ArrayList<>();
+
+        if(X!=0 && Y!=0)
+            objects.addAll(getObjectManager().all_objects[X-1][Y-1]);
+
+        if(Y!=0)
+            objects.addAll(getObjectManager().all_objects[X][Y-1]);
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=0)
+            objects.addAll(getObjectManager().all_objects[X+1][Y-1]);
+
+        if(X!=0)
+            objects.addAll(getObjectManager().all_objects[X-1][Y]);
+
+        objects.addAll(getObjectManager().all_objects[X][Y]);
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1)
+            objects.addAll(getObjectManager().all_objects[X+1][Y]);
+
+        if(X!=0 && Y!=getMain().ABS_H_MAP_SIZE-1)
+            objects.addAll(getObjectManager().all_objects[X-1][Y+1]);
+
+        if(Y!=getMain().ABS_H_MAP_SIZE-1)
+            objects.addAll(getObjectManager().all_objects[X][Y+1]);
+
+        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=getMain().ABS_H_MAP_SIZE-1)
+            objects.addAll(getObjectManager().all_objects[X+1][Y+1]);
+
+        return objects;
+    }
 }

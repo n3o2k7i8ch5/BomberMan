@@ -20,7 +20,9 @@ public class Player extends MovingObject {
     private direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
 
-    private int fire_length = 12;
+    public int fire_length = 3;
+
+    public int lives = 1;
 
     public int max_bombs = 3;
 
@@ -209,27 +211,39 @@ public class Player extends MovingObject {
 
     @Override
     protected ArrayList<Image> getImageUpList() {
-        return getMain().graphicsContainer.playerUpImages;
+        if(lives!=0)
+            return getMain().graphicsContainer.playerUpImages;
+        else
+            return getMain().graphicsContainer.bombImages;
     }
 
     @Override
     protected ArrayList<Image> getImageDownList() {
-        return getMain().graphicsContainer.playerDownImages;
-    }
+        if(lives!=0)
+            return getMain().graphicsContainer.playerDownImages;
+        else
+            return getMain().graphicsContainer.bombImages;    }
 
     @Override
     protected ArrayList<Image> getImageLeftList() {
-        return getMain().graphicsContainer.playerLeftImages;
-    }
+        if(lives!=0)
+            return getMain().graphicsContainer.playerLeftImages;
+        else
+            return getMain().graphicsContainer.bombImages;    }
 
     @Override
     protected ArrayList<Image> getImageRightList() {
-        return getMain().graphicsContainer.playerRightImages;
-    }
+        if(lives!=0)
+            return getMain().graphicsContainer.playerRightImages;
+        else
+            return getMain().graphicsContainer.bombImages;    }
 
     @Override
     protected ArrayList<Image> getImageNullList() {
-        return getMain().graphicsContainer.playerUpImages;
+        if(lives!=0)
+            return getMain().graphicsContainer.playerUpImages;
+        else
+            return getMain().graphicsContainer.bombImages;
     }
 
     /**

@@ -34,7 +34,10 @@ public class Explosion extends Object {
         addPlayerColisionListener(new PlayerColisionListener(frame) {
             @Override
             public void onColision(Iterator<Object> it) {
-                getMain().setGameState(-1);
+                if(frame.player.lives>0)
+                    frame.player.lives--;
+                if(frame.player.lives == 0)
+                    getMain().setGameState(-1);
             }
         });
 
@@ -42,7 +45,6 @@ public class Explosion extends Object {
         if(bomb!=null)
             getObjectManager().detonate(bomb);
 
-        //getObjectManager().enemy_list.removeIf(enemy -> enemy.X == X && enemy.Y == Y);
         getObjectManager().powerup_list.removeIf(powerUp -> powerUp.X == X && powerUp.Y == Y);
     }
 
@@ -53,7 +55,8 @@ public class Explosion extends Object {
         Solid solid = upSolid();
 
         if(solid==null) {
-            if(!getObjectManager().all_objects[X][Y-1].contains(Explosion.class))
+
+            if(!getObjectManager().containsInstance(getObjectManager().all_objects[X][Y-1], Explosion.class))
                 getObjectManager().addExplosion(X, Y - 1, fire_length - 1, UP);
         }else if(solid.isSoft){
             getObjectManager().addExplosion(X, Y - 1, 0, UP);
@@ -69,7 +72,7 @@ public class Explosion extends Object {
         Solid solid = downSolid();
 
         if(solid==null) {
-            if (!getObjectManager().all_objects[X][Y + 1].contains(Explosion.class))
+            if(!getObjectManager().containsInstance(getObjectManager().all_objects[X][Y+1], Explosion.class))
                 getObjectManager().addExplosion(X, Y + 1, fire_length - 1, DOWN);
         }else if(solid.isSoft){
             getObjectManager().addExplosion(X, Y + 1, 0, DOWN);
@@ -85,7 +88,7 @@ public class Explosion extends Object {
         Solid solid = rightSolid();
 
         if(solid==null) {
-            if(!getObjectManager().all_objects[X+1][Y].contains(Explosion.class))
+            if(!getObjectManager().containsInstance(getObjectManager().all_objects[X+1][Y], Explosion.class))
                 getObjectManager().addExplosion(X + 1, Y, fire_length - 1, RIGHT);
         }else if(solid.isSoft){
             getObjectManager().addExplosion(X+1, Y, 0, RIGHT);
@@ -101,7 +104,7 @@ public class Explosion extends Object {
         Solid solid = leftSolid();
 
         if(solid==null) {
-            if (!getObjectManager().all_objects[X - 1][Y].contains(Explosion.class))
+            if(!getObjectManager().containsInstance(getObjectManager().all_objects[X-1][Y], Explosion.class))
                 getObjectManager().addExplosion(X - 1, Y, fire_length - 1, LEFT);
         }else if(solid.isSoft){
             getObjectManager().addExplosion(X-1, Y, 0, LEFT);
@@ -164,66 +167,10 @@ public class Explosion extends Object {
 
     public void checkNearbyCollisions(){
 
-        if(X!=0 && Y!=0)
-            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y-1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
-                if (object.explosionColisionListener != null)
-                    object.explosionColisionListener.checkColision(this, it);
-            }
-
-        if(Y!=0)
-            for (Iterator<Object> it = getObjectManager().all_objects[X][Y-1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
-                if (object.explosionColisionListener != null)
-                    object.explosionColisionListener.checkColision(this, it);
-            }
-
-        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=0)
-            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y-1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
-                if (object.explosionColisionListener != null)
-                    object.explosionColisionListener.checkColision(this, it);
-            }
-
-        if(X!=0)
-            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y].iterator(); it.hasNext(); ) {
-                Object object = it.next();
-                if (object.explosionColisionListener != null)
-                    object.explosionColisionListener.checkColision(this, it);
-            }
-
-        for (Iterator<Object> it = getObjectManager().all_objects[X][Y].iterator(); it.hasNext(); ) {
+        for (Iterator<Object> it = getSurroundingObjects().iterator(); it.hasNext(); ) {
             Object object = it.next();
             if (object.explosionColisionListener != null)
                 object.explosionColisionListener.checkColision(this, it);
         }
-
-        if(X!=getMain().ABS_W_MAP_SIZE-1)
-            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y].iterator(); it.hasNext(); ) {
-                Object object = it.next();
-                if (object.explosionColisionListener != null)
-                    object.explosionColisionListener.checkColision(this, it);
-            }
-
-        if(X!=0 && Y!=getMain().ABS_H_MAP_SIZE-1)
-            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y+1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
-                if (object.explosionColisionListener != null)
-                    object.explosionColisionListener.checkColision(this, it);
-            }
-
-        if(Y!=getMain().ABS_H_MAP_SIZE-1)
-            for (Iterator<Object> it = getObjectManager().all_objects[X][Y+1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
-                if (object.explosionColisionListener != null)
-                    object.explosionColisionListener.checkColision(this, it);
-            }
-
-        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=getMain().ABS_H_MAP_SIZE-1)
-            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y+1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
-                if (object.explosionColisionListener != null)
-                    object.explosionColisionListener.checkColision(this, it);
-            }
     }
 }

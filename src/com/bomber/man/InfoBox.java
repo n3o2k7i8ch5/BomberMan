@@ -1,51 +1,60 @@
 package com.bomber.man;
 
 
+import com.bomber.man.enemies.SmartAssEnemy;
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * Created by Kisiel on 28.04.2017.
  */
 public class InfoBox extends JPanel {
 
-    Label lab_punktow;
-    Label lab_zycia;
-    Label lab_bomby;
-    Label lab_zasieg;
-    Label lab_szybkosc;
+    JLabel lab_punktow;
+    JLabel lab_zycia;
+    JLabel lab_bomby;
+    JLabel lab_zasieg;
+    JLabel lab_szybkosc;
 
-    public InfoBox() {
+    GameFrame frame;
 
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.setColumns(2);
-        gridLayout.setRows(5);
+    final int margin = 10;
 
-        setLayout(gridLayout);
+    public InfoBox(GameFrame frame) {
 
-        add(new Label( "Ilość punktów:"));
-        lab_punktow = new Label();
-        add(lab_punktow);
+        this.frame = frame;
 
-        add(new Label( "Ilość żyć:"));
-        lab_zycia = new Label();
-        add(lab_zycia);
+        Box box = Box.createVerticalBox();
 
-        add(new Label( "Ilość bomb:"));
-        lab_bomby = new Label();
-        add(lab_bomby);
+        box.add(new JLabel( "Ilość punktów:"));
+        lab_punktow = new JLabel();
+        box.add(lab_punktow);
+        box.add(Box.createVerticalStrut(margin));
 
-        add(new Label( "Zasięg ognia:"));
-        lab_zasieg = new Label();
-        add(lab_zasieg);
+        box.add(new JLabel( "Ilość żyć:"));
+        lab_zycia = new JLabel();
+        box.add(lab_zycia);
+        box.add(Box.createVerticalStrut(margin));
 
-        add(new Label( "Szybkość:"));
-        lab_szybkosc = new Label();
-        add(lab_szybkosc);
+        box.add(new JLabel( "Ilość bomb:"));
+        lab_bomby = new JLabel();
+        box.add(lab_bomby);
+        box.add(Box.createVerticalStrut(margin));
+
+        box.add(new JLabel( "Zasięg ognia:"));
+        lab_zasieg = new JLabel();
+        box.add(lab_zasieg);
+        box.add(Box.createVerticalStrut(margin));
+
+        box.add(new JLabel( "Szybkość:"));
+        lab_szybkosc = new JLabel();
+        box.add(lab_szybkosc);
+
+
+        add(box);
     }
 
     public void update(Player player){
-        lab_punktow.setText("" + 0);
+//        lab_punktow.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(2)).print());
         lab_zycia.setText("x: " + player.x);
         lab_bomby.setText("y: " + player.y);
         lab_szybkosc.setText("" + player.speed);

@@ -1,8 +1,6 @@
 package com.bomber.man;
 
-import com.bomber.man.enemies.Enemy;
-import com.bomber.man.enemies.RandomEnemy;
-import com.bomber.man.enemies.StraightEnemy;
+import com.bomber.man.enemies.*;
 import com.bomber.man.forest.Forest;
 import com.bomber.man.power_ups.BombUp;
 import com.bomber.man.power_ups.FlameUp;
@@ -111,6 +109,11 @@ public class ObjectManager {
         all_objects[powerUp.X][powerUp.Y].remove(powerUp);
     }
 
+    public void removeEnemy(Enemy enemy){
+        enemy_list.remove(enemy);
+        all_objects[enemy.X][enemy.Y].remove(enemy);
+    }
+
     /**
      * Metoda dodająca bombę na planszę.
      * @param X pozycja bomby wyrażona w ilości kratek.
@@ -156,9 +159,27 @@ public class ObjectManager {
      * @param Y pozycja na której początkowo znajduje się potwór.
      */
     void addStraightEnemy(int X, int Y){
-        StraightEnemy straightEnemy = new StraightEnemy(frame, X, Y, 1);
+        StraightEnemy straightEnemy = new StraightEnemy(frame, X, Y);
         all_objects[X][Y].add(straightEnemy);
         enemy_list.add(straightEnemy);
+    }
+
+    void addFastStraightEnemy(int X, int Y){
+        FastStraightEnemy enemy = new FastStraightEnemy(frame, X, Y);
+        all_objects[X][Y].add(enemy);
+        enemy_list.add(enemy);
+    }
+
+    void addMagnetEnemy(int X, int Y){
+        MagnetEnemy enemy = new MagnetEnemy(frame, X, Y, 1);
+        all_objects[X][Y].add(enemy);
+        enemy_list.add(enemy);
+    }
+
+    void addSmartAssEnemy(int X, int Y){
+        SmartAssEnemy enemy = new SmartAssEnemy(frame, X, Y, 1);
+        all_objects[X][Y].add(enemy);
+        enemy_list.add(enemy);
     }
 
     /**
@@ -206,7 +227,7 @@ public class ObjectManager {
     }
 
     void addPlayer(int X, int Y){
-        frame.player = new Player(frame, X, Y, 1.3, 3);
+        frame.player = new Player(frame, X, Y, 3, 3);
         all_objects[X][Y].add(frame.player);
         frame.addKeyListener(new KeyAdapt(frame.player));
     }
@@ -287,6 +308,15 @@ public class ObjectManager {
                 return object;
         }
         return null;
+    }
+
+    public boolean containsInstance(ArrayList<Object> list, Class<? extends Object> clazz) {
+        for (Object object : list) {
+            if (clazz.isInstance(object)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Main getMain(){return frame.main;}

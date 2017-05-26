@@ -30,6 +30,6 @@ public class BombUp extends PowerUp {
 
     @Override
     protected ArrayList<Image> getImageNullList() {
-        return getMain().graphicsContainer.powerUpBombPath;
+        return getMain().graphicsContainer.powerUpBombImages;
     }
 }

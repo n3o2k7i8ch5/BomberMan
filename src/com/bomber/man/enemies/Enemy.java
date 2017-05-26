@@ -18,17 +18,19 @@ public abstract class Enemy extends MovingObject {
         addPlayerColisionListener(new PlayerColisionListener(frame) {
 
             @Override
-            public void onColision(Iterator<Object> it) {
-                getMain().setGameState(-1);
+            public void onColision(Iterator<Object> it)
+            {
+                if(frame.player.lives>0)
+                    frame.player.lives--;
+                if(frame.player.lives == 0)
+                    getMain().setGameState(-1);
             }
         });
 
         addExplosionColisionListener(new ExplosionColisionListener() {
-
             @Override
             public void onColision(Iterator<Object> it) {
-                it.remove();
-                getObjectManager().enemy_list.remove(enemy);
+                getObjectManager().removeEnemy(enemy);
             }
         });
     }

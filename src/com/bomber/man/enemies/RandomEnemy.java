@@ -20,12 +20,12 @@ public class RandomEnemy extends Enemy {
     }
 
     @Override
-    public void update(long time) {
+    public void updateStep(long time) {
 
         if(isAlignedX() && isAlignedY())
             new_dir = randomFreeDirection();
 
-        super.update(time);
+        super.updateStep(time);
 
     }
 

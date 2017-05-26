@@ -27,6 +27,6 @@ public class SpeedUp extends PowerUp {
 
     @Override
     protected ArrayList<Image> getImageNullList() {
-        return getMain().graphicsContainer.powerUpSpeedPath;
+        return getMain().graphicsContainer.powerUpSpeedImages;
     }
 }

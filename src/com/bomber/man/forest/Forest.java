@@ -27,8 +27,8 @@ public class Forest extends Tile {
     @Override
     protected ArrayList<Image> getImageNullList() {
         if(transp)
-            return getMain().graphicsContainer.forestTranspPath;
+            return getMain().graphicsContainer.forestTranspImages;
         else
-            return getMain().graphicsContainer.forestPath;
+            return getMain().graphicsContainer.forestImages;
     }
 }

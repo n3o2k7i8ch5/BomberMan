@@ -52,9 +52,10 @@ public class Explosion extends Object {
 
         Solid solid = upSolid();
 
-        if(solid==null)
-            getObjectManager().addExplosion(X, Y - 1, fire_length-1, UP);
-        else if(solid.isSoft){
+        if(solid==null) {
+            if(!getObjectManager().all_objects[X][Y-1].contains(Explosion.class))
+                getObjectManager().addExplosion(X, Y - 1, fire_length - 1, UP);
+        }else if(solid.isSoft){
             getObjectManager().addExplosion(X, Y - 1, 0, UP);
             getObjectManager().removeSolid(solid);
             randomPowerUp(solid.X, solid.Y);
@@ -67,9 +68,10 @@ public class Explosion extends Object {
 
         Solid solid = downSolid();
 
-        if(solid==null)
-            getObjectManager().addExplosion(X, Y + 1, fire_length-1, DOWN);
-        else if(solid.isSoft){
+        if(solid==null) {
+            if (!getObjectManager().all_objects[X][Y + 1].contains(Explosion.class))
+                getObjectManager().addExplosion(X, Y + 1, fire_length - 1, DOWN);
+        }else if(solid.isSoft){
             getObjectManager().addExplosion(X, Y + 1, 0, DOWN);
             getObjectManager().removeSolid(solid);
             randomPowerUp(solid.X, solid.Y);
@@ -82,9 +84,10 @@ public class Explosion extends Object {
 
         Solid solid = rightSolid();
 
-        if(solid==null)
-            getObjectManager().addExplosion(X+1, Y, fire_length-1, RIGHT);
-        else if(solid.isSoft){
+        if(solid==null) {
+            if(!getObjectManager().all_objects[X+1][Y].contains(Explosion.class))
+                getObjectManager().addExplosion(X + 1, Y, fire_length - 1, RIGHT);
+        }else if(solid.isSoft){
             getObjectManager().addExplosion(X+1, Y, 0, RIGHT);
             getObjectManager().removeSolid(solid);
             randomPowerUp(solid.X, solid.Y);
@@ -97,9 +100,10 @@ public class Explosion extends Object {
 
         Solid solid = leftSolid();
 
-        if(solid==null)
-            getObjectManager().addExplosion(X-1, Y, fire_length-1, LEFT);
-        else if(solid.isSoft){
+        if(solid==null) {
+            if (!getObjectManager().all_objects[X - 1][Y].contains(Explosion.class))
+                getObjectManager().addExplosion(X - 1, Y, fire_length - 1, LEFT);
+        }else if(solid.isSoft){
             getObjectManager().addExplosion(X-1, Y, 0, LEFT);
             getObjectManager().removeSolid(solid);
             randomPowerUp(solid.X, solid.Y);

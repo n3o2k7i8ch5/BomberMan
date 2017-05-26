@@ -4,10 +4,13 @@ import com.bomber.man.menu.Menu;
 import com.bomber.man.tiles.Tile;
 import com.sun.org.apache.regexp.internal.RE;
 
+import javax.sound.sampled.Line;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.io.*;
 import java.util.Scanner;
 
@@ -34,6 +37,8 @@ public class Main extends JFrame{
 
     static double w_scale_rate = 1;
     static double h_scale_rate = 1;
+
+    public InfoBox infoBox;
 
     public static void main(String[] args) {
         // write your code here
@@ -87,24 +92,13 @@ public class Main extends JFrame{
             gameFrame.player.speed = 0;
         }
         else if(gamestate == 1) {
-            main.setSize(VISIB_MAP_SIZE*RESOLUTION + INFO_WIDTH, VISIB_MAP_SIZE*RESOLUTION);
+            main.setSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION + INFO_WIDTH, VISIB_MAP_SIZE*RESOLUTION));
+            FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+            flowLayout.setHgap(0);
+            flowLayout.setVgap(0);
+            main.setLayout(flowLayout);
+            main.setLocationRelativeTo(null);
             gameFrame = new GameFrame(main);
-            gameFrame.setPreferredSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION, VISIB_MAP_SIZE*RESOLUTION));
-            main.add(gameFrame);
-            //main.setLocationRelativeTo(null);
-
-
-            JLabel label = new JLabel("Speed: ");
-            label.setLocation(200, 10);
-            label.setFont(label.getFont().deriveFont(20));
-            label.setVisible(true);
-            gameFrame.add(label);
-            gameFrame.setVisible(true);
-
-
-
-
-            main.setVisible(true);
 
             Scanner in = null;
             try {
@@ -117,37 +111,28 @@ public class Main extends JFrame{
                 e.printStackTrace();
             }
 
+            main.add(gameFrame);
+            infoBox = new InfoBox();
+            add(infoBox);
+
+            main.setVisible(true);
+
+            main.addWindowStateListener(event -> resize());
+
+            main.addComponentListener(new ComponentListener() {
+                public void componentResized(ComponentEvent e) {
+                    resize();
+                }
+                @Override
+                public void componentMoved(ComponentEvent e) {}
+                @Override
+                public void componentShown(ComponentEvent e) {}
+                @Override
+                public void componentHidden(ComponentEvent e) {}
+            });
+
             gameFrame.pause = false;
         }
-/*
-        main.addComponentListener(new ComponentListener() {
-            public void componentResized(ComponentEvent e) {
-
-                if(gameFrame == null)
-                    return;
-
-                int init_win_size = VISIB_MAP_SIZE*RESOLUTION;
-
-                double win_width = gameFrame.getBounds().width;
-                double win_height = gameFrame.getBounds().height;
-
-                w_scale_rate = (win_width - INFO_WIDTH)/(init_win_size);
-                h_scale_rate = win_height/init_win_size;
-
-                graphicsContainer.scaleAll();
-                updateStaticImages();
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {}
-
-            @Override
-            public void componentShown(ComponentEvent e) {}
-
-            @Override
-            public void componentHidden(ComponentEvent e) {}
-        });
-*/
 
     }
 
@@ -185,6 +170,21 @@ public class Main extends JFrame{
                     break;
             }
         }
+    }
+
+    private void resize(){
+        if(gameFrame == null)
+            return;
+        int init_win_size = VISIB_MAP_SIZE*RESOLUTION;
+        double win_width = getBounds().getWidth();
+        double win_height = getBounds().getHeight();
+
+        w_scale_rate = (win_width - INFO_WIDTH)/(init_win_size);
+        h_scale_rate = win_height/init_win_size;
+        graphicsContainer.scaleAll();
+        updateStaticImages();
+
+        gameFrame.setPreferredSize(new Dimension((int)win_width - INFO_WIDTH, (int)win_height));
     }
 
     private void updateStaticImages(){

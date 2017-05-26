@@ -22,10 +22,8 @@ public class RandomEnemy extends Enemy {
     @Override
     public void update(long time) {
 
-        new_dir = randomFreeDirection();
-
-        //if(frame.player.X == X && frame.player.Y == Y)
-        //    getMain().setGameState(-1);
+        if(isAlignedX() && isAlignedY())
+            new_dir = randomFreeDirection();
 
         super.update(time);
 

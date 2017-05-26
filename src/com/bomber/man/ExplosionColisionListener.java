@@ -10,7 +10,8 @@ public abstract class ExplosionColisionListener {
     private Object object;
 
     void checkColision(Explosion explosion, Iterator<Object> it){
-        if(Math.abs(explosion.x - object.x) < Main.RESOLUTION && Math.abs(explosion.y - object.y) < Main.RESOLUTION)
+
+        if(explosion.touches(object, 0.9))
             onColision(it);
     }
 

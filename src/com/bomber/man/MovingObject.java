@@ -1,6 +1,8 @@
 package com.bomber.man;
 
 import java.awt.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -14,13 +16,16 @@ import static com.bomber.man.Object.direction.*;
  */
 public abstract class MovingObject extends Object {
 
-    private int old_x, old_y;
+    private /*int*/ double old_x, old_y;
+    public int old_x(){return (int)old_x;}
+    public int old_y(){return (int)old_y;}
+
     protected int old_X, old_Y;
-    int speed;
+    /*int*/ double speed;
+
     int align_factor;
     private double element;
     private boolean is_element_int;
-
     /**
      * Konstruktor klasy.
      *
@@ -29,7 +34,8 @@ public abstract class MovingObject extends Object {
      * @param Y     pozycja obiektu liczona w ilości kratek.
      * @param speed prędkość porszania się obieku.
      */
-    public MovingObject(GameFrame frame, int X, int Y, int speed) {
+
+    public MovingObject(GameFrame frame, int X, int Y, double speed) {
         super(frame, X, Y);
         this.speed = speed;
         this.align_factor = 1;
@@ -39,7 +45,7 @@ public abstract class MovingObject extends Object {
         is_element_int = element == Math.floor(element);
     }
 
-    public MovingObject(GameFrame frame, int X, int Y, int speed, int align_factor) {
+    public MovingObject(GameFrame frame, int X, int Y, double speed, int align_factor) {
         super(frame, X, Y);
         this.speed = speed;
         this.align_factor = align_factor;
@@ -54,16 +60,16 @@ public abstract class MovingObject extends Object {
     public void beforePositionChanged() {
         old_x = x;
         old_y = y;
-        old_X = (old_x / RESOLUTION);
-        old_Y = (old_y / RESOLUTION);
+        old_X = (old_x() / RESOLUTION);
+        old_Y = (old_y() / RESOLUTION);
     }
 
     /**
      * Metoda, która wywoływana po tym, jak obiekt zmienił położenie.
      */
     public void onPositionChanged() {
-        X = x / RESOLUTION;
-        Y = y / RESOLUTION;
+        X = (x() / RESOLUTION);
+        Y = (y() / RESOLUTION);
         if (X != old_X || Y != old_Y)
             onTilePositionChanged();
     }
@@ -101,56 +107,64 @@ public abstract class MovingObject extends Object {
                 updateCurrentDir();
                 if (current_dir == UP) {
                     beforePositionChanged();
-                    y--;
+                    if (i + 1 > speed)
+                        y -= (speed - (int) speed);
+                    else
+                        y--;
                     onPositionChanged();
                 } else if (current_dir == DOWN) {
                     beforePositionChanged();
-                    y++;
+                    if (i + 1 > speed)
+                        y += (speed - (int) speed);
+                    else
+                        y++;
                     onPositionChanged();
                 } else if (current_dir == LEFT) {
                     beforePositionChanged();
-                    x--;
+                    if (i + 1 > speed)
+                    //    x = round(x - (speed - (int) speed), 1);
+                        x -= (speed - (int)speed);
+                    else
+                        x--;
                     onPositionChanged();
                 } else if (current_dir == RIGHT) {
                     beforePositionChanged();
-                    x++;
+                    if (i + 1 > speed)
+                        x += (speed - (int) speed);
+                    else
+                        x++;
                     onPositionChanged();
                 }
             }
         }
     }
+/*
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
 
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+*/
     /**
      * Metoda aktualizująca kierunek ruchu w momencie, kiedy obiekt znajduje na odpowiedniej części kratki.
      */
     private void updateCurrentDir() {
-        if ((current_dir == RIGHT && x % element < old_x % element) ||
-                (current_dir == LEFT && (x - 1) % element > (old_x - 1) % element) ||
-                (current_dir == UP && (y - 1) % element > (old_y - 1) % element) ||
-                (current_dir == DOWN && y % element < old_y % element) ||
+
+        int x_tmp = (int)(x % element);
+        int y_tmp = (int)(y % element);
+
+        if(new_dir==dirReverse(current_dir))
+            current_dir = new_dir;
+
+        if ((current_dir == RIGHT && x_tmp == 0) ||
+                (current_dir == LEFT && x_tmp == 0) ||
+                (current_dir == UP && y_tmp == 0) ||
+                (current_dir == DOWN && y_tmp == 0) ||
                 current_dir == NULL) {
             current_dir = new_dir;
         }
-    }
-
-    /**
-     * Metoda sprawdzająca czy wybrany kierunek jest możliwy do przejścia.
-     *
-     * @param direction kierunek sprawdzany.
-     */
-    public boolean isDirFreeToGo(direction direction) {
-        if (direction == UP && y > 0)
-            return !isAlignedY() || upSolid() == null;
-        else if (direction == DOWN && y < ABS_H_MAP_SIZE * RESOLUTION)
-            return !isAlignedY() || downSolid() == null;
-        else if (direction == LEFT && x > 0)
-            return !isAlignedX() || leftSolid() == null;
-        else if (direction == RIGHT && x < ABS_W_MAP_SIZE * RESOLUTION)
-            return !isAlignedX() || rightSolid() == null;
-        else if (direction == NULL)
-            return true;
-        else
-            return false;
     }
 
     /**

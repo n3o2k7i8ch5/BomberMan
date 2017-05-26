@@ -49,25 +49,27 @@ public class GraphicsContainer {
     public static String STRAIGHT_ENEMY_PATH[] = {"res/drawables/straightenemy.png", "res/drawables/straightenemy2.png"};
     public ArrayList<Image> straightEnemyPath = new ArrayList<>();
 
-    public static String POWER_UP_FLAME[] = {"res/drawables/flame.png"};
+    public static String POWER_UP_FLAME_PATH[] = {"res/drawables/flame.png"};
     public ArrayList<Image> powerUpFlamePath = new ArrayList<>();
 
-    public static String POWER_UP_SPEED[] = {"res/drawables/speed.png"};
+    public static String POWER_UP_SPEED_PATH[] = {"res/drawables/speed.png"};
     public ArrayList<Image> powerUpSpeedPath = new ArrayList<>();
 
-    public static String POWER_UP_BOMB[]={"res/drawables/bombup.png"};
+    public static String POWER_UP_BOMB_PATH[] = {"res/drawables/bombup.png"};
     public ArrayList<Image> powerUpBombPath = new ArrayList<>();
 
-    public static String LIVING_WALL[]={"res/drawables/livingwall.png"};
-    public ArrayList<Image>livingWallPath=new ArrayList<>();
+    public static String LIVING_WALL_PATH[] = {"res/drawables/livingwall.png"};
+    public ArrayList<Image>livingWallPath = new ArrayList<>();
 
-    public static String INFO_BOX[]={"res/drawables/info.png"};
-    public ArrayList<Image>infoBoxPath=new ArrayList<>();
+    public static String FOREST_PATH[] = {"res/drawables/forest.png"};
+    public ArrayList<Image>forestPath = new ArrayList<>();
+
+    public static String FOREST_TRANSP_PATH[]={"res/drawables/forest_transp.png"};
+    public ArrayList<Image>forestTranspPath = new ArrayList<>();
 
     GraphicsContainer(Main main){
         this.main = main;
         scaleAll();
-        infoBoxPath.add(new ImageIcon(INFO_BOX[0]).getImage());
     }
 
     public void loadScaleImages(String[] paths) {
@@ -125,27 +127,29 @@ public class GraphicsContainer {
         } else if (paths.equals(STRAIGHT_ENEMY_PATH)){
             straightEnemyPath.clear();
             straightEnemyPath.addAll(images);
-        } else if (paths.equals(POWER_UP_FLAME)){
+        } else if (paths.equals(POWER_UP_FLAME_PATH)){
             powerUpFlamePath.clear();
             powerUpFlamePath.addAll(images);
-        } else if (paths.equals(POWER_UP_SPEED)){
+        } else if (paths.equals(POWER_UP_SPEED_PATH)){
             powerUpSpeedPath.clear();
             powerUpSpeedPath.addAll(images);
-        }else if(paths.equals(POWER_UP_BOMB)){
+        }else if(paths.equals(POWER_UP_BOMB_PATH)){
             powerUpBombPath.clear();
             powerUpBombPath.addAll(images);
-        }else if(paths.equals(LIVING_WALL)){
+        }else if(paths.equals(LIVING_WALL_PATH)){
             livingWallPath.clear();
             livingWallPath.addAll(images);
-        //}else if(paths.equals(INFO_BOX)){
-        //    infoBoxPath.clear();
-        //    infoBoxPath.addAll(images);
+        }else if(paths.equals(FOREST_PATH)){
+            forestPath.clear();
+            forestPath.addAll(images);
+        }else if(paths.equals(FOREST_TRANSP_PATH)){
+            forestTranspPath.clear();
+            forestTranspPath.addAll(images);
         }
-
     }
 
     public void scaleAll(){
-        loadScaleImages(LIVING_WALL);
+        loadScaleImages(LIVING_WALL_PATH);
         loadScaleImages(BOMB_PATH);
         loadScaleImages(GRASS_DARK_PATH);
         loadScaleImages(GRASS_LIGHT_PATH);
@@ -158,9 +162,11 @@ public class GraphicsContainer {
         loadScaleImages(SOFT_WALL_PATH);
         loadScaleImages(EXPLOSION_PATH);
         loadScaleImages(STRAIGHT_ENEMY_PATH);
-        loadScaleImages(POWER_UP_FLAME);
-        loadScaleImages(POWER_UP_SPEED);
-        loadScaleImages(POWER_UP_BOMB);
-        //loadScaleImages(INFO_BOX);//
+        loadScaleImages(POWER_UP_FLAME_PATH);
+        loadScaleImages(POWER_UP_SPEED_PATH);
+        loadScaleImages(POWER_UP_BOMB_PATH);
+        loadScaleImages(FOREST_PATH);
+        loadScaleImages(FOREST_TRANSP_PATH);
+
     }
 }

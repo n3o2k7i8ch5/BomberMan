@@ -24,8 +24,8 @@ public class Player extends MovingObject {
 
     public int max_bombs = 3;
 
-    public Player(GameFrame frame, int x, int y, int speed, int align_factor) {
-        super(frame, x, y, speed, align_factor);
+    public Player(GameFrame frame, int X, int Y, /*int*/ double speed, int align_factor) {
+        super(frame, X, Y, speed, align_factor);
     }
 
     public void keyPressed(KeyEvent e)
@@ -128,13 +128,13 @@ public class Player extends MovingObject {
 
         if(X + Main.CENTER_MAP < getMain().ABS_W_MAP_SIZE-1 && X >= Main.CENTER_MAP) {
             move_player_x = false;
-            frame.x_map_shift = x - CENTER_MAP*RESOLUTION;
+            frame.x_map_shift = (int)x - CENTER_MAP*RESOLUTION;
         }else
             move_player_x = true;
 
         if(Y + Main.CENTER_MAP < getMain().ABS_H_MAP_SIZE-1 && Y >= Main.CENTER_MAP) {
             move_player_y = false;
-            frame.y_map_shift = y - CENTER_MAP*RESOLUTION;
+            frame.y_map_shift = (int)y - CENTER_MAP*RESOLUTION;
         }else
             move_player_y = true;
 
@@ -290,7 +290,7 @@ public class Player extends MovingObject {
      * Metoda zwiększająca prędkość gracza
      */
     public void increaseSpeed(){
-        speed++;
+        speed+=0.5;
     }
 
     /**

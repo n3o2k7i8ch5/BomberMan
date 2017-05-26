@@ -3,6 +3,9 @@ package com.bomber.man;
 import java.awt.*;
 import java.util.ArrayList;
 
+import static com.bomber.man.Main.ABS_H_MAP_SIZE;
+import static com.bomber.man.Main.ABS_W_MAP_SIZE;
+import static com.bomber.man.Main.RESOLUTION;
 import static com.bomber.man.Object.direction.*;
 import static com.bomber.man.Object.direction.NULL;
 import static com.bomber.man.Object.direction.RIGHT;
@@ -12,7 +15,10 @@ import static com.bomber.man.Object.direction.RIGHT;
  */
 public abstract class Object extends Entity{
 
-    public int x, y;
+    protected /*int*/ double x, y;
+    int x(){return (int)x;}
+    int y(){return (int)y;}
+
     public int X, Y;
 
     ArrayList<Image> current_image_list = new ArrayList<>();
@@ -55,11 +61,11 @@ public abstract class Object extends Entity{
     }
 
     public boolean isAlignedY(){
-        return y % Main.RESOLUTION == 0;
+        return y() % Main.RESOLUTION == 0;
     }
 
     public boolean isAlignedX() {
-        return x % Main.RESOLUTION == 0;
+        return x() % Main.RESOLUTION == 0;
     }
 
     double previous_sub_time = 0;
@@ -158,6 +164,35 @@ public abstract class Object extends Entity{
             default:
                 return NULL;
         }
+    }
+
+
+    /**
+     * Metoda sprawdzająca czy wybrany kierunek jest możliwy do przejścia.
+     *
+     * @param direction kierunek sprawdzany.
+     */
+    public boolean isDirFreeToGo(direction direction) {
+        if (direction == UP && y() > 0)
+            return !isAlignedY() || upSolid() == null;
+        else if (direction == DOWN && y() < ABS_H_MAP_SIZE * RESOLUTION)
+            return !isAlignedY() || downSolid() == null;
+        else if (direction == LEFT && x() > 0)
+            return !isAlignedX() || leftSolid() == null;
+        else if (direction == RIGHT && x() < ABS_W_MAP_SIZE * RESOLUTION)
+            return !isAlignedX() || rightSolid() == null;
+        else if (direction == NULL)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean touches(Object object, double accuracy){
+        if(Math.abs(x() - object.x()) < Main.RESOLUTION*accuracy && Math.abs(y() - object.y()) < Main.RESOLUTION*accuracy)
+            return true;
+        else
+            return false;
+
     }
 
     /**

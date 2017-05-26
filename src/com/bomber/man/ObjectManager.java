@@ -3,6 +3,7 @@ package com.bomber.man;
 import com.bomber.man.enemies.Enemy;
 import com.bomber.man.enemies.RandomEnemy;
 import com.bomber.man.enemies.StraightEnemy;
+import com.bomber.man.forest.Forest;
 import com.bomber.man.power_ups.BombUp;
 import com.bomber.man.power_ups.FlameUp;
 import com.bomber.man.power_ups.PowerUp;
@@ -12,7 +13,6 @@ import com.bomber.man.tiles.GrassLight;
 import com.bomber.man.tiles.Tile;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import static com.bomber.man.Main.ABS_H_MAP_SIZE;
 import static com.bomber.man.Main.ABS_W_MAP_SIZE;
@@ -28,10 +28,12 @@ public class ObjectManager {
     public ArrayList<Bomb> bomb_list = new ArrayList<>();
     public ArrayList<Tile> tile_list = new ArrayList<>();
     public ArrayList<Solid> solid_list = new ArrayList<>();
+    public ArrayList<LivingWall> living_wall_list = new ArrayList<>();
     public ArrayList<Explosion> explosion_list = new ArrayList<>();
     public ArrayList<Explosion> new_explosion_list = new ArrayList<>();
     public ArrayList<Enemy> enemy_list = new ArrayList<>();
     public ArrayList<PowerUp> powerup_list = new ArrayList<>();
+    public ArrayList<Forest> forest_list = new ArrayList<>();
 
     public ArrayList<Object> all_objects[][];
     public Solid solids[][];
@@ -85,6 +87,13 @@ public class ObjectManager {
         solid_list.add(solid);
     }
 
+
+    public void addLivingWall(int X, int Y){
+        LivingWall livingWall = new LivingWall(frame, X, Y, true);
+        addSolid(livingWall);
+        living_wall_list.add(livingWall);
+    }
+
     /**
      * Metoda usuwająca obiekt Solid.
      * @param solid obiekt do usunięcia.
@@ -93,6 +102,8 @@ public class ObjectManager {
         solid_list.remove(solid);
         all_objects[solid.X][solid.Y].remove(solid);
         solids[solid.X][solid.Y] = null;
+        if(solid.getClass() == LivingWall.class)
+            living_wall_list.remove(solid);
     }
 
     public void removePowerUp(PowerUp powerUp){
@@ -188,8 +199,14 @@ public class ObjectManager {
         powerup_list.add(bombUp);
     }
 
+    void addForest(int X, int Y){
+        Forest forest = new Forest(frame, X, Y);
+        all_objects[X][Y].add(forest);
+        forest_list.add(forest);
+    }
+
     void addPlayer(int X, int Y){
-        frame.player = new Player(frame, X, Y, 2, 3);
+        frame.player = new Player(frame, X, Y, 1.3, 3);
         all_objects[X][Y].add(frame.player);
         frame.addKeyListener(new KeyAdapt(frame.player));
     }
@@ -271,143 +288,6 @@ public class ObjectManager {
         }
         return null;
     }
-
-
-    /*
-     * Zwraca Obiekt z podanej listy, na lewo od Obiektu, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt na lewo od Obiektu, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście na lewo od Obiektu, którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu na lewo od Obiektu, z którego wywoływana jest metoda.
-     *
-    public ArrayList<Object> leftObjects(){
-
-        ArrayList<Object> list = new ArrayList<>();
-
-        if (X==0)
-            return list;
-
-        list.addAll(frame.all_objects[X - 1][Y]);
-
-        if(Y==0)
-            return list;
-        else
-            for (Object object : frame.all_objects[X - 1][Y - 1])
-                if (!object.isAlignedY())
-                    list.add(object);
-
-        if(!isAlignedY() && Y!=getMain().ABS_W_MAP_SIZE-1)
-            for (Object object : frame.all_objects[X - 1][Y + 1])
-                if (object.isAlignedY()) {
-                    list.add(object);
-                }else{
-                    // tutaj przypadek, kiedy oba są niealigned.
-                }
-
-        return list;
-    }
-*/
-
-    /*
-     * Zwraca Obiekt z podanej listy, na prawo od Obiektu, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt na prawo od Obiektu, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście na prawo od Obiektu, którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu na prawo od Obiektu, z którego wywoływana jest metoda.
-     *
-    public ArrayList<Object> rightObjects(){
-
-        ArrayList<Object> list = new ArrayList<>();
-
-        if (X==getMain().ABS_W_MAP_SIZE-1)
-            return list;
-
-        list.addAll(frame.all_objects[X + 1][Y]);
-
-        if(Y==0)
-            return list;
-        else
-            for (Object object : frame.all_objects[X + 1][Y - 1])
-                if (!object.isAlignedY())
-                    list.add(object);
-
-        if(!isAlignedY() && Y!=getMain().ABS_W_MAP_SIZE-1)
-            for (Object object : frame.all_objects[X + 1][Y + 1])
-                if (object.isAlignedY()) {
-                    list.add(object);
-                }else{
-                    // tutaj przypadek, kiedy oba są niealigned.
-                }
-
-        return list;
-    }
-*/
-
-    /*
-     * Zwraca Obiekt z podanej listy, na górę od Obiektu, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt na górę od Obiektu, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście na górę od Obiektu, którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu na górę od Obiektu, z którego wywoływana jest metoda.
-     *
-    public ArrayList<Object> upObjects(){
-
-        ArrayList<Object> list = new ArrayList<>();
-
-        if (Y==0)
-            return list;
-
-        list.addAll(frame.all_objects[X][Y - 1]);
-
-        if(X==0)
-            return list;
-        else
-            for (Object object : frame.all_objects[X - 1][Y - 1])
-                if (!object.isAlignedX())
-                    list.add(object);
-
-        if(!isAlignedX() && X!=getMain().ABS_W_MAP_SIZE-1)
-            for (Object object : frame.all_objects[X + 1][Y - 1])
-                if (object.isAlignedX()) {
-                    list.add(object);
-                }else{
-                    // tutaj przypadek, kiedy oba są niealigned.
-                }
-
-        return list;
-    }
-*/
-
-    /*
-     * Zwraca Obiekt z podanej listy, na dół od Obiektu, z którego wywoływana jest metoda.
-     * @param list lista, w której wyszukiwany jest Obiekt na dół od Obiektu, z którego wywoływana jest metoda.
-     * @return Obiekt przechowywany w podanej liście na dół od Obiektu, którego wywoływana jest metoda.
-     * @return null, jeżeli podana lista nie przechowuje Obiektu na dół od Obiektu, z którego wywoływana jest metoda.
-     *
-    public ArrayList<Object> downObjects(){
-
-        ArrayList<Object> list = new ArrayList<>();
-
-        if (Y==Main.ABS_H_MAP_SIZE-1)
-            return list;
-
-        list.addAll(frame.all_objects[X][Y + 1]);
-
-        if(X==0)
-            return list;
-        else
-            for (Object object : frame.all_objects[X - 1][Y + 1])
-                if (!object.isAlignedX())
-                    list.add(object);
-
-        if(!isAlignedX() && X!=getMain().ABS_W_MAP_SIZE-1)
-            for (Object object : frame.all_objects[X + 1][Y + 1])
-                if (object.isAlignedX()) {
-                    list.add(object);
-                }else{
-                    // tutaj przypadek, kiedy oba są niealigned.
-                }
-
-        return list;
-    }
-    */
 
     private Main getMain(){return frame.main;}
 }

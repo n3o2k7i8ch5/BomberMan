@@ -1,6 +1,7 @@
 package com.bomber.man.power_ups;
 
 import com.bomber.man.GameFrame;
+import com.bomber.man.enemies.SmartAssEnemy;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class FlameUp extends PowerUp {
     @Override
     public void performBonus() {
         frame.player.increaseFlame();
+        for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
+            enemy.checkSafety();
     }
 
     @Override

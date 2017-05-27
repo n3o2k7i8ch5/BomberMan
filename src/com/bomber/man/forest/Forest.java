@@ -1,13 +1,10 @@
 package com.bomber.man.forest;
 
 import com.bomber.man.GameFrame;
-import com.bomber.man.Object;
-import com.bomber.man.PlayerColisionListener;
 import com.bomber.man.tiles.Tile;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by Kisiel on 27.03.2017.

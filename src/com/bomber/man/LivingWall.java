@@ -1,5 +1,6 @@
 package com.bomber.man;
 
+import com.bomber.man.enemies.SmartAssEnemy;
 import com.bomber.man.power_ups.PowerUp;
 
 import java.awt.*;
@@ -14,6 +15,8 @@ public class LivingWall extends Solid {
 
     public LivingWall(GameFrame frame, int X, int Y, boolean isSoft) {
         super(frame, X, Y, isSoft);
+        for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
+            enemy.checkSafety();
     }
 
     @Override

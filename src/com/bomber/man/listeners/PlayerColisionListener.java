@@ -1,4 +1,7 @@
-package com.bomber.man;
+package com.bomber.man.listeners;
+
+import com.bomber.man.GameFrame;
+import com.bomber.man.Object;
 
 import java.util.Iterator;
 

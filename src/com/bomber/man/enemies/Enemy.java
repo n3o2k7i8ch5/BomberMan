@@ -2,6 +2,8 @@ package com.bomber.man.enemies;
 
 import com.bomber.man.*;
 import com.bomber.man.Object;
+import com.bomber.man.listeners.ExplosionColisionListener;
+import com.bomber.man.listeners.PlayerColisionListener;
 
 import java.util.Iterator;
 

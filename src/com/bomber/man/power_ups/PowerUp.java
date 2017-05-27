@@ -2,7 +2,7 @@ package com.bomber.man.power_ups;
 
 import com.bomber.man.GameFrame;
 import com.bomber.man.Object;
-import com.bomber.man.PlayerColisionListener;
+import com.bomber.man.listeners.PlayerColisionListener;
 
 import java.util.Iterator;
 

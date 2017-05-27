@@ -20,7 +20,7 @@ public class Player extends MovingObject {
     private direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
 
-    public int fire_length = 3;
+    public int fire_length = 2;
 
     public int lives = 1;
 

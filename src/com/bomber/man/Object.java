@@ -1,8 +1,10 @@
 package com.bomber.man;
 
+import com.bomber.man.listeners.ExplosionColisionListener;
+import com.bomber.man.listeners.PlayerColisionListener;
+
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import static com.bomber.man.Main.ABS_H_MAP_SIZE;
 import static com.bomber.man.Main.ABS_W_MAP_SIZE;

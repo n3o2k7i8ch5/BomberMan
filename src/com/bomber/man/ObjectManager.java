@@ -30,6 +30,7 @@ public class ObjectManager {
     public ArrayList<Explosion> explosion_list = new ArrayList<>();
     public ArrayList<Explosion> new_explosion_list = new ArrayList<>();
     public ArrayList<Enemy> enemy_list = new ArrayList<>();
+    public ArrayList<SmartAssEnemy> smartass_enemy_list = new ArrayList<>();
     public ArrayList<PowerUp> powerup_list = new ArrayList<>();
     public ArrayList<Forest> forest_list = new ArrayList<>();
 
@@ -100,8 +101,13 @@ public class ObjectManager {
         solid_list.remove(solid);
         all_objects[solid.X][solid.Y].remove(solid);
         solids[solid.X][solid.Y] = null;
+
         if(solid.getClass() == LivingWall.class)
             living_wall_list.remove(solid);
+
+        if(Bomb.class.isInstance(solid))
+            for(SmartAssEnemy enemy : smartass_enemy_list)
+                enemy.bombDetonation(solid.X, solid.Y);
     }
 
     public void removePowerUp(PowerUp powerUp){
@@ -112,6 +118,8 @@ public class ObjectManager {
     public void removeEnemy(Enemy enemy){
         enemy_list.remove(enemy);
         all_objects[enemy.X][enemy.Y].remove(enemy);
+        if(SmartAssEnemy.class.isInstance(enemy))
+            smartass_enemy_list.remove(enemy);
     }
 
     /**
@@ -125,6 +133,8 @@ public class ObjectManager {
             Bomb bomb = new Bomb(frame, X, Y, fire_length);
             bomb_list.add(bomb);
             addSolid(bomb);
+            for(SmartAssEnemy enemy : smartass_enemy_list)
+                enemy.addBomb(X, Y);
         }
     }
 
@@ -180,6 +190,7 @@ public class ObjectManager {
         SmartAssEnemy enemy = new SmartAssEnemy(frame, X, Y, 1);
         all_objects[X][Y].add(enemy);
         enemy_list.add(enemy);
+        smartass_enemy_list.add(enemy);
     }
 
     /**

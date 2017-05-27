@@ -1,6 +1,7 @@
 package com.bomber.man;
 
 import com.bomber.man.enemies.Enemy;
+import com.bomber.man.enemies.SmartAssEnemy;
 import com.bomber.man.forest.Forest;
 import com.bomber.man.power_ups.PowerUp;
 import com.bomber.man.tiles.Tile;
@@ -19,7 +20,7 @@ public class GameFrame extends JPanel implements ActionListener {
     public Player player;
 
     public static final int frame_time = 10;
-    long time = 0;
+    public long time = 0;
 
     int x_map_shift = 0;
     int y_map_shift = 0;
@@ -49,7 +50,7 @@ public class GameFrame extends JPanel implements ActionListener {
 
         objectManager = new ObjectManager(this);
 
-        objectManager.addLivingWall(5, 5);
+        //objectManager.addLivingWall(5, 5);
         objectManager.addForest(3, 7);
         objectManager.addForest(3, 8);
         objectManager.addForest(3, 9);
@@ -58,7 +59,7 @@ public class GameFrame extends JPanel implements ActionListener {
         //objectManager.addFastStraightEnemy(5, 7);
         //objectManager.addMagnetEnemy(9, 9);
 
-        objectManager.addSmartAssEnemy(1, 5);
+        objectManager.addSmartAssEnemy(2, 5);
 
     }
 
@@ -145,6 +146,9 @@ public class GameFrame extends JPanel implements ActionListener {
             if (explosion.tick()) {
                 it.remove();
                 objectManager.all_objects[explosion.X][explosion.Y].remove(explosion);
+                for(SmartAssEnemy enemy : objectManager.smartass_enemy_list) {
+                    enemy.liftLock(explosion.X, explosion.Y);
+                }
             }else{
                 explosion.checkNearbyCollisions();
             }

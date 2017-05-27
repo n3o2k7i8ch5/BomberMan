@@ -1,5 +1,7 @@
 package com.bomber.man;
 
+import com.bomber.man.listeners.PlayerColisionListener;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,9 +57,7 @@ public class Explosion extends Object {
         Solid solid = upSolid();
 
         if(solid==null) {
-
-            if(!getObjectManager().containsInstance(getObjectManager().all_objects[X][Y-1], Explosion.class))
-                getObjectManager().addExplosion(X, Y - 1, fire_length - 1, UP);
+             getObjectManager().addExplosion(X, Y - 1, fire_length - 1, UP);
         }else if(solid.isSoft){
             getObjectManager().addExplosion(X, Y - 1, 0, UP);
             getObjectManager().removeSolid(solid);
@@ -72,8 +72,7 @@ public class Explosion extends Object {
         Solid solid = downSolid();
 
         if(solid==null) {
-            if(!getObjectManager().containsInstance(getObjectManager().all_objects[X][Y+1], Explosion.class))
-                getObjectManager().addExplosion(X, Y + 1, fire_length - 1, DOWN);
+            getObjectManager().addExplosion(X, Y + 1, fire_length - 1, DOWN);
         }else if(solid.isSoft){
             getObjectManager().addExplosion(X, Y + 1, 0, DOWN);
             getObjectManager().removeSolid(solid);
@@ -88,8 +87,7 @@ public class Explosion extends Object {
         Solid solid = rightSolid();
 
         if(solid==null) {
-            if(!getObjectManager().containsInstance(getObjectManager().all_objects[X+1][Y], Explosion.class))
-                getObjectManager().addExplosion(X + 1, Y, fire_length - 1, RIGHT);
+            getObjectManager().addExplosion(X + 1, Y, fire_length - 1, RIGHT);
         }else if(solid.isSoft){
             getObjectManager().addExplosion(X+1, Y, 0, RIGHT);
             getObjectManager().removeSolid(solid);
@@ -104,8 +102,7 @@ public class Explosion extends Object {
         Solid solid = leftSolid();
 
         if(solid==null) {
-            if(!getObjectManager().containsInstance(getObjectManager().all_objects[X-1][Y], Explosion.class))
-                getObjectManager().addExplosion(X - 1, Y, fire_length - 1, LEFT);
+            getObjectManager().addExplosion(X - 1, Y, fire_length - 1, LEFT);
         }else if(solid.isSoft){
             getObjectManager().addExplosion(X-1, Y, 0, LEFT);
             getObjectManager().removeSolid(solid);

@@ -54,7 +54,7 @@ public class InfoBox extends JPanel {
     }
 
     public void update(Player player){
-//        lab_punktow.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(2)).print());
+        lab_punktow.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(0)).print());
         lab_zycia.setText("x: " + player.x);
         lab_bomby.setText("y: " + player.y);
         lab_szybkosc.setText("" + player.speed);

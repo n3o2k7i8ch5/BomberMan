@@ -1,5 +1,7 @@
 package com.bomber.man;
 
+import com.bomber.man.enemies.Enemy;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.lang.*;
@@ -20,14 +22,18 @@ public class Player extends MovingObject {
     private direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
 
+    private direction orientation = UP;
+
     public int fire_length = 2;
 
     public int lives = 1;
 
-    public int max_bombs = 3;
+    public static double SPEED = 3;
 
-    public Player(GameFrame frame, int X, int Y, /*int*/ double speed, int align_factor) {
-        super(frame, X, Y, speed, align_factor);
+    public int max_bombs = 5;
+
+    public Player(GameFrame frame, int X, int Y, int align_factor) {
+        super(frame, X, Y, SPEED, align_factor);
     }
 
     public void keyPressed(KeyEvent e)
@@ -63,7 +69,13 @@ public class Player extends MovingObject {
         }
         else if(key==KeyEvent.VK_SPACE){
             if(getMain().gamestate==1)
+                //putBomb();
+                throwBomb();
+        }
+        else if(key==KeyEvent.VK_X){
+            if(getMain().gamestate==1)
                 putBomb();
+                //throwBomb();
         }
     }
 
@@ -118,6 +130,18 @@ public class Player extends MovingObject {
     public void onPositionChanged() {
         super.onPositionChanged();
         getDirectionFromKey();
+    }
+
+    @Override
+    protected void updateStep(long time) {
+        if(current_dir!=NULL)
+            orientation = current_dir;
+
+        if(current_dir!=NULL && !isDirFreeToGo(current_dir))
+            current_dir = NULL;
+        else
+            super.updateStep(time);
+
     }
 
     @Override
@@ -240,9 +264,18 @@ public class Player extends MovingObject {
 
     @Override
     protected ArrayList<Image> getImageNullList() {
-        if(lives!=0)
-            return getMain().graphicsContainer.playerUpImages;
-        else
+        if(lives!=0) {
+            if(orientation==UP)
+                return getMain().graphicsContainer.playerUpImages;
+            else if(orientation==DOWN)
+                return getMain().graphicsContainer.playerDownImages;
+            else if(orientation==LEFT)
+                return getMain().graphicsContainer.playerLeftImages;
+            else if(orientation==RIGHT)
+                return getMain().graphicsContainer.playerRightImages;
+            else
+                return getMain().graphicsContainer.playerUpImages;
+        }else
             return getMain().graphicsContainer.bombImages;
     }
 
@@ -276,6 +309,33 @@ public class Player extends MovingObject {
         }
     }
 
+    public void throwBomb(){
+
+        int X = this.X;
+        int Y = this.Y;
+
+
+        if(orientation == RIGHT && !isAlignedX())
+            X++;
+
+        if(orientation == DOWN && !isAlignedY())
+            Y++;
+
+        if(getObjectManager().bomb_list.size()==0)
+            getObjectManager().addBomb(X, Y, orientation);
+        else {
+            boolean new_bomb = true;
+
+            for (Bomb bomb : getObjectManager().bomb_list)
+                if (bomb.touches(X, Y, 1))
+                    new_bomb = false;
+
+            if(new_bomb)
+                getObjectManager().addBomb(X, Y, orientation);
+        }
+
+    }
+
     public void putBomb(){
 
         int X, Y;
@@ -295,8 +355,8 @@ public class Player extends MovingObject {
             if(bomb.Y == Y && bomb.X == X)
                 isBomb = true;
 
-        if(!isBomb)
-            getObjectManager().addBomb(X, Y, fire_length);
+        if(!isBomb && !getObjectManager().containsInstance(getObjectManager().all_objects[X][Y], Enemy.class))
+            getObjectManager().addBomb(X, Y, NULL);
 
     }
 

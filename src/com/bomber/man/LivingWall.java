@@ -11,10 +11,10 @@ import java.util.Random;
 /**
  * Created by Kisiel on 26.05.2017.
  */
-public class LivingWall extends Solid {
+public class LivingWall extends Object {
 
-    public LivingWall(GameFrame frame, int X, int Y, boolean isSoft) {
-        super(frame, X, Y, isSoft);
+    public LivingWall(GameFrame frame, int X, int Y, boolean softSolid) {
+        super(frame, X, Y, softSolid);
         for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
             enemy.checkSafety();
     }
@@ -45,7 +45,7 @@ public class LivingWall extends Solid {
         for(Object object : objects)
             if(object.touches(X, Y, 1) &&
                     (MovingObject.class.isInstance(object)
-                    || Solid.class.isInstance(object)
+                    || object.solid
                     || PowerUp.class.isInstance(object)))
                 return false;
         return true;

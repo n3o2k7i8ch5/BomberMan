@@ -31,7 +31,7 @@ public abstract class Enemy extends MovingObject {
 
         addExplosionColisionListener(new ExplosionColisionListener() {
             @Override
-            public void onColision(Iterator<Object> it) {
+            public void onColision(Explosion explosion, Iterator<Object> it) {
                 getObjectManager().removeEnemy(enemy);
             }
         });

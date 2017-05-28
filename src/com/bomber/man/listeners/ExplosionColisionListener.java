@@ -15,12 +15,12 @@ public abstract class ExplosionColisionListener {
     public void checkColision(Explosion explosion, Iterator<Object> it){
 
         if(explosion.touches(object, 0.9))
-            onColision(it);
+            onColision(explosion, it);
     }
 
     public void assignToObject(Object object){
         this.object = object;
     }
 
-    public abstract void onColision(Iterator<Object> it);
+    public abstract void onColision(Explosion explosion, Iterator<Object> it);
 }

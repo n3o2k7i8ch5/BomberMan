@@ -1,5 +1,6 @@
 package com.bomber.man;
 
+import com.bomber.man.enemies.SmartAssEnemy;
 import com.bomber.man.listeners.PlayerColisionListener;
 
 import java.awt.*;
@@ -19,7 +20,9 @@ public class Explosion extends Object {
     int fire_length;
     direction direction;
     int life_time;
-    int delay;
+    int PROPAG_DELAY;
+
+    boolean leaveRandPowerUp = false;
 
     public Explosion(GameFrame frame, int X, int Y, int fire_length, direction direction) {
         super(frame, X, Y);
@@ -29,9 +32,9 @@ public class Explosion extends Object {
         this.direction = direction;
 
         if(direction == NULL)
-            delay = 0;
+            PROPAG_DELAY = 0;
         else
-            delay = 30;
+            PROPAG_DELAY = 30;
 
         addPlayerColisionListener(new PlayerColisionListener(frame) {
             @Override
@@ -42,26 +45,18 @@ public class Explosion extends Object {
                     getMain().setGameState(-1);
             }
         });
-
-        Bomb bomb = (Bomb) getObjectManager().hereObject(getObjectManager().bomb_list, this);
-        if(bomb!=null)
-            getObjectManager().detonate(bomb);
-
-        getObjectManager().powerup_list.removeIf(powerUp -> powerUp.X == X && powerUp.Y == Y);
     }
 
     private void tryPropataingUp(){
         if(Y==0)
             return;
 
-        Solid solid = upSolid();
+        Object solid = upSolid();
 
         if(solid==null) {
              getObjectManager().addExplosion(X, Y - 1, fire_length - 1, UP);
-        }else if(solid.isSoft){
+        }else if(solid.softSolid){
             getObjectManager().addExplosion(X, Y - 1, 0, UP);
-            getObjectManager().removeSolid(solid);
-            randomPowerUp(solid.X, solid.Y);
         }
     }
 
@@ -69,14 +64,12 @@ public class Explosion extends Object {
         if(Y==getMain().ABS_H_MAP_SIZE-1)
             return;
 
-        Solid solid = downSolid();
+        Object solid = downSolid();
 
         if(solid==null) {
             getObjectManager().addExplosion(X, Y + 1, fire_length - 1, DOWN);
-        }else if(solid.isSoft){
+        }else if(solid.softSolid){
             getObjectManager().addExplosion(X, Y + 1, 0, DOWN);
-            getObjectManager().removeSolid(solid);
-            randomPowerUp(solid.X, solid.Y);
         }
     }
 
@@ -84,14 +77,12 @@ public class Explosion extends Object {
         if(X==getMain().ABS_W_MAP_SIZE-1)
             return;
 
-        Solid solid = rightSolid();
+        Object solid = rightSolid();
 
         if(solid==null) {
             getObjectManager().addExplosion(X + 1, Y, fire_length - 1, RIGHT);
-        }else if(solid.isSoft){
-            getObjectManager().addExplosion(X+1, Y, 0, RIGHT);
-            getObjectManager().removeSolid(solid);
-            randomPowerUp(solid.X, solid.Y);
+        }else if(solid.softSolid){
+            getObjectManager().addExplosion(X + 1, Y, 0, RIGHT);
         }
     }
 
@@ -99,14 +90,12 @@ public class Explosion extends Object {
         if(X==0)
             return;
 
-        Solid solid = leftSolid();
+        Object solid = leftSolid();
 
         if(solid==null) {
             getObjectManager().addExplosion(X - 1, Y, fire_length - 1, LEFT);
-        }else if(solid.isSoft){
-            getObjectManager().addExplosion(X-1, Y, 0, LEFT);
-            getObjectManager().removeSolid(solid);
-            randomPowerUp(solid.X, solid.Y);
+        }else if(solid.softSolid){
+            getObjectManager().addExplosion(X - 1, Y, 0, LEFT);
         }
     }
 
@@ -120,7 +109,6 @@ public class Explosion extends Object {
             tryPropataingDown();
             tryPropataingRight();
             tryPropataingLeft();
-
         }else if(direction == UP){
             tryPropataingUp();
         }else if(direction == DOWN){
@@ -132,18 +120,30 @@ public class Explosion extends Object {
         }
     }
 
-    public boolean tick(){
-        if(delay==0)
-            tryPropagating();
-        if(delay>=0)
-            delay-=frame_time;
+    public void tick(Iterator<Explosion> it){
+        if(PROPAG_DELAY>=0) {
 
-        if(life_time == 0)
-            return true;
+            if(PROPAG_DELAY==0)
+                tryPropagating();
 
-        life_time -= frame_time;
+            PROPAG_DELAY -= FRAME_TIME;
 
-        return false;
+            return;
+        }else {
+            checkNearbyCollisions();
+            life_time -= FRAME_TIME;
+
+            if (life_time == 0) {
+                it.remove();
+                getObjectManager().all_objects[X][Y].remove(this);
+                for (SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
+                    enemy.explosionRemoved(X, Y);
+
+                if(leaveRandPowerUp)
+                    randomPowerUp(X, Y);
+
+            }
+        }
     }
 
     @Override
@@ -153,7 +153,7 @@ public class Explosion extends Object {
 
     private void randomPowerUp(int X, int Y){
         Random random = new Random();
-        int r = random.nextInt()%10;
+        int r = random.nextInt()%20;
         if(r==0)
             getObjectManager().addFlameUp(X, Y);
         else if(r==1)

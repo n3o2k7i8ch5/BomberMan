@@ -11,6 +11,7 @@ import com.bomber.man.tiles.GrassLight;
 import com.bomber.man.tiles.Tile;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static com.bomber.man.Main.ABS_H_MAP_SIZE;
 import static com.bomber.man.Main.ABS_W_MAP_SIZE;
@@ -25,7 +26,7 @@ public class ObjectManager {
 
     public ArrayList<Bomb> bomb_list = new ArrayList<>();
     public ArrayList<Tile> tile_list = new ArrayList<>();
-    public ArrayList<Solid> solid_list = new ArrayList<>();
+    public ArrayList<Object> solid_list = new ArrayList<>();
     public ArrayList<LivingWall> living_wall_list = new ArrayList<>();
     public ArrayList<Explosion> explosion_list = new ArrayList<>();
     public ArrayList<Explosion> new_explosion_list = new ArrayList<>();
@@ -35,7 +36,7 @@ public class ObjectManager {
     public ArrayList<Forest> forest_list = new ArrayList<>();
 
     public ArrayList<Object> all_objects[][];
-    public Solid solids[][];
+    public Object solids[][];
 
     ObjectManager(GameFrame frame){
         this.frame = frame;
@@ -45,7 +46,7 @@ public class ObjectManager {
             for(int j=0; j<frame.main.ABS_H_MAP_SIZE; j++)
                 all_objects[i][j] = new ArrayList<>();
 
-        solids = new Solid[frame.main.ABS_W_MAP_SIZE][frame.main.ABS_H_MAP_SIZE];
+        solids = new Object[frame.main.ABS_W_MAP_SIZE][frame.main.ABS_H_MAP_SIZE];
 
     }
 
@@ -80,12 +81,18 @@ public class ObjectManager {
         addSolid(wall);
     }
 
-    private void addSolid(Solid solid){
+    private void addSolid(Object solid){
         all_objects[solid.X][solid.Y].add(solid);
         solids[solid.X][solid.Y] = solid;
         solid_list.add(solid);
     }
 
+    public boolean isThereSolid(int X, int Y){
+        for(Object object: all_objects[X][Y])
+            if(object.solid)
+                return true;
+        return false;
+    }
 
     public void addLivingWall(int X, int Y){
         LivingWall livingWall = new LivingWall(frame, X, Y, true);
@@ -97,22 +104,17 @@ public class ObjectManager {
      * Metoda usuwająca obiekt Solid.
      * @param solid obiekt do usunięcia.
      */
-    public void removeSolid(Solid solid){
+    public void removeSolid(Object solid){
         solid_list.remove(solid);
-        all_objects[solid.X][solid.Y].remove(solid);
+        boolean a = all_objects[solid.X][solid.Y].contains(solid);
+        boolean b = all_objects[solid.X][solid.Y].remove(solid);
+        boolean c = all_objects[solid.X][solid.Y].contains(solid);
+
         solids[solid.X][solid.Y] = null;
 
         if(solid.getClass() == LivingWall.class)
             living_wall_list.remove(solid);
 
-        if(Bomb.class.isInstance(solid))
-            for(SmartAssEnemy enemy : smartass_enemy_list)
-                enemy.bombDetonation(solid.X, solid.Y);
-    }
-
-    public void removePowerUp(PowerUp powerUp){
-        powerup_list.remove(powerUp);
-        all_objects[powerUp.X][powerUp.Y].remove(powerUp);
     }
 
     public void removeEnemy(Enemy enemy){
@@ -126,15 +128,19 @@ public class ObjectManager {
      * Metoda dodająca bombę na planszę.
      * @param X pozycja bomby wyrażona w ilości kratek.
      * @param Y pozycja bomby wyrażona w ilości kratek.
-     * @param fire_length długość eksplozji
      */
-    public void addBomb(int X, int Y, int fire_length){
+    public void addBomb(int X, int Y, Object.direction dir){
         if(frame.player.max_bombs > bomb_list.size()) {
-            Bomb bomb = new Bomb(frame, X, Y, fire_length);
+            Bomb bomb;
+            if(dir==NULL)
+                bomb = new Bomb(frame, X, Y);
+            else
+                bomb = new Bomb(frame, X, Y, dir);
+
             bomb_list.add(bomb);
             addSolid(bomb);
             for(SmartAssEnemy enemy : smartass_enemy_list)
-                enemy.addBomb(X, Y);
+                enemy.bombAdded(X, Y);
         }
     }
 
@@ -142,10 +148,14 @@ public class ObjectManager {
      * Metoda służąca do detonacji bomby.
      * @param bomb
      */
-    void detonate(Bomb bomb){
-        bomb_list.remove(bomb);
+    void detonate(Bomb bomb, Iterator it){
+        it.remove();
         removeSolid(bomb);
-        addExplosion(bomb.X, bomb.Y, bomb.fire_length, NULL);
+
+        //addExplosion(
+        //        ((bomb.x() + Main.RESOLUTION/2)/Main.RESOLUTION),
+         //       ((bomb.y() + Main.RESOLUTION/2)/Main.RESOLUTION),
+         //       bomb.fire_length, NULL);
     }
 
     /**
@@ -187,7 +197,7 @@ public class ObjectManager {
     }
 
     void addSmartAssEnemy(int X, int Y){
-        SmartAssEnemy enemy = new SmartAssEnemy(frame, X, Y, 1);
+        SmartAssEnemy enemy = new SmartAssEnemy(frame, X, Y);
         all_objects[X][Y].add(enemy);
         enemy_list.add(enemy);
         smartass_enemy_list.add(enemy);
@@ -238,12 +248,12 @@ public class ObjectManager {
     }
 
     void addPlayer(int X, int Y){
-        frame.player = new Player(frame, X, Y, 3, 3);
+        frame.player = new Player(frame, X, Y, 3);
         all_objects[X][Y].add(frame.player);
         frame.addKeyListener(new KeyAdapt(frame.player));
     }
 
-    public Solid leftSolid(Object o){
+    public Object leftSolid(Object o){
 
         if (o.X==0)
             return null;
@@ -251,13 +261,10 @@ public class ObjectManager {
         if(solids[o.X-1][o.Y] != null)
             return solids[o.X-1][o.Y];
 
-        if(!o.isAlignedY() && o.Y!=frame.main.ABS_W_MAP_SIZE-1)
-            return solids[o.X-1][o.Y+1];
-
         return null;
     }
 
-    public Solid rightSolid(Object o){
+    public Object rightSolid(Object o){
 
         if (o.X==frame.main.ABS_W_MAP_SIZE-1)
             return null;
@@ -265,13 +272,17 @@ public class ObjectManager {
         if(solids[o.X+1][o.Y] != null)
             return solids[o.X+1][o.Y];
 
-        if(!o.isAlignedY() && o.Y!=frame.main.ABS_W_MAP_SIZE-1)
-            return solids[o.X+1][o.Y+1];
+        return null;
+    }
+
+    public Object upRightSolid(Object o){
+        if(o.X!=frame.main.ABS_W_MAP_SIZE-1 && o.Y!=0)
+            return solids[o.X+1][o.Y-1];
 
         return null;
     }
 
-    public Solid upSolid(Object o){
+    public Object upSolid(Object o){
 
         if (o.Y==0)
             return null;
@@ -279,13 +290,18 @@ public class ObjectManager {
         if(solids[o.X][o.Y-1] != null)
             return solids[o.X][o.Y-1];
 
-        if(!o.isAlignedX() && o.X!=getMain().ABS_W_MAP_SIZE-1)
-            return solids[o.X+1][o.Y-1];
+        return null;
+    }
+
+    public Object upLeftSolid(Object o){
+
+        if(o.X!=0 && o.Y!=0)
+            return solids[o.X-1][o.Y-1];
 
         return null;
     }
 
-    public Solid downSolid(Object o){
+    public Object downSolid(Object o){
 
         if (o.Y==Main.ABS_H_MAP_SIZE-1)
             return null;
@@ -293,12 +309,24 @@ public class ObjectManager {
         if(solids[o.X][o.Y+1] != null)
             return solids[o.X][o.Y+1];
 
-        if(!o.isAlignedX() && o.X!=getMain().ABS_W_MAP_SIZE-1)
-            return solids[o.X+1][o.Y+1];
+        return null;
+    }
+
+    public Object downLeftSolid(Object o){
+
+        if(o.X!=0 && o.Y!=Main.ABS_H_MAP_SIZE-1)
+            return solids[o.X-1][o.Y+1];
 
         return null;
     }
 
+    public Object downRightSolid(Object o){
+
+        if(o.X!=Main.ABS_H_MAP_SIZE-1 && o.Y!=Main.ABS_H_MAP_SIZE-1)
+            return solids[o.X+1][o.Y+1];
+
+        return null;
+    }
 
     /**
      * Zwraca Obiekt z podanej listy, o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.

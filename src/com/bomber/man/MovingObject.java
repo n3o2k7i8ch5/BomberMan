@@ -25,7 +25,6 @@ public abstract class MovingObject extends Object {
 
     int align_factor;
     private double element;
-    private boolean is_element_int;
     /**
      * Konstruktor klasy.
      *
@@ -42,7 +41,15 @@ public abstract class MovingObject extends Object {
         this.old_x = x;
         this.old_y = y;
         element = ((double) RESOLUTION / (double) align_factor);
-        is_element_int = element == Math.floor(element);
+    }
+
+    public MovingObject(GameFrame frame, int X, int Y, double speed, int align_factor, boolean softSolid) {
+        super(frame, X, Y, softSolid);
+        this.speed = speed;
+        this.align_factor = 1;
+        this.old_x = x;
+        this.old_y = y;
+        element = ((double) RESOLUTION / (double) align_factor);
     }
 
     public MovingObject(GameFrame frame, int X, int Y, double speed, int align_factor) {

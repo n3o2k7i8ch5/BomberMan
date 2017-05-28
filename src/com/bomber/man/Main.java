@@ -191,7 +191,7 @@ public class Main extends JFrame{
         for(Tile tile: gameFrame.objectManager.tile_list)
             tile.updateImage();
 
-        for(Solid solid: gameFrame.objectManager.solid_list)
+        for(Object solid: gameFrame.objectManager.solid_list)
             solid.updateImage();
     }
 

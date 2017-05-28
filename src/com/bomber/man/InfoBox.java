@@ -49,14 +49,74 @@ public class InfoBox extends JPanel {
         lab_szybkosc = new JLabel();
         box.add(lab_szybkosc);
 
-
         add(box);
     }
 
     public void update(Player player){
-//        lab_punktow.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(0)).print());
-        lab_zycia.setText("x: " + player.x);
-        lab_bomby.setText("y: " + player.y);
-        lab_szybkosc.setText("" + player.speed);
+        lab_punktow.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(0)).print());
+
+        Object upSolid = player.upSolid();
+        Object downSolid = player.downSolid();
+        Object rightSolid = player.rightSolid();
+        Object leftSolid = player.leftSolid();
+
+        Object upLeftSolid = player.upLeftSolid();
+        Object upRightSolid = player.upRightSolid();
+        Object downLeftSolid = player.downLeftSolid();
+        Object downRightSolid = player.downRightSolid();
+
+        String s1 = "<html>";
+        if(upSolid!=null)
+            s1 += ("UP: " + upSolid.getClass().getSimpleName()) + "<br>";
+        else
+            s1 += "UP: <br>";
+
+        if(downSolid!=null)
+            s1 += ("DOWN: " + downSolid.getClass().getSimpleName()) + "<br>";
+        else
+            s1 += "DOWN: <br>";
+
+        if(leftSolid!=null)
+            s1 += ("LEFT: " + leftSolid.getClass().getSimpleName()) + "<br>";
+        else
+            s1 += "LEFT: <br>";
+
+        if(rightSolid!=null)
+            s1 += ("RIGHT: " + rightSolid.getClass().getSimpleName()) + "<br><br>";
+        else
+            s1 += "RIGHT: <br><br>";
+
+        if(upLeftSolid!=null)
+            s1 += ("UP_LEFT: " + upLeftSolid.getClass().getSimpleName()) + "<br>";
+        else
+            s1 += "UP_LEFT: <br>";
+
+        if(upRightSolid!=null)
+            s1 += ("UP_RIGHT: " + upRightSolid.getClass().getSimpleName()) + "<br>";
+        else
+            s1 += "UP_RIGHT: <br>";
+
+        if(downLeftSolid!=null)
+            s1 += ("DOWN_LEFT: " + downLeftSolid.getClass().getSimpleName()) + "<br>";
+        else
+            s1 += "DOWN_LEFT: <br>";
+
+        if(downRightSolid!=null)
+            s1 += ("DOWN_RIGHT: " + downRightSolid.getClass().getSimpleName()) + "<br>";
+        else
+            s1 += "DOWN_RIGHT: <br>";
+
+        lab_zycia.setText(s1);
+        lab_bomby.setText("");
+        lab_szybkosc.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(0)).safetyTarget());
+
+        String s = "<html>";
+        for(Object object : player.getSurroundingObjects())
+            s += (object.getClass().getSimpleName() + "<br>");
+
+        s+= "</html>";
+
+        //lab_szybkosc.setText(s);
+
     }
 }

@@ -19,7 +19,7 @@ public class GameFrame extends JPanel implements ActionListener {
 
     public Player player;
 
-    public static final int frame_time = 10;
+    public static final int FRAME_TIME = 10;
     public long time = 0;
 
     int x_map_shift = 0;
@@ -39,27 +39,26 @@ public class GameFrame extends JPanel implements ActionListener {
      */
     public GameFrame(Main main)
     {
-        //addPlayer(3,3);
         setPreferredSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION, VISIB_MAP_SIZE*RESOLUTION));
         this.main = main;
 
         setFocusable(true);
-        timer = new Timer(frame_time, this::actionPerformed);
+        timer = new Timer(FRAME_TIME, this::actionPerformed);
         timer.setRepeats(true);
         timer.start();
 
         objectManager = new ObjectManager(this);
 
         //objectManager.addLivingWall(5, 5);
-        objectManager.addForest(3, 7);
-        objectManager.addForest(3, 8);
-        objectManager.addForest(3, 9);
-        objectManager.addForest(3, 10);
+        //objectManager.addForest(3, 7);
+        //objectManager.addForest(3, 8);
+       // objectManager.addForest(3, 9);
+       // objectManager.addForest(3, 10);
 
         //objectManager.addFastStraightEnemy(5, 7);
         //objectManager.addMagnetEnemy(9, 9);
 
-        objectManager.addSmartAssEnemy(2, 5);
+        objectManager.addSmartAssEnemy(5, 5);
 
     }
 
@@ -72,7 +71,7 @@ public class GameFrame extends JPanel implements ActionListener {
         for(Tile tile : objectManager.tile_list)
             tile.draw(g2d);
 
-        for(Solid solid : objectManager.solid_list)
+        for(Object solid : objectManager.solid_list)
             solid.draw(g2d);
 
         for(PowerUp powerUp : objectManager.powerup_list)
@@ -129,21 +128,24 @@ public class GameFrame extends JPanel implements ActionListener {
     }
 
     private void tickBombs(){
+
+        for(Bomb bomb : objectManager.bomb_list)
+            bomb.updateDir();
+
         for (Iterator<Bomb> it = objectManager.bomb_list.iterator(); it.hasNext(); ) {
             Bomb bomb = it.next();
-            bomb.destruct_time -= frame_time;
+            bomb.tick(it);
             bomb.update(time);
-            if (bomb.destruct_time == 0) {
-                it.remove();
-                objectManager.detonate(bomb);
-            }
         }
     }
 
     private void tickExplosions(){
         for (Iterator<Explosion> it = objectManager.explosion_list.iterator(); it.hasNext(); ) {
             Explosion explosion = it.next();
-            if (explosion.tick()) {
+            explosion.tick(it);
+            explosion.update(time);
+
+            /*if (explosion.tick()) {
                 it.remove();
                 objectManager.all_objects[explosion.X][explosion.Y].remove(explosion);
                 for(SmartAssEnemy enemy : objectManager.smartass_enemy_list) {
@@ -152,6 +154,7 @@ public class GameFrame extends JPanel implements ActionListener {
             }else{
                 explosion.checkNearbyCollisions();
             }
+            */
         }
 
         objectManager.explosion_list.addAll(objectManager.new_explosion_list);

@@ -1,17 +1,16 @@
 package com.bomber.man;
 
 import com.bomber.man.enemies.Enemy;
-import com.bomber.man.enemies.SmartAssEnemy;
 import com.bomber.man.forest.Forest;
 import com.bomber.man.power_ups.PowerUp;
 import com.bomber.man.tiles.Tile;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 import static com.bomber.man.Main.*;
 
@@ -31,7 +30,7 @@ public class GameFrame extends JPanel implements ActionListener {
 
     public Main main;
 
-    public ObjectManager objectManager;
+    ObjectManager objectManager;
 
     /**
      * Klasa GameFrame klasa przechowujaca aktualny stan gry.
@@ -42,24 +41,13 @@ public class GameFrame extends JPanel implements ActionListener {
         setPreferredSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION, VISIB_MAP_SIZE*RESOLUTION));
         this.main = main;
 
-        setFocusable(true);
         timer = new Timer(FRAME_TIME, this::actionPerformed);
         timer.setRepeats(true);
         timer.start();
 
         objectManager = new ObjectManager(this);
 
-        //objectManager.addLivingWall(5, 5);
-        //objectManager.addForest(3, 7);
-        //objectManager.addForest(3, 8);
-       // objectManager.addForest(3, 9);
-       // objectManager.addForest(3, 10);
-
-        //objectManager.addFastStraightEnemy(5, 7);
-        //objectManager.addMagnetEnemy(9, 9);
-
-        objectManager.addSmartAssEnemy(5, 5);
-
+        objectManager.addInstantBomb(1, 6);
     }
 
     @Override
@@ -67,6 +55,8 @@ public class GameFrame extends JPanel implements ActionListener {
     {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
+
+        requestFocus();
 
         for(Tile tile : objectManager.tile_list)
             tile.draw(g2d);
@@ -95,11 +85,14 @@ public class GameFrame extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        timerTick();
+    }
 
+    private void timerTick(){
         if(pause)
             return;
 
-        main.countFPS(player);
+        main.countFPS();
 
         time++;
 
@@ -124,7 +117,6 @@ public class GameFrame extends JPanel implements ActionListener {
 
         if(main.infoBox!= null)
             main.infoBox.update(player);
-
     }
 
     private void tickBombs(){
@@ -144,17 +136,6 @@ public class GameFrame extends JPanel implements ActionListener {
             Explosion explosion = it.next();
             explosion.tick(it);
             explosion.update(time);
-
-            /*if (explosion.tick()) {
-                it.remove();
-                objectManager.all_objects[explosion.X][explosion.Y].remove(explosion);
-                for(SmartAssEnemy enemy : objectManager.smartass_enemy_list) {
-                    enemy.liftLock(explosion.X, explosion.Y);
-                }
-            }else{
-                explosion.checkNearbyCollisions();
-            }
-            */
         }
 
         objectManager.explosion_list.addAll(objectManager.new_explosion_list);
@@ -173,4 +154,5 @@ public class GameFrame extends JPanel implements ActionListener {
         for(Forest forest1 : objectManager.forest_list)
             forest1.setTransp(false);
     }
+
 }

@@ -22,10 +22,8 @@ public class Bomb extends MovingObject {
     static final int BOMB_DESTRUCT_TIME = 3000;
     static final int BOMB_QUICK_DESTRUCT_TIME = 1000;
     static final double SPEED = 2;
-    int destruct_time;
-    public int fire_length;
-
-    Bomb bomb = this;
+    private int destruct_time;
+    public int flame_length;
 
     /**
      * Klasa Bomb wybuchająca po określonym czasie i niszcząca wszystkie zniszczalne obiekty
@@ -37,7 +35,7 @@ public class Bomb extends MovingObject {
     public Bomb(GameFrame frame, int X, int Y, boolean quick_explode) {
         super(frame, X, Y, 0, 1, true);
         this.destruct_time = quick_explode?BOMB_QUICK_DESTRUCT_TIME:BOMB_DESTRUCT_TIME;
-        this.fire_length = frame.player.fire_length;
+        this.flame_length = frame.player.flame_length;
         setExplosionListener();
     }
 
@@ -50,14 +48,14 @@ public class Bomb extends MovingObject {
     public Bomb(GameFrame frame, int X, int Y) {
         super(frame, X, Y, 0, 1, true);
         this.destruct_time = BOMB_DESTRUCT_TIME;
-        this.fire_length = frame.player.fire_length;
+        this.flame_length = frame.player.flame_length;
         setExplosionListener();
     }
 
     public Bomb(GameFrame frame, int X, int Y, boolean quick_explode, direction dir) {
         super(frame, X, Y, SPEED, 1, true);
         this.destruct_time = quick_explode?BOMB_QUICK_DESTRUCT_TIME:BOMB_DESTRUCT_TIME;
-        this.fire_length = frame.player.fire_length;
+        this.flame_length = frame.player.flame_length;
         this.current_dir = dir;
         this.new_dir = dir;
         setExplosionListener();
@@ -66,7 +64,7 @@ public class Bomb extends MovingObject {
     public Bomb(GameFrame frame, int X, int Y, direction dir) {
         super(frame, X, Y, SPEED, 1, true);
         this.destruct_time = BOMB_DESTRUCT_TIME;
-        this.fire_length = frame.player.fire_length;
+        this.flame_length = frame.player.flame_length;
         this.current_dir = dir;
         this.new_dir = dir;
         setExplosionListener();
@@ -80,11 +78,11 @@ public class Bomb extends MovingObject {
 
     public void detonate(Iterator bomb_list_iter){
         bomb_list_iter.remove();
-        getObjectManager().removeSolid(bomb);
+        getObjectManager().removeSolid(this);
         getObjectManager().addExplosion(
                 ((x() + Main.RESOLUTION/2)/Main.RESOLUTION),
                ((y() + Main.RESOLUTION/2)/Main.RESOLUTION),
-               fire_length, NULL);
+                flame_length, NULL);
 
         for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
             enemy.bombDetonation(X, Y);
@@ -96,7 +94,7 @@ public class Bomb extends MovingObject {
         getObjectManager().addExplosion(
                 ((x() + Main.RESOLUTION/2)/Main.RESOLUTION),
                 ((y() + Main.RESOLUTION/2)/Main.RESOLUTION),
-                fire_length, NULL);
+                flame_length, NULL);
 
         for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
             enemy.bombDetonation(X, Y);
@@ -146,7 +144,7 @@ public class Bomb extends MovingObject {
         getObjectManager().solids[X][Y] = this;
 
         for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
-            enemy.bombMoved(X, Y);
+            enemy.bombMoved();
 
     }
 

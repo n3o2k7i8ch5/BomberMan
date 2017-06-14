@@ -19,8 +19,8 @@ public class Explosion extends Object {
     static final int LIFE_TIME = 500;
     int fire_length;
     direction direction;
-    int life_time;
-    int PROPAG_DELAY;
+    private int life_time;
+    private int PROPAG_DELAY;
 
     boolean leaveRandPowerUp = false;
 
@@ -141,7 +141,6 @@ public class Explosion extends Object {
 
                 if(leaveRandPowerUp)
                     randomPowerUp(X, Y);
-
             }
         }
     }
@@ -153,13 +152,19 @@ public class Explosion extends Object {
 
     private void randomPowerUp(int X, int Y){
         Random random = new Random();
-        int r = random.nextInt()%20;
+        int r = random.nextInt()%30;
         if(r==0)
             getObjectManager().addFlameUp(X, Y);
         else if(r==1)
             getObjectManager().addSpeedUp(X, Y);
         else if(r==2)
             getObjectManager().addBombUp(X, Y);
+        else if(r==3)
+            getObjectManager().addSlowDown(X, Y);
+        else if(r==4)
+            getObjectManager().addInstantBomb(X, Y);
+        else if(r==5)
+            getObjectManager().addFlameDown(X, Y);
     }
 
     public void checkNearbyCollisions(){

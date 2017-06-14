@@ -1,7 +1,4 @@
 package com.bomber.man;
-
-
-import com.bomber.man.enemies.SmartAssEnemy;
 import javax.swing.*;
 
 /**
@@ -53,7 +50,7 @@ public class InfoBox extends JPanel {
     }
 
     public void update(Player player){
-        lab_punktow.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(0)).print());
+//        lab_punktow.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(0)).print());
 
         Object upSolid = player.upSolid();
         Object downSolid = player.downSolid();
@@ -108,7 +105,7 @@ public class InfoBox extends JPanel {
 
         lab_zycia.setText(s1);
         lab_bomby.setText("");
-        lab_szybkosc.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(0)).safetyTarget());
+        lab_szybkosc.setText(player.speed + "");
 
         String s = "<html>";
         for(Object object : player.getSurroundingObjects())

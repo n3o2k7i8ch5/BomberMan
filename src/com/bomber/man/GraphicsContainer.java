@@ -85,6 +85,9 @@ public class GraphicsContainer {
     public static String SMARTASS_ENEMY_PATH[]={"res/drawables/smartass_enemy.png"};
     public ArrayList<Image> smartAssEnemyImages = new ArrayList<>();
 
+    public static String CURSE_UP_PATH[]={"res/drawables/curseup.png"};
+    public ArrayList<Image> curseUpImages = new ArrayList<>();
+
     GraphicsContainer(Main main){
         this.main = main;
         scaleAll();
@@ -181,6 +184,9 @@ public class GraphicsContainer {
         }else if(paths.equals(SMARTASS_ENEMY_PATH)) {
             smartAssEnemyImages.clear();
             smartAssEnemyImages.addAll(images);
+        }else if(paths.equals(CURSE_UP_PATH)) {
+            curseUpImages.clear();
+            curseUpImages.addAll(images);
         }
     }
 
@@ -209,6 +215,7 @@ public class GraphicsContainer {
         loadScaleImages(FAST_STRAIGHT_ENEMY_RIGHT_PATH);
         loadScaleImages(MAGNET_ENEMY_PATH);
         loadScaleImages(SMARTASS_ENEMY_PATH);
+        loadScaleImages(CURSE_UP_PATH);
 
     }
 }

@@ -2,16 +2,12 @@ package com.bomber.man;
 
 import com.bomber.man.enemies.*;
 import com.bomber.man.forest.Forest;
-import com.bomber.man.power_ups.BombUp;
-import com.bomber.man.power_ups.FlameUp;
-import com.bomber.man.power_ups.PowerUp;
-import com.bomber.man.power_ups.SpeedUp;
+import com.bomber.man.power_ups.*;
 import com.bomber.man.tiles.GrassDark;
 import com.bomber.man.tiles.GrassLight;
 import com.bomber.man.tiles.Tile;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import static com.bomber.man.Main.ABS_H_MAP_SIZE;
 import static com.bomber.man.Main.ABS_W_MAP_SIZE;
@@ -22,7 +18,7 @@ import static com.bomber.man.Object.direction.NULL;
  */
 public class ObjectManager {
 
-    GameFrame frame;
+    private GameFrame frame;
 
     public ArrayList<Bomb> bomb_list = new ArrayList<>();
     public ArrayList<Tile> tile_list = new ArrayList<>();
@@ -106,11 +102,9 @@ public class ObjectManager {
      */
     public void removeSolid(Object solid){
         solid_list.remove(solid);
-        boolean a = all_objects[solid.X][solid.Y].contains(solid);
-        boolean b = all_objects[solid.X][solid.Y].remove(solid);
-        boolean c = all_objects[solid.X][solid.Y].contains(solid);
 
         solids[solid.X][solid.Y] = null;
+        all_objects[solid.X][solid.Y].remove(solid);
 
         if(solid.getClass() == LivingWall.class)
             living_wall_list.remove(solid);
@@ -140,22 +134,8 @@ public class ObjectManager {
             bomb_list.add(bomb);
             addSolid(bomb);
             for(SmartAssEnemy enemy : smartass_enemy_list)
-                enemy.bombAdded(X, Y);
+                enemy.bombAdded();
         }
-    }
-
-    /**
-     * Metoda służąca do detonacji bomby.
-     * @param bomb
-     */
-    void detonate(Bomb bomb, Iterator it){
-        it.remove();
-        removeSolid(bomb);
-
-        //addExplosion(
-        //        ((bomb.x() + Main.RESOLUTION/2)/Main.RESOLUTION),
-         //       ((bomb.y() + Main.RESOLUTION/2)/Main.RESOLUTION),
-         //       bomb.fire_length, NULL);
     }
 
     /**
@@ -239,6 +219,24 @@ public class ObjectManager {
         BombUp bombUp = new BombUp(frame, X, Y);
         all_objects[X][Y].add(bombUp);
         powerup_list.add(bombUp);
+    }
+
+    void addSlowDown(int X, int Y){
+        SlowDown slowDown = new SlowDown(frame, X, Y);
+        all_objects[X][Y].add(slowDown);
+        powerup_list.add(slowDown);
+    }
+
+    void addInstantBomb(int X, int Y){
+        InstantBomb instantBomb = new InstantBomb(frame, X, Y);
+        all_objects[X][Y].add(instantBomb);
+        powerup_list.add(instantBomb);
+    }
+
+    void addFlameDown(int X, int Y){
+        FlameDown flameDown = new FlameDown(frame, X, Y);
+        all_objects[X][Y].add(flameDown);
+        powerup_list.add(flameDown);
     }
 
     void addForest(int X, int Y){
@@ -335,20 +333,6 @@ public class ObjectManager {
      * @return null, jeżeli podana lista nie przechowuje Obiektu o tych samych współrzędnych, co Obiekt, z którego wywoływana jest metoda.
      */
 
-    public Object hereObject(ArrayList list, Object o){
-
-        boolean isObject = false;
-
-        ArrayList<Object> arrayList = (ArrayList<Object>) list;
-        for(Object object : arrayList) {
-            isObject = object.X == o.X && object.Y == o.Y;
-
-            if(isObject)
-                return object;
-        }
-        return null;
-    }
-
     public boolean containsInstance(ArrayList<Object> list, Class<? extends Object> clazz) {
         for (Object object : list) {
             if (clazz.isInstance(object)) {
@@ -357,6 +341,4 @@ public class ObjectManager {
         }
         return false;
     }
-
-    private Main getMain(){return frame.main;}
 }

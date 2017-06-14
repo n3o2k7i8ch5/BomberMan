@@ -1,11 +1,12 @@
 package com.bomber.man;
 
 import java.awt.*;
+import java.lang.*;
 
 /**
  * Podstawowa klasa bazowa, będąca dziedziczona przez klasy pochodne.
  */
-public abstract class Entity {
+public abstract class Entity{
 
     void handleEvents(Event e){}
 

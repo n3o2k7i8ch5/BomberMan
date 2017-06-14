@@ -19,18 +19,23 @@ public class Player extends MovingObject {
 
     boolean move_player_x, move_player_y;
 
-    private direction key1_pressed = NULL;
+    public direction key1_pressed = NULL;
     private direction key2_pressed = NULL;
 
     private direction orientation = UP;
 
-    public int fire_length = 2;
-
+    public int flame_length = 2;
     public int lives = 1;
+    public int max_bombs = 3;
 
-    public static double SPEED = 3;
+    static final double SPEED = 3;
+    private double saved_speed;
+    private int slow_down = -1;
 
-    public int max_bombs = 5;
+    private int instant_bomb = -1;
+
+    private int saved_flame;
+    private int flame_down = -1;
 
     public Player(GameFrame frame, int X, int Y, int align_factor) {
         super(frame, X, Y, SPEED, align_factor);
@@ -123,6 +128,9 @@ public class Player extends MovingObject {
         {
             frame.pause = !frame.pause;
         }
+        else if(key == KeyEvent.VK_R){
+            getMain().setGameState(1);
+        }
 
     }
 
@@ -134,6 +142,35 @@ public class Player extends MovingObject {
 
     @Override
     protected void updateStep(long time) {
+
+        if(slow_down>0) {
+            slow_down -= frame.FRAME_TIME;
+            if(slow_down < 0)
+                slow_down = 0;
+        }else if(slow_down==0){
+            slow_down = -1;
+            speed = saved_speed;
+        }
+
+        if(instant_bomb > 0) {
+            instant_bomb -=frame.FRAME_TIME;
+            if(isAlignedX() && isAlignedY())
+                putBomb();
+            if(instant_bomb<0)
+                instant_bomb = 0;
+        }else if(instant_bomb==0){
+            instant_bomb = -1;
+        }
+
+        if(flame_down>0) {
+            flame_down -= frame.FRAME_TIME;
+            if(flame_down < 0)
+                flame_down = 0;
+        }else if(flame_down==0){
+            flame_down = -1;
+            flame_length = saved_flame;
+        }
+
         if(current_dir!=NULL)
             orientation = current_dir;
 
@@ -371,11 +408,27 @@ public class Player extends MovingObject {
      *Metoda zwiekszająca promień wybuchu
      */
     public void increaseFlame(){
-        fire_length++;
+        flame_length++;
     }
 
     /**
      * Metoda zwiększająca ilość bomb do położenia
      */
     public void increaseBomb() { max_bombs++;}
+
+    public void slowDown(final int slow_down_time){
+        saved_speed = speed;
+        speed = 1;
+        slow_down = slow_down_time;
+    }
+
+    public void instantBomb(final int instant_bomb_time){
+        instant_bomb = instant_bomb_time;
+    }
+
+    public void flameDown(final int flame_down_time){
+        saved_flame = flame_length;
+        flame_length = 1;
+        flame_down = flame_down_time;
+    }
 }

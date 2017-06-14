@@ -100,20 +100,18 @@ public class SmartAssEnemy extends Enemy {
         checkSafety();
     }
 
-    public void bombAdded(int X, int Y){
+    public void bombAdded(){
         analizeMap();
-        //lockExp(X, Y, frame.player.fire_length);
         checkSafety();
     }
 
-    public void bombMoved(int X, int Y){
+    public void bombMoved(){
         analizeMap();
-        //lockExp(X, Y, frame.player.fire_length);
         checkSafety();
     }
 
     public void bombDetonation(int X, int Y){
-        simulateExp(X, Y, frame.player.fire_length);
+        simulateExp(X, Y, frame.player.flame_length);
         checkSafety();
     }
 
@@ -133,7 +131,7 @@ public class SmartAssEnemy extends Enemy {
             map[explosion.X][explosion.Y].add(EXPLOSION);
 
         for(Bomb bomb : getObjectManager().bomb_list)
-            lockExp(bomb.X, bomb.Y, frame.player.fire_length);
+            lockExp(bomb.X, bomb.Y, frame.player.flame_length);
 
         for(Object solid : getObjectManager().solid_list)
             map[solid.X][solid.Y].add(SOLID);

@@ -25,7 +25,7 @@ public abstract class Enemy extends MovingObject {
                 if(frame.player.lives>0)
                     frame.player.lives--;
                 if(frame.player.lives == 0)
-                    getMain().setGameState(-1);
+                    getMain().setGameState(Main.STATE_PLAYER_DEAD);
             }
         });
 

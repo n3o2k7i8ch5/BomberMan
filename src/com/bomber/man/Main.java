@@ -2,33 +2,33 @@ package com.bomber.man;
 
 import com.bomber.man.menu.Menu;
 import com.bomber.man.tiles.Tile;
-import com.sun.org.apache.regexp.internal.RE;
 
-import javax.sound.sampled.Line;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main extends JFrame{
+
+    public static final int STATE_MENU = 0;
+    public static final int STATE_PLAYER_DEAD = -1;
+    public static final int STATE_GAME = 1;
 
     static final int VISIB_MAP_SIZE = 13;
     static final int CENTER_MAP = (int)Math.floor(VISIB_MAP_SIZE/2);
     public static int ABS_H_MAP_SIZE = 20;
     public static int ABS_W_MAP_SIZE = 20;
 
-    public static int INFO_WIDTH = 300;
-
+    static int INFO_WIDTH = 300;
     static final int RESOLUTION = 64;
 
-    int gamestate = 0;
+    int gamestate;
 
     private GameFrame gameFrame;
-    private Menu menuFrame;
 
     public static GraphicsContainer graphicsContainer;
 
@@ -36,19 +36,19 @@ public class Main extends JFrame{
     static double h_scale_rate = 1;
 
     public InfoBox infoBox;
+    static Main main;
 
     public static void main(String[] args) {
-        // write your code here
 
-        Main main = new Main();
+        main = new Main();
+        main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         graphicsContainer = new GraphicsContainer(main);
-        main.setGameState(1, main);
+        main.setGameState(STATE_MENU);
     }
-
 
     private static long CLOCK;
     private static int FPS = 0;
-    void countFPS(Player player){
+    void countFPS(){
         if(System.currentTimeMillis() - CLOCK >= 1000) {
             setTitle("Bomber Man FPS = " + FPS);
             FPS = 0;
@@ -58,52 +58,47 @@ public class Main extends JFrame{
         }
     }
 
-    public void setGameState(int gamestate)
-    {
-        setGameState(gamestate, this);
-    }
-
     /**
      * Metoda ustawiająca dany stan gry. Gdy stan gry jest równy 0 to jest menu gdy stan gry jest 1 to jest gra gdy stan gry wynosi -1 to gameover
      * @param gamestate stan gry
-     * @param main
      */
-    private void setGameState(int gamestate, Main main)
+    public void setGameState(int gamestate)
     {
-
-        main.setTitle("Bomber Man");
-        main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
         this.gamestate = gamestate;
-        if(gamestate == 0)
+        main.getContentPane().removeAll();
+
+        if(gamestate == STATE_MENU)
         {
-            menuFrame = new Menu(main);
-            main.add(menuFrame);
             main.setTitle("BomberMan - Menu");
-            main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             main.setSize(800,600);
-            main.setLocationRelativeTo(null);
             main.setResizable(false);
-            main.setVisible(true);
+            main.setLocationRelativeTo(null);
+
+            main.add(new Menu(main));
+
         }
-        else if(gamestate == -1)
+        else if(gamestate == STATE_PLAYER_DEAD)
         {
             gameFrame.player.speed = 0;
         }
-        else if(gamestate == 1) {
-            main.setSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION + INFO_WIDTH, VISIB_MAP_SIZE*RESOLUTION));
+        else if(gamestate == STATE_GAME) {
+
+            main.setTitle("Bomber Man");
+            main.setSize(VISIB_MAP_SIZE*RESOLUTION + INFO_WIDTH, VISIB_MAP_SIZE*RESOLUTION);
+            main.setResizable(true);
+            main.setLocationRelativeTo(null);
 
             FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
             main.setLayout(flowLayout);
-            main.setLocationRelativeTo(null);
 
             gameFrame = new GameFrame(main);
+            gameFrame.setFocusable(true);
+            gameFrame.setVisible(true);
 
             Scanner in = null;
             try {
                 in = new Scanner(new FileReader("map1"));
                 String code = in.nextLine();
-
                 main.loadMap(code, gameFrame);
                 updateStaticImages();
             } catch (FileNotFoundException e) {
@@ -111,11 +106,11 @@ public class Main extends JFrame{
             }
 
             main.add(gameFrame);
+
             infoBox = new InfoBox(gameFrame);
             main.add(infoBox);
 
             main.addWindowStateListener(event -> resize());
-
             main.addComponentListener(new ComponentListener() {
                 public void componentResized(ComponentEvent e) {
                     resize();
@@ -128,12 +123,22 @@ public class Main extends JFrame{
                 public void componentHidden(ComponentEvent e) {}
             });
 
-            main.setVisible(true);
-
             gameFrame.pause = false;
         }
+        main.setVisible(true);
 
     }
+
+    static final char GRASS_KEY = '1';
+    static final char GRASS_LIGHT_KEY = '2';
+    static final char WALL_KEY = 'w';
+    static final char SOFT_WALL_KEY = 's';
+    static final char RANDOM_ENEMY_KEY = 'r';
+    static final char STRAIGHT_ENEMY_KEY = 'e';
+    static final char MAGNET_ENEMY_KEY = 'm';
+    static final char SMARTASS_ENEMY_KEY = 'x';
+    static final char PLAYER_KEY = 'p';
+    static final char FOREST_KEY = 'f';
 
     private void loadMap(String code, GameFrame frame){
         String[] items = code.split("!");
@@ -146,26 +151,35 @@ public class Main extends JFrame{
             int Y = Integer.parseInt(elements[1]);
 
             switch (elements[2].charAt(0)) {
-                case '1': //z pliku wczytuje pozycje ciemnej trawy
+                case GRASS_KEY: //z pliku wczytuje pozycje ciemnej trawy
                     frame.objectManager.addGrassDark(X, Y);
                     break;
-                case '2':   //z pliku wczytuje pozycje jasnej trawy
+                case GRASS_LIGHT_KEY:   //z pliku wczytuje pozycje jasnej trawy
                     frame.objectManager.addGrassLight(X, Y);
                     break;
-                case 'w':   //z pliku wczytuje niezniszczalną ściane
+                case WALL_KEY:   //z pliku wczytuje niezniszczalną ściane
                     frame.objectManager.addHardWall(X, Y);
                     break;
-                case 's': // z pliku wczytuje ściane, którą można zniszczyć
+                case SOFT_WALL_KEY: // z pliku wczytuje ściane, którą można zniszczyć
                     frame.objectManager.addSoftWall(X, Y);
                     break;
-                case 'r': // z pliku wczytuje prostego potwora
+                case STRAIGHT_ENEMY_KEY: // z pliku wczytuje prostego potwora
                     frame.objectManager.addStraightEnemy(X,Y);
                     break;
-                case 'e': // z pliku wczytuje losowego potwora
+                case RANDOM_ENEMY_KEY: // z pliku wczytuje losowego potwora
                     frame.objectManager.addRandomEnemy(X,Y);
                     break;
-                case 'p': // z pliku wczytuje gracza
+                case PLAYER_KEY: // z pliku wczytuje gracza
                     frame.objectManager.addPlayer(X, Y);
+                    break;
+                case MAGNET_ENEMY_KEY: // z pliku wczytuje gracza
+                    frame.objectManager.addMagnetEnemy(X, Y);
+                    break;
+                case SMARTASS_ENEMY_KEY: // z pliku wczytuje gracza
+                    frame.objectManager.addSmartAssEnemy(X, Y);
+                    break;
+                case FOREST_KEY: // z pliku wczytuje gracza
+                    frame.objectManager.addForest(X, Y);
                     break;
             }
         }

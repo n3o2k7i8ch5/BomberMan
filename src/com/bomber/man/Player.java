@@ -454,7 +454,7 @@ public class Player extends MovingObject {
      * Metoda zwiększająca prędkość gracza
      */
     public void increaseSpeed(){
-        if(speed<5)
+        if(speed<5.5)
         speed+=0.5;
     }
 

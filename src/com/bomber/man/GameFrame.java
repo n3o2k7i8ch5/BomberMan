@@ -18,7 +18,7 @@ public class GameFrame extends JPanel implements ActionListener {
 
     public Player player;
 
-    public static final int FRAME_TIME = 10;
+    static final int FRAME_TIME = 10;
     public long time = 0;
 
     int x_map_shift = 0;
@@ -39,15 +39,14 @@ public class GameFrame extends JPanel implements ActionListener {
     public GameFrame(Main main)
     {
         setPreferredSize(new Dimension(VISIB_MAP_SIZE*RESOLUTION, VISIB_MAP_SIZE*RESOLUTION));
+        setFocusable(true);
+        setVisible(true);
+
         this.main = main;
 
         timer = new Timer(FRAME_TIME, this::actionPerformed);
         timer.setRepeats(true);
         timer.start();
-
-        objectManager = new ObjectManager(this);
-
-        objectManager.addInstantBomb(1, 6);
     }
 
     @Override
@@ -61,11 +60,17 @@ public class GameFrame extends JPanel implements ActionListener {
         for(Tile tile : objectManager.tile_list)
             tile.draw(g2d);
 
-        for(Object solid : objectManager.solid_list)
-            solid.draw(g2d);
-
         for(PowerUp powerUp : objectManager.powerup_list)
             powerUp.draw(g2d);
+
+        if(objectManager.portal!=null)
+            objectManager.portal.draw(g2d);
+
+        if(player!=null && player.lives==0)
+            player.draw(g2d);
+
+        for(Object solid : objectManager.solid_list)
+            solid.draw(g2d);
 
         for(Bomb bomb : objectManager.bomb_list)
             bomb.draw(g2d);
@@ -73,7 +78,7 @@ public class GameFrame extends JPanel implements ActionListener {
         for(Enemy enemy : objectManager.enemy_list)
             enemy.draw(g2d);
 
-        if(player!=null)
+        if(player!=null && player.lives>0)
             player.draw(g2d);
 
         for(Explosion explosion : objectManager.explosion_list)
@@ -81,6 +86,7 @@ public class GameFrame extends JPanel implements ActionListener {
 
         for(Forest forest : objectManager.forest_list)
             forest.draw(g2d);
+
     }
 
     @Override
@@ -92,11 +98,13 @@ public class GameFrame extends JPanel implements ActionListener {
         if(pause)
             return;
 
-        main.countFPS();
-
         time++;
 
-        player.update(time);
+        for(PowerUp powerUp : objectManager.powerup_list)
+            powerUp.update(time);
+
+        if(player!=null && player.lives>0)
+            player.update(time);
 
         for(LivingWall livingWall: new ArrayList<>(objectManager.living_wall_list))
             livingWall.update(time);
@@ -110,19 +118,38 @@ public class GameFrame extends JPanel implements ActionListener {
 
         checkPlayerInForestPresence();
 
+        if(objectManager.portal!=null)
+            objectManager.portal.update(time);
+
         for(Forest forest : objectManager.forest_list)
             forest.update(time);
 
         repaint();
 
         if(main.infoBox!= null)
-            main.infoBox.update(player);
+            main.infoBox.update(time, player);
+
+        if(objectManager.portal != null) {
+            if (objectManager.enemy_list.size() == 0)
+                objectManager.portal.locked = false;
+            else
+                objectManager.portal.locked = true;
+        }
+
+        if(player!=null)
+            main.countFPS();
     }
 
     private void tickBombs(){
 
-        for(Bomb bomb : objectManager.bomb_list)
-            bomb.updateDir();
+            for(int i=0; i<Bomb.SPEED; i++)
+            {
+                for(Bomb bomb : objectManager.bomb_list)
+                    bomb.updateDir();
+
+                for(Bomb bomb : objectManager.bomb_list)
+                    bomb.moveBy(1);
+            }
 
         for (Iterator<Bomb> it = objectManager.bomb_list.iterator(); it.hasNext(); ) {
             Bomb bomb = it.next();
@@ -132,6 +159,7 @@ public class GameFrame extends JPanel implements ActionListener {
     }
 
     private void tickExplosions(){
+
         for (Iterator<Explosion> it = objectManager.explosion_list.iterator(); it.hasNext(); ) {
             Explosion explosion = it.next();
             explosion.tick(it);
@@ -153,6 +181,21 @@ public class GameFrame extends JPanel implements ActionListener {
 
         for(Forest forest1 : objectManager.forest_list)
             forest1.setTransp(false);
+    }
+
+    public void setPortal(){
+
+        ArrayList<Object> soft_walls = new ArrayList<>();
+
+        for(Object wall: objectManager.solid_list)
+            if(wall.softSolid && !(wall instanceof LivingWall))
+                soft_walls.add(wall);
+
+        if(soft_walls.size()>0) {
+            int r = (Math.abs(new Random().nextInt())) % soft_walls.size();
+            Object wall = soft_walls.get(r);
+            objectManager.addPortal(wall.X, wall.Y);
+        }
     }
 
 }

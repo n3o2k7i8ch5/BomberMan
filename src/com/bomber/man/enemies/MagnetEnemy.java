@@ -11,9 +11,12 @@ import java.util.Random;
  */
 public class MagnetEnemy extends Enemy {
 
-    public MagnetEnemy(GameFrame frame, int x, int y, int speed)
+    static double SPEED = 1.5;
+    static final int POINTS = 15;
+
+    public MagnetEnemy(GameFrame frame, int x, int y)
     {
-        super(frame,x,y,speed);
+        super(frame,x,y,SPEED, POINTS);
     }
 
     @Override

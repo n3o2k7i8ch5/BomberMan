@@ -6,13 +6,17 @@ import javax.swing.*;
  */
 public class InfoBox extends JPanel {
 
+    JLabel lab_czas;
     JLabel lab_punktow;
     JLabel lab_zycia;
     JLabel lab_bomby;
+    JLabel lab_bomby_rzucane;
     JLabel lab_zasieg;
     JLabel lab_szybkosc;
 
     GameFrame frame;
+    public int points;
+    public int bonus = 1;
 
     final int margin = 10;
 
@@ -21,6 +25,11 @@ public class InfoBox extends JPanel {
         this.frame = frame;
 
         Box box = Box.createVerticalBox();
+
+        box.add(new JLabel( "Czas:"));
+        lab_czas = new JLabel();
+        box.add(lab_czas);
+        box.add(Box.createVerticalStrut(margin));
 
         box.add(new JLabel( "Ilość punktów:"));
         lab_punktow = new JLabel();
@@ -37,6 +46,11 @@ public class InfoBox extends JPanel {
         box.add(lab_bomby);
         box.add(Box.createVerticalStrut(margin));
 
+        box.add(new JLabel( "Ilość bomb rzucanych:"));
+        lab_bomby_rzucane = new JLabel();
+        box.add(lab_bomby_rzucane);
+        box.add(Box.createVerticalStrut(margin));
+
         box.add(new JLabel( "Zasięg ognia:"));
         lab_zasieg = new JLabel();
         box.add(lab_zasieg);
@@ -49,69 +63,29 @@ public class InfoBox extends JPanel {
         add(box);
     }
 
-    public void update(Player player){
-//        lab_punktow.setText(((SmartAssEnemy)frame.objectManager.enemy_list.get(0)).print());
+    public void update(long time, Player player){
 
-        Object upSolid = player.upSolid();
-        Object downSolid = player.downSolid();
-        Object rightSolid = player.rightSolid();
-        Object leftSolid = player.leftSolid();
+        int minutes = (int)(frame.FRAME_TIME*time/(1000*60));
+        int seconds = (int)((frame.FRAME_TIME*time/1000) % 60);
 
-        Object upLeftSolid = player.upLeftSolid();
-        Object upRightSolid = player.upRightSolid();
-        Object downLeftSolid = player.downLeftSolid();
-        Object downRightSolid = player.downRightSolid();
+        lab_czas.setText("Minutes: " + Integer.toString(minutes) + " Seconds: " + Integer.toString(seconds));
 
-        String s1 = "<html>";
-        if(upSolid!=null)
-            s1 += ("UP: " + upSolid.getClass().getSimpleName()) + "<br>";
-        else
-            s1 += "UP: <br>";
+        if(player==null)
+            return;
 
-        if(downSolid!=null)
-            s1 += ("DOWN: " + downSolid.getClass().getSimpleName()) + "<br>";
-        else
-            s1 += "DOWN: <br>";
+        lab_punktow.setText(Integer.toString(points));
 
-        if(leftSolid!=null)
-            s1 += ("LEFT: " + leftSolid.getClass().getSimpleName()) + "<br>";
-        else
-            s1 += "LEFT: <br>";
+        lab_zycia.setText(Integer.toString(player.lives));
+        lab_bomby.setText(Integer.toString(player.max_bombs));
+        lab_bomby_rzucane.setText(Integer.toString(player.max_throw_bombs));
+        lab_zasieg.setText(Integer.toString(player.flame_length));
+        lab_szybkosc.setText(Double.toString(player.speed));
 
-        if(rightSolid!=null)
-            s1 += ("RIGHT: " + rightSolid.getClass().getSimpleName()) + "<br><br>";
-        else
-            s1 += "RIGHT: <br><br>";
+        //String s = "<html>";
+        //for(Object object : player.getSurroundingObjects())
+        //    s += (object.getClass().getSimpleName() + "<br>");
 
-        if(upLeftSolid!=null)
-            s1 += ("UP_LEFT: " + upLeftSolid.getClass().getSimpleName()) + "<br>";
-        else
-            s1 += "UP_LEFT: <br>";
-
-        if(upRightSolid!=null)
-            s1 += ("UP_RIGHT: " + upRightSolid.getClass().getSimpleName()) + "<br>";
-        else
-            s1 += "UP_RIGHT: <br>";
-
-        if(downLeftSolid!=null)
-            s1 += ("DOWN_LEFT: " + downLeftSolid.getClass().getSimpleName()) + "<br>";
-        else
-            s1 += "DOWN_LEFT: <br>";
-
-        if(downRightSolid!=null)
-            s1 += ("DOWN_RIGHT: " + downRightSolid.getClass().getSimpleName()) + "<br>";
-        else
-            s1 += "DOWN_RIGHT: <br>";
-
-        lab_zycia.setText(s1);
-        lab_bomby.setText("");
-        lab_szybkosc.setText(player.speed + "");
-
-        String s = "<html>";
-        for(Object object : player.getSurroundingObjects())
-            s += (object.getClass().getSimpleName() + "<br>");
-
-        s+= "</html>";
+        //s+= "</html>";
 
         //lab_szybkosc.setText(s);
 

@@ -39,10 +39,7 @@ public class Explosion extends Object {
         addPlayerColisionListener(new PlayerColisionListener(frame) {
             @Override
             public void onColision(Iterator<Object> it) {
-                if(frame.player.lives>0)
-                    frame.player.lives--;
-                if(frame.player.lives == 0)
-                    getMain().setGameState(-1);
+                player().reduceLife();
             }
         });
     }
@@ -54,7 +51,7 @@ public class Explosion extends Object {
         Object solid = upSolid();
 
         if(solid==null) {
-             getObjectManager().addExplosion(X, Y - 1, fire_length - 1, UP);
+            getObjectManager().addExplosion(X, Y - 1, fire_length - 1, UP);
         }else if(solid.softSolid){
             getObjectManager().addExplosion(X, Y - 1, 0, UP);
         }
@@ -136,6 +133,8 @@ public class Explosion extends Object {
             if (life_time == 0) {
                 it.remove();
                 getObjectManager().all_objects[X][Y].remove(this);
+                getObjectManager().removeSolid(X, Y);
+
                 for (SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
                     enemy.explosionRemoved(X, Y);
 
@@ -152,7 +151,7 @@ public class Explosion extends Object {
 
     private void randomPowerUp(int X, int Y){
         Random random = new Random();
-        int r = random.nextInt()%30;
+        int r = Math.abs(random.nextInt())%70;
         if(r==0)
             getObjectManager().addFlameUp(X, Y);
         else if(r==1)
@@ -160,11 +159,20 @@ public class Explosion extends Object {
         else if(r==2)
             getObjectManager().addBombUp(X, Y);
         else if(r==3)
-            getObjectManager().addSlowDown(X, Y);
-        else if(r==4)
-            getObjectManager().addInstantBomb(X, Y);
-        else if(r==5)
-            getObjectManager().addFlameDown(X, Y);
+            getObjectManager().addLifeUp(X, Y);
+        else if(r==4) {
+            getObjectManager().addShieldUp(X, Y);
+        }else if(r==5) {
+            getObjectManager().addThrowBombUp(X, Y);
+        }else if(r==6){
+            int r1 = Math.abs(random.nextInt())%3;
+            if(r1==0)
+                getObjectManager().addSlowDown(X, Y);
+            else if(r1==1)
+                getObjectManager().addInstantBomb(X, Y);
+            else if(r1==2)
+                getObjectManager().addFlameDown(X, Y);
+        }
     }
 
     public void checkNearbyCollisions(){

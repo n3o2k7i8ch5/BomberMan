@@ -14,9 +14,11 @@ import static com.bomber.man.Object.direction.*;
  */
 public class RandomEnemy extends Enemy {
 
+    static final int POINTS = 15;
+
     public RandomEnemy(GameFrame frame, int x, int y, int speed)
     {
-        super(frame,x,y,speed);
+        super(frame,x,y,speed, POINTS);
     }
 
     @Override
@@ -31,27 +33,27 @@ public class RandomEnemy extends Enemy {
 
     @Override
     protected ArrayList<Image> getImageUpList() {
-        return getMain().graphicsContainer.enemyImages;
+        return getMain().graphicsContainer.randomEnemyUpImages;
     }
 
     @Override
     protected ArrayList<Image> getImageDownList() {
-        return getMain().graphicsContainer.enemyImages;
+        return getMain().graphicsContainer.randomEnemyDownImages;
     }
 
     @Override
     protected ArrayList<Image> getImageLeftList() {
-        return getMain().graphicsContainer.enemyImages;
+        return getMain().graphicsContainer.randomEnemyLeftImages;
     }
 
     @Override
     protected ArrayList<Image> getImageRightList() {
-        return getMain().graphicsContainer.enemyImages;
+        return getMain().graphicsContainer.randomEnemyRightImages;
     }
 
     @Override
     protected ArrayList<Image> getImageNullList() {
-        return getMain().graphicsContainer.enemyImages;
+        return getMain().graphicsContainer.randomEnemyUpImages;
     }
 
 

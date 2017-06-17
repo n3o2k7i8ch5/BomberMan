@@ -1,22 +1,21 @@
 package com.bomber.man;
 
+import com.bomber.man.client.Client;
 import com.bomber.man.menu.Menu;
 import com.bomber.man.tiles.Tile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main extends JFrame{
 
     public static final int STATE_MENU = 0;
     public static final int STATE_PLAYER_DEAD = -1;
-    public static final int STATE_GAME = 1;
+    public static final int NEXT_LEVEL = 1;
 
     static final int VISIB_MAP_SIZE = 13;
     static final int CENTER_MAP = (int)Math.floor(VISIB_MAP_SIZE/2);
@@ -28,6 +27,9 @@ public class Main extends JFrame{
 
     int gamestate;
 
+    private int current_level;
+    private int level_count = -1;
+
     private GameFrame gameFrame;
 
     public static GraphicsContainer graphicsContainer;
@@ -37,6 +39,11 @@ public class Main extends JFrame{
 
     public InfoBox infoBox;
     static Main main;
+
+    Client client;
+
+    Thread downloadCurrentMap;
+    Thread downloadNextMap;
 
     public static void main(String[] args) {
 
@@ -65,10 +72,11 @@ public class Main extends JFrame{
     public void setGameState(int gamestate)
     {
         this.gamestate = gamestate;
-        main.getContentPane().removeAll();
 
         if(gamestate == STATE_MENU)
         {
+            main.getContentPane().removeAll();
+
             main.setTitle("BomberMan - Menu");
             main.setSize(800,600);
             main.setResizable(false);
@@ -77,37 +85,41 @@ public class Main extends JFrame{
             main.add(new Menu(main));
 
         }
-        else if(gamestate == STATE_PLAYER_DEAD)
-        {
-            gameFrame.player.speed = 0;
-        }
-        else if(gamestate == STATE_GAME) {
+        else if(gamestate == NEXT_LEVEL) {
 
-            main.setTitle("Bomber Man");
+            main.getContentPane().removeAll();
+
             main.setSize(VISIB_MAP_SIZE*RESOLUTION + INFO_WIDTH, VISIB_MAP_SIZE*RESOLUTION);
             main.setResizable(true);
             main.setLocationRelativeTo(null);
-
             FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
             main.setLayout(flowLayout);
-
             gameFrame = new GameFrame(main);
-            gameFrame.setFocusable(true);
-            gameFrame.setVisible(true);
 
-            Scanner in = null;
+            current_level++;
+            client = new Client();
+            if(client.error())
+                setTitle("serverIP file error");
+
+            downloadNextMap = nextMapDownloader(current_level);
+            downloadCurrentMap = currentMapDownloader(current_level+1);
+            Thread startLevel = levelStarter(current_level);
+
+            downloadCurrentMap.start();
             try {
-                in = new Scanner(new FileReader("map1"));
-                String code = in.nextLine();
-                main.loadMap(code, gameFrame);
-                updateStaticImages();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+                downloadCurrentMap.join();
+            } catch (InterruptedException e) {}
+
+            startLevel.start();
+            try {
+                startLevel.join();
+            } catch (InterruptedException e) {}
 
             main.add(gameFrame);
 
-            infoBox = new InfoBox(gameFrame);
+            if(infoBox == null)
+                infoBox = new InfoBox(gameFrame);
+
             main.add(infoBox);
 
             main.addWindowStateListener(event -> resize());
@@ -124,7 +136,14 @@ public class Main extends JFrame{
             });
 
             gameFrame.pause = false;
+            downloadNextMap.start();
+
         }
+        else if(gamestate == STATE_PLAYER_DEAD)
+        {
+            gameFrame.player.speed = 0;
+        }
+
         main.setVisible(true);
 
     }
@@ -139,11 +158,24 @@ public class Main extends JFrame{
     static final char SMARTASS_ENEMY_KEY = 'x';
     static final char PLAYER_KEY = 'p';
     static final char FOREST_KEY = 'f';
+    static final char LIVING_WALL_KEY = 'l';
+    static final char FAST_STRAIGHT_ENEMY_KEY = 'q';
 
-    private void loadMap(String code, GameFrame frame){
+    private void loadMap(String file_name) throws Exception{
+
+        if(!new File(file_name).exists()) {
+            setTitle("Game file error: " + file_name);
+            return;
+        }
+
+        Scanner in = new Scanner(new FileReader(file_name));
+        String code = in.nextLine();
+
         String[] items = code.split("!");
         ABS_W_MAP_SIZE = Integer.parseInt(items[0]);
         ABS_H_MAP_SIZE = Integer.parseInt(items[1]);
+
+        gameFrame.objectManager = new ObjectManager(gameFrame);
 
         for(int i=2; i<items.length; i++){
             String elements[] = items[i].split(",");
@@ -152,37 +184,45 @@ public class Main extends JFrame{
 
             switch (elements[2].charAt(0)) {
                 case GRASS_KEY: //z pliku wczytuje pozycje ciemnej trawy
-                    frame.objectManager.addGrassDark(X, Y);
+                    gameFrame.objectManager.addGrassDark(X, Y);
                     break;
                 case GRASS_LIGHT_KEY:   //z pliku wczytuje pozycje jasnej trawy
-                    frame.objectManager.addGrassLight(X, Y);
+                    gameFrame.objectManager.addGrassLight(X, Y);
                     break;
                 case WALL_KEY:   //z pliku wczytuje niezniszczalną ściane
-                    frame.objectManager.addHardWall(X, Y);
+                    gameFrame.objectManager.addHardWall(X, Y);
                     break;
                 case SOFT_WALL_KEY: // z pliku wczytuje ściane, którą można zniszczyć
-                    frame.objectManager.addSoftWall(X, Y);
+                    gameFrame.objectManager.addSoftWall(X, Y);
+                    break;
+                case LIVING_WALL_KEY: // z pliku wczytuje ściane, którą można zniszczyć
+                    gameFrame.objectManager.addLivingWall(X, Y);
+                    break;
+                case FAST_STRAIGHT_ENEMY_KEY: // z pliku wczytuje prostego potwora
+                    gameFrame.objectManager.addFastStraightEnemy(X,Y);
                     break;
                 case STRAIGHT_ENEMY_KEY: // z pliku wczytuje prostego potwora
-                    frame.objectManager.addStraightEnemy(X,Y);
+                    gameFrame.objectManager.addStraightEnemy(X,Y);
                     break;
                 case RANDOM_ENEMY_KEY: // z pliku wczytuje losowego potwora
-                    frame.objectManager.addRandomEnemy(X,Y);
+                    gameFrame.objectManager.addRandomEnemy(X,Y);
                     break;
                 case PLAYER_KEY: // z pliku wczytuje gracza
-                    frame.objectManager.addPlayer(X, Y);
+                    gameFrame.objectManager.addPlayer(X, Y);
                     break;
                 case MAGNET_ENEMY_KEY: // z pliku wczytuje gracza
-                    frame.objectManager.addMagnetEnemy(X, Y);
+                    gameFrame.objectManager.addMagnetEnemy(X, Y);
                     break;
                 case SMARTASS_ENEMY_KEY: // z pliku wczytuje gracza
-                    frame.objectManager.addSmartAssEnemy(X, Y);
+                    gameFrame.objectManager.addSmartAssEnemy(X, Y);
                     break;
                 case FOREST_KEY: // z pliku wczytuje gracza
-                    frame.objectManager.addForest(X, Y);
+                    gameFrame.objectManager.addForest(X, Y);
                     break;
             }
         }
+
+        updateStaticImages();
     }
 
     private void resize(){
@@ -207,6 +247,40 @@ public class Main extends JFrame{
 
         for(Object solid: gameFrame.objectManager.solid_list)
             solid.updateImage();
+    }
+
+    private Thread levelStarter(int level){
+        return new Thread(() -> {
+            try {
+                loadMap("map" + Integer.toString(level));
+                gameFrame.setPortal();
+            } catch (Exception e) {e.printStackTrace();}
+        });
+    }
+
+    private Thread currentMapDownloader(int level){
+        return new Thread(() -> {
+            if(level_count>level) {
+                downloadNextMap.isAlive();
+                downloadNextMap.interrupt();
+
+                File map = new File("map" + Integer.toString(level));
+                if (!map.exists()) {
+                    client.downloadMap(level);
+                }
+            }
+        });
+    }
+
+    private Thread nextMapDownloader(int level){
+        return new Thread(() -> {
+            if(level_count>level) {
+                File map = new File("map" + Integer.toString(level));
+                if (!map.exists()) {
+                    client.downloadMap(level);
+                }
+            }
+        });
     }
 
 }

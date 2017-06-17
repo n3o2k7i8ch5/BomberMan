@@ -96,38 +96,34 @@ public abstract class MovingObject extends Object {
 
         for (int i = 0; i < speed; i++) {
             updateStep(time);
-            if (current_dir == UP) {
-                beforePositionChanged();
-                if (i + 1 > speed)
-                    y -= (speed - (int) speed);
-                else
-                    y--;
-                onPositionChanged();
-            } else if (current_dir == DOWN) {
-                beforePositionChanged();
-                if (i + 1 > speed)
-                    y += (speed - (int) speed);
-                else
-                    y++;
-                onPositionChanged();
-            } else if (current_dir == LEFT) {
-                beforePositionChanged();
-                if (i + 1 > speed)
-                    x -= (speed - (int)speed);
-                else
-                    x--;
-                onPositionChanged();
-            } else if (current_dir == RIGHT) {
-                beforePositionChanged();
-                if (i + 1 > speed)
-                    x += (speed - (int) speed);
-                else
-                    x++;
-                onPositionChanged();
-            }
+            if (i + 1 > speed)
+                moveBy(speed - (int) speed);
+            else
+                moveBy(1);
         }
 
     }
+
+    public void moveBy(double distance){
+        if (current_dir == UP) {
+            beforePositionChanged();
+                y -= distance;
+            onPositionChanged();
+        } else if (current_dir == DOWN) {
+            beforePositionChanged();
+                y += distance;
+            onPositionChanged();
+        } else if (current_dir == LEFT) {
+            beforePositionChanged();
+                x -= distance;
+            onPositionChanged();
+        } else if (current_dir == RIGHT) {
+            beforePositionChanged();
+                x += distance;
+            onPositionChanged();
+        }
+    }
+
     /**
      * Metoda aktualizująca kierunek ruchu w momencie, kiedy obiekt znajduje na odpowiedniej części kratki.
      */
@@ -183,31 +179,31 @@ public abstract class MovingObject extends Object {
     protected void updateImageList() {
         switch (current_dir) {
             case UP:
-                if (current_image_list != getImageUpList()) {
+                if (!current_image_list.equals(getImageUpList())) {
                     current_image_list = getImageUpList();
                     updateImage();
                 }
                 break;
             case DOWN:
-                if (current_image_list != getImageDownList()) {
+                if (!current_image_list.equals(getImageDownList())) {
                     current_image_list = getImageDownList();
                     updateImage();
                 }
                 break;
             case RIGHT:
-                if (current_image_list != getImageRightList()) {
+                if (!current_image_list.equals(getImageRightList())) {
                     current_image_list = getImageRightList();
                     updateImage();
                 }
                 break;
             case LEFT:
-                if (current_image_list != getImageLeftList()) {
+                if (!current_image_list.equals(getImageLeftList())) {
                     current_image_list = getImageLeftList();
                     updateImage();
                 }
                 break;
             case NULL:
-                if (current_image_list != getImageNullList()) {
+                if (!current_image_list.equals(getImageNullList())) {
                     current_image_list = getImageNullList();
                     updateImage();
                 }

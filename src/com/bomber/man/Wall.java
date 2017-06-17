@@ -28,8 +28,15 @@ public class Wall extends Object {
         addExplosionColisionListener(new ExplosionColisionListener() {
             @Override
             public void onColision(Explosion explosion, Iterator<Object> it) {
-                explosion.leaveRandPowerUp = true;
+
+                boolean leaveRandomPowerUp;
+                if(!(wall instanceof LivingWall) && !(touches(getObjectManager().portal, 1)))
+                    leaveRandomPowerUp = true;
+                else
+                    leaveRandomPowerUp = false;
+
                 getObjectManager().removeSolid(wall);
+                getObjectManager().addInvisibleWall(X, Y, leaveRandomPowerUp);
             }
         });
     }

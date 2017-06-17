@@ -14,13 +14,14 @@ import static com.bomber.man.Object.direction.*;
 public class StraightEnemy extends Enemy {
 
     static final int SPEED = 1;
+    static final int POINTS = 10;
 
     public StraightEnemy(GameFrame frame, int X, int Y) {
-        super(frame, X, Y, SPEED);
+        super(frame, X, Y, SPEED, POINTS);
     }
 
-    protected StraightEnemy(GameFrame frame, int X, int Y, int speed) {
-        super(frame, X, Y, speed);
+    protected StraightEnemy(GameFrame frame, int X, int Y, int speed, int points) {
+        super(frame, X, Y, speed, points);
     }
 
     @Override
@@ -57,35 +58,32 @@ public class StraightEnemy extends Enemy {
             }
         }
 
-        if(frame.player.X == X && frame.player.Y == Y)
-            getMain().setGameState(-1);
-
         super.updateStep(time);
     }
 
     @Override
     protected ArrayList<Image> getImageUpList() {
-        return getMain().graphicsContainer.straightEnemyImages;
+        return getMain().graphicsContainer.straightEnemyRightImages;
     }
 
     @Override
     protected ArrayList<Image> getImageDownList() {
-        return getMain().graphicsContainer.straightEnemyImages;
+        return getMain().graphicsContainer.straightEnemyLeftImages;
     }
 
     @Override
     protected ArrayList<Image> getImageLeftList() {
-        return getMain().graphicsContainer.straightEnemyImages;
+        return getMain().graphicsContainer.straightEnemyLeftImages;
     }
 
     @Override
     protected ArrayList<Image> getImageRightList() {
-        return getMain().graphicsContainer.straightEnemyImages;
+        return getMain().graphicsContainer.straightEnemyRightImages;
     }
 
     @Override
     protected ArrayList<Image> getImageNullList() {
-        return getMain().graphicsContainer.straightEnemyImages;
+        return getMain().graphicsContainer.straightEnemyRightImages;
     }
 
 }

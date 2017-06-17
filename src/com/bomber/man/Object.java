@@ -28,7 +28,8 @@ public abstract class Object extends Entity{
     public int X, Y;
 
     ArrayList<Image> current_image_list = new ArrayList<>();
-    protected int current_image_index;
+    private int current_image_index = 0;
+    private int animation_duration = 500;
 
     protected direction current_dir = NULL;
     protected direction new_dir = NULL;
@@ -88,12 +89,18 @@ public abstract class Object extends Entity{
         return x() % Main.RESOLUTION == 0;
     }
 
-    double previous_sub_time = 0;
+    private double previous_sub_time = 0;
     @Override
     protected void update(long time) {
         super.update(time);
+        handleAnimation(time);
+    }
 
-        double sub_time = time*frame.FRAME_TIME % ((double)500/(double)current_image_list.size());
+    protected void handleAnimation(long time){
+
+        double element = current_image_list.size() + (((double)animation_duration)/(double)current_image_list.size());
+
+        double sub_time = time*frame.FRAME_TIME % element;
         updateImageList();
         if(previous_sub_time>sub_time) {
             updateImage();
@@ -295,10 +302,12 @@ public abstract class Object extends Entity{
     protected abstract ArrayList<Image> getImageNullList();
 
     protected void updateImageList(){
-        if(current_image_list != getImageNullList()) {
+        if(current_image_list != getImageNullList())
             current_image_list = getImageNullList();
-            updateImage();
-        }
+    }
+
+    protected void setAnimationDuration(int animation_duration){
+        this.animation_duration = animation_duration;
     }
 
     protected ObjectManager getObjectManager(){
@@ -316,35 +325,6 @@ public abstract class Object extends Entity{
     }
 
     public ArrayList<Object> getSurroundingObjects(){
-
-        ArrayList<Object> objects = new ArrayList<>();
-
-        if(X!=0 && Y!=0)
-            objects.addAll(getObjectManager().all_objects[X-1][Y-1]);
-
-        if(Y!=0)
-            objects.addAll(getObjectManager().all_objects[X][Y-1]);
-
-        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=0)
-            objects.addAll(getObjectManager().all_objects[X+1][Y-1]);
-
-        if(X!=0)
-            objects.addAll(getObjectManager().all_objects[X-1][Y]);
-
-        objects.addAll(getObjectManager().all_objects[X][Y]);
-
-        if(X!=getMain().ABS_W_MAP_SIZE-1)
-            objects.addAll(getObjectManager().all_objects[X+1][Y]);
-
-        if(X!=0 && Y!=getMain().ABS_H_MAP_SIZE-1)
-            objects.addAll(getObjectManager().all_objects[X-1][Y+1]);
-
-        if(Y!=getMain().ABS_H_MAP_SIZE-1)
-            objects.addAll(getObjectManager().all_objects[X][Y+1]);
-
-        if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=getMain().ABS_H_MAP_SIZE-1)
-            objects.addAll(getObjectManager().all_objects[X+1][Y+1]);
-
-        return objects;
+        return getObjectManager().getSurroundingObjects(X, Y);
     }
 }

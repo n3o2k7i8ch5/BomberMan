@@ -24,7 +24,7 @@ public abstract class PowerUp extends Object {
                 performBonus();
                 it.remove();
                 getObjectManager().powerup_list.remove(powerUp);
-                getObjectManager().all_objects[powerUp.X][powerUp.Y].remove(powerUp);
+                //getObjectManager().all_objects[powerUp.X][powerUp.Y].remove(powerUp);
             }
         });
 

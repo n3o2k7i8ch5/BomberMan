@@ -12,8 +12,11 @@ import java.util.Iterator;
  */
 public abstract class Enemy extends MovingObject {
 
-    public Enemy(GameFrame frame, int X, int Y, int speed) {
+    int points;
+
+    public Enemy(GameFrame frame, int X, int Y, double speed, int points) {
         super(frame, X, Y, speed);
+        this.points = points;
 
         Enemy enemy = this;
 
@@ -22,10 +25,7 @@ public abstract class Enemy extends MovingObject {
             @Override
             public void onColision(Iterator<Object> it)
             {
-                if(frame.player.lives>0)
-                    frame.player.lives--;
-                if(frame.player.lives == 0)
-                    getMain().setGameState(Main.STATE_PLAYER_DEAD);
+                player().reduceLife();
             }
         });
 
@@ -33,6 +33,7 @@ public abstract class Enemy extends MovingObject {
             @Override
             public void onColision(Explosion explosion, Iterator<Object> it) {
                 getObjectManager().removeEnemy(enemy);
+                getMain().infoBox.points += points;
             }
         });
     }

@@ -15,9 +15,10 @@ import static com.bomber.man.Object.direction.NULL;
 public class FastStraightEnemy extends StraightEnemy {
 
     static final int SPEED = 3;
+    static final int POINTS = 25;
 
     public FastStraightEnemy(GameFrame frame, int X, int Y) {
-        super(frame, X, Y, SPEED);
+        super(frame, X, Y, SPEED, POINTS);
     }
 
     @Override

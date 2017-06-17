@@ -30,6 +30,7 @@ public class ObjectManager {
     public ArrayList<SmartAssEnemy> smartass_enemy_list = new ArrayList<>();
     public ArrayList<PowerUp> powerup_list = new ArrayList<>();
     public ArrayList<Forest> forest_list = new ArrayList<>();
+    public Portal portal;
 
     public ArrayList<Object> all_objects[][];
     public Object solids[][];
@@ -78,9 +79,15 @@ public class ObjectManager {
     }
 
     private void addSolid(Object solid){
+
         all_objects[solid.X][solid.Y].add(solid);
         solids[solid.X][solid.Y] = solid;
         solid_list.add(solid);
+    }
+
+    public void addInvisibleWall(int X, int Y, boolean leaveRandomPowerUp){
+        InvisibleWall invisibleWall = new InvisibleWall(frame, X, Y, leaveRandomPowerUp);
+        addSolid(invisibleWall);
     }
 
     public boolean isThereSolid(int X, int Y){
@@ -91,7 +98,7 @@ public class ObjectManager {
     }
 
     public void addLivingWall(int X, int Y){
-        LivingWall livingWall = new LivingWall(frame, X, Y, true);
+        LivingWall livingWall = new LivingWall(frame, X, Y);
         addSolid(livingWall);
         living_wall_list.add(livingWall);
     }
@@ -106,9 +113,32 @@ public class ObjectManager {
         solids[solid.X][solid.Y] = null;
         all_objects[solid.X][solid.Y].remove(solid);
 
-        if(solid.getClass() == LivingWall.class)
+        if(solid instanceof LivingWall)
             living_wall_list.remove(solid);
 
+    }
+
+    public void removeSolid(int X, int Y){
+        Object solid = solids[X][Y];
+        solids[X][Y] = null;
+        solid_list.remove(solid);
+        all_objects[X][Y].remove(solid);
+
+        if(solid instanceof LivingWall)
+            living_wall_list.remove(solid);
+
+    }
+
+    public void removeExplosion(int X, int Y){
+        Explosion explosion = null;
+        for(Explosion explosion_tmp: explosion_list)
+            if(explosion_tmp.X == X && explosion_tmp.Y == Y){
+                explosion = explosion_tmp;
+                break;
+            }
+
+        all_objects[X][Y].remove(explosion);
+        explosion_list.remove(explosion);
     }
 
     public void removeEnemy(Enemy enemy){
@@ -124,18 +154,16 @@ public class ObjectManager {
      * @param Y pozycja bomby wyrażona w ilości kratek.
      */
     public void addBomb(int X, int Y, Object.direction dir){
-        if(frame.player.max_bombs > bomb_list.size()) {
-            Bomb bomb;
-            if(dir==NULL)
-                bomb = new Bomb(frame, X, Y);
-            else
-                bomb = new Bomb(frame, X, Y, dir);
+        Bomb bomb;
+        if(dir==NULL)
+            bomb = new Bomb(frame, X, Y);
+        else
+            bomb = new Bomb(frame, X, Y, dir);
 
-            bomb_list.add(bomb);
-            addSolid(bomb);
-            for(SmartAssEnemy enemy : smartass_enemy_list)
-                enemy.bombAdded();
-        }
+        bomb_list.add(bomb);
+        addSolid(bomb);
+        for(SmartAssEnemy enemy : smartass_enemy_list)
+            enemy.bombAdded();
     }
 
     /**
@@ -171,7 +199,7 @@ public class ObjectManager {
     }
 
     void addMagnetEnemy(int X, int Y){
-        MagnetEnemy enemy = new MagnetEnemy(frame, X, Y, 1);
+        MagnetEnemy enemy = new MagnetEnemy(frame, X, Y);
         all_objects[X][Y].add(enemy);
         enemy_list.add(enemy);
     }
@@ -221,6 +249,24 @@ public class ObjectManager {
         powerup_list.add(bombUp);
     }
 
+    void addLifeUp(int X, int Y){
+        LifeUp lifeUp = new LifeUp(frame, X, Y);
+        all_objects[X][Y].add(lifeUp);
+        powerup_list.add(lifeUp);
+    }
+
+    void addShieldUp(int X, int Y){
+        ShieldUp shieldUp = new ShieldUp(frame, X, Y);
+        all_objects[X][Y].add(shieldUp);
+        powerup_list.add(shieldUp);
+    }
+
+    void addThrowBombUp(int X, int Y){
+        ThrowBombUp throwBombUp = new ThrowBombUp(frame, X, Y);
+        all_objects[X][Y].add(throwBombUp);
+        powerup_list.add(throwBombUp);
+    }
+
     void addSlowDown(int X, int Y){
         SlowDown slowDown = new SlowDown(frame, X, Y);
         all_objects[X][Y].add(slowDown);
@@ -249,6 +295,11 @@ public class ObjectManager {
         frame.player = new Player(frame, X, Y, 3);
         all_objects[X][Y].add(frame.player);
         frame.addKeyListener(new KeyAdapt(frame.player));
+    }
+
+    void addPortal(int X, int Y){
+        portal = new Portal(frame, X, Y);
+        all_objects[X][Y].add(portal);
     }
 
     public Object leftSolid(Object o){
@@ -320,10 +371,43 @@ public class ObjectManager {
 
     public Object downRightSolid(Object o){
 
-        if(o.X!=Main.ABS_H_MAP_SIZE-1 && o.Y!=Main.ABS_H_MAP_SIZE-1)
+        if(o.X!=Main.ABS_W_MAP_SIZE-1 && o.Y!=Main.ABS_H_MAP_SIZE-1)
             return solids[o.X+1][o.Y+1];
 
         return null;
+    }
+
+    public ArrayList<Object> getSurroundingObjects(int X, int Y){
+
+        ArrayList<Object> objects = new ArrayList<>();
+
+        if(X!=0 && Y!=0)
+            objects.addAll(all_objects[X-1][Y-1]);
+
+        if(Y!=0)
+            objects.addAll(all_objects[X][Y-1]);
+
+        if(X!=frame.main.ABS_W_MAP_SIZE-1 && Y!=0)
+            objects.addAll(all_objects[X+1][Y-1]);
+
+        if(X!=0)
+            objects.addAll(all_objects[X-1][Y]);
+
+        objects.addAll(all_objects[X][Y]);
+
+        if(X!=frame.main.ABS_W_MAP_SIZE-1)
+            objects.addAll(all_objects[X+1][Y]);
+
+        if(X!=0 && Y!=frame.main.ABS_H_MAP_SIZE-1)
+            objects.addAll(all_objects[X-1][Y+1]);
+
+        if(Y!=frame.main.ABS_H_MAP_SIZE-1)
+            objects.addAll(all_objects[X][Y+1]);
+
+        if(X!=frame.main.ABS_W_MAP_SIZE-1 && Y!=frame.main.ABS_H_MAP_SIZE-1)
+            objects.addAll(all_objects[X+1][Y+1]);
+
+        return objects;
     }
 
     /**

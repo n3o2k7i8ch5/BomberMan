@@ -24,6 +24,7 @@ public class Bomb extends MovingObject {
     static final double SPEED = 2;
     private int destruct_time;
     public int flame_length;
+    public boolean mooving_bomb;
 
     /**
      * Klasa Bomb wybuchająca po określonym czasie i niszcząca wszystkie zniszczalne obiekty
@@ -36,7 +37,10 @@ public class Bomb extends MovingObject {
         super(frame, X, Y, 0, 1, true);
         this.destruct_time = quick_explode?BOMB_QUICK_DESTRUCT_TIME:BOMB_DESTRUCT_TIME;
         this.flame_length = frame.player.flame_length;
+        this.mooving_bomb = false;
+
         setExplosionListener();
+        setAnimationDuration(250);
     }
 
     /**
@@ -49,7 +53,10 @@ public class Bomb extends MovingObject {
         super(frame, X, Y, 0, 1, true);
         this.destruct_time = BOMB_DESTRUCT_TIME;
         this.flame_length = frame.player.flame_length;
+        this.mooving_bomb = false;
+
         setExplosionListener();
+        setAnimationDuration(250);
     }
 
     public Bomb(GameFrame frame, int X, int Y, boolean quick_explode, direction dir) {
@@ -58,7 +65,10 @@ public class Bomb extends MovingObject {
         this.flame_length = frame.player.flame_length;
         this.current_dir = dir;
         this.new_dir = dir;
+        this.mooving_bomb = true;
+
         setExplosionListener();
+        setAnimationDuration(250);
     }
 
     public Bomb(GameFrame frame, int X, int Y, direction dir) {
@@ -67,7 +77,10 @@ public class Bomb extends MovingObject {
         this.flame_length = frame.player.flame_length;
         this.current_dir = dir;
         this.new_dir = dir;
+        this.mooving_bomb = true;
+
         setExplosionListener();
+        setAnimationDuration(250);
     }
 
     public void tick(Iterator<Bomb> bomb_list_iter){
@@ -84,6 +97,11 @@ public class Bomb extends MovingObject {
                ((y() + Main.RESOLUTION/2)/Main.RESOLUTION),
                 flame_length, NULL);
 
+        if(mooving_bomb)
+            player().throw_bombs_left++;
+        else
+            player().bombs_left++;
+
         for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
             enemy.bombDetonation(X, Y);
     }
@@ -95,6 +113,11 @@ public class Bomb extends MovingObject {
                 ((x() + Main.RESOLUTION/2)/Main.RESOLUTION),
                 ((y() + Main.RESOLUTION/2)/Main.RESOLUTION),
                 flame_length, NULL);
+
+        if(mooving_bomb)
+            player().throw_bombs_left++;
+        else
+            player().bombs_left++;
 
         for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
             enemy.bombDetonation(X, Y);
@@ -109,13 +132,18 @@ public class Bomb extends MovingObject {
         });
     }
 
+    @Override
+    protected void update(long time) {
+        handleAnimation(time);
+    }
+
     private boolean prev_touched;
 
     public void updateDir(){
 
-        if(touches(frame.player, 1) && isDirFreeToGo(current_dir))
+        if(touches(player(), 1) && isDirFreeToGo(current_dir)) {
             prev_touched = true;
-        else if(touches(frame.player, 1) && !isDirFreeToGo(current_dir)){
+        }else if(touches(player(), 1) && !isDirFreeToGo(current_dir)){
             if (isDirFreeToGo(dirReverse(current_dir)))
                 current_dir = dirReverse(current_dir);
             else
@@ -132,7 +160,7 @@ public class Bomb extends MovingObject {
 
     @Override
     protected void updateStep(long time) {
-        updateDir();
+        //updateDir();
     }
 
     @Override

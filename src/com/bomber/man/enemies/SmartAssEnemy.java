@@ -12,57 +12,18 @@ import static com.bomber.man.Object.direction.*;
 
 public class SmartAssEnemy extends Enemy {
 
-    public String print(){
-
-        String s = "<html>";
-
-        for(int i=0; i<map.length; i++) {
-            for (int j = 0; j < map[0].length; j++)
-                if(map[j][i]!=null) {
-                    if (map[j][i].contains(EXPLOSION))
-                        s += "8 ";
-                    else if (map[j][i].contains(SOLID))
-                        s += "9 ";
-                    else if (map[j][i].contains(LOCK))
-                        s += "4 ";
-                    else
-                        s += "0 ";
-                }
-            s+="<br>";
-        }
-
-        s+="</html>";
-        return s;
-
-    }
-
-    public String safetyTarget(){
-
-        if(safetyRoute==null)
-            return"";
-
-        String s = "<html>";
-
-        s += "X: " + safetyRoute.X + ",Y: " + safetyRoute.Y;
-
-        s+="</html>";
-        return s;
-
-    }
-
     final Character LOCK = 'L';
-    //final short GRASS = 0;
     final Character EXPLOSION = 'E';
     final Character SOLID = 'S';
 
-    ArrayList<Character>[][] map;
+    static final int POINTS = 100;
 
-    private boolean check_safety = false;
+    ArrayList<Character>[][] map;
 
     Route safetyRoute;
 
     public SmartAssEnemy(GameFrame frame, int x, int y) {
-        super(frame,x,y,2);
+        super(frame,x,y,2, POINTS);
         map = new ArrayList[getMain().ABS_W_MAP_SIZE][getMain().ABS_H_MAP_SIZE];
         for(int i=0; i<map.length; i++)
             for (int j = 0; j < map[0].length; j++)

@@ -31,7 +31,7 @@ public class Menu extends JPanel implements MouseListener {
 
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(getImage("res/drawables/menu1.png"), 0, 0, 800, 600, this);
+        g2d.drawImage(getImage("/drawables/menu1.png"), 0, 0, 800, 600, this);
 
         Font fnt0 = new Font("arial", Font.BOLD, 40);
         g.setFont(fnt0);
@@ -49,14 +49,14 @@ public class Menu extends JPanel implements MouseListener {
     }
 
     public Image getImage(String path) {
-        Image tempImage = null;
+        Image image = null;
         try {
-            tempImage = Toolkit.getDefaultToolkit().getImage(path);
+            image = new ImageIcon(Main.class.getResource(path)).getImage();
         } catch (Exception e) {
             System.out.println("Error");
         }
 
-        return tempImage;
+        return image;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class Menu extends JPanel implements MouseListener {
         {
             if(my >=220 && my<=270)
                 removeMouseListener(this);
-                main.setGameState(Main.STATE_GAME);
+                main.setGameState(Main.NEXT_LEVEL);
         }
 
         if(mx >= 300 && mx <=500)

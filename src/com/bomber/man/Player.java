@@ -25,10 +25,17 @@ public class Player extends MovingObject {
     private direction orientation = UP;
 
     public int flame_length = 2;
-    public int lives = 1;
-    public int max_bombs = 3;
+    int lives = 3;
+    int max_bombs = 3;
+    int bombs_left;
+    int max_throw_bombs = 0;
+    int throw_bombs_left;
 
-    static final double SPEED = 3;
+    private int immortal = -1;
+    private final int IMMORTAL_TIME = 3000;
+    public static final int IMMORTAL_SHIELD_TIME = 10000;
+
+    static final double SPEED = 2.5;
     private double saved_speed;
     private int slow_down = -1;
 
@@ -39,6 +46,9 @@ public class Player extends MovingObject {
 
     public Player(GameFrame frame, int X, int Y, int align_factor) {
         super(frame, X, Y, SPEED, align_factor);
+        setAnimationDuration(200);
+        bombs_left = max_bombs;
+        throw_bombs_left = max_throw_bombs;
     }
 
     public void keyPressed(KeyEvent e)
@@ -74,13 +84,11 @@ public class Player extends MovingObject {
         }
         else if(key==KeyEvent.VK_SPACE){
             if(getMain().gamestate==1)
-                //putBomb();
                 throwBomb();
         }
         else if(key==KeyEvent.VK_X){
             if(getMain().gamestate==1)
                 putBomb();
-                //throwBomb();
         }
     }
 
@@ -142,6 +150,14 @@ public class Player extends MovingObject {
 
     @Override
     protected void updateStep(long time) {
+
+        if(immortal>0) {
+            immortal -= frame.FRAME_TIME;
+            if(immortal < 0)
+                immortal = 0;
+        }else if(immortal==0){
+            immortal = -1;
+        }
 
         if(slow_down>0) {
             slow_down -= frame.FRAME_TIME;
@@ -272,48 +288,69 @@ public class Player extends MovingObject {
 
     @Override
     protected ArrayList<Image> getImageUpList() {
-        if(lives!=0)
-            return getMain().graphicsContainer.playerUpImages;
-        else
-            return getMain().graphicsContainer.bombImages;
+
+        if (lives != 0) {
+            if (immortal != -1 && (frame.time /10) % 4 == 0)
+                return getMain().graphicsContainer.emptyImages;
+            else
+                return getMain().graphicsContainer.playerUpImages;
+        }else
+            return getMain().graphicsContainer.graveImages;
+
     }
 
     @Override
     protected ArrayList<Image> getImageDownList() {
-        if(lives!=0)
-            return getMain().graphicsContainer.playerDownImages;
-        else
-            return getMain().graphicsContainer.bombImages;    }
+
+        if(lives!=0) {
+            if(immortal!=-1 && (frame.time/10)%4==0)
+                return getMain().graphicsContainer.emptyImages;
+            else
+                return getMain().graphicsContainer.playerDownImages;
+        }else
+            return getMain().graphicsContainer.graveImages;    }
 
     @Override
     protected ArrayList<Image> getImageLeftList() {
-        if(lives!=0)
-            return getMain().graphicsContainer.playerLeftImages;
-        else
-            return getMain().graphicsContainer.bombImages;    }
+
+        if (lives != 0){
+            if (immortal != -1 && (frame.time/10) % 4 == 0)
+                return getMain().graphicsContainer.emptyImages;
+            else
+                return getMain().graphicsContainer.playerLeftImages;
+        }else
+            return getMain().graphicsContainer.graveImages;    }
 
     @Override
     protected ArrayList<Image> getImageRightList() {
-        if(lives!=0)
-            return getMain().graphicsContainer.playerRightImages;
-        else
-            return getMain().graphicsContainer.bombImages;    }
+
+        if(lives!=0) {
+            if(immortal!=-1 && (frame.time/10)%4==0)
+                return getMain().graphicsContainer.emptyImages;
+            else
+                return getMain().graphicsContainer.playerRightImages;
+        }else
+            return getMain().graphicsContainer.graveImages;
+    }
 
     @Override
     protected ArrayList<Image> getImageNullList() {
         if(lives!=0) {
+            if(immortal!=-1 && (frame.time/10)%4==0)
+                return getMain().graphicsContainer.emptyImages;
+
             if(orientation==UP)
-                return getMain().graphicsContainer.playerUpImages;
+                return new ArrayList<>(getMain().graphicsContainer.playerUpImages.subList(0,1));
             else if(orientation==DOWN)
-                return getMain().graphicsContainer.playerDownImages;
+                return new ArrayList<>(getMain().graphicsContainer.playerDownImages.subList(0,1));
             else if(orientation==LEFT)
-                return getMain().graphicsContainer.playerLeftImages;
+                return new ArrayList<>(getMain().graphicsContainer.playerLeftImages.subList(0,1));
             else if(orientation==RIGHT)
-                return getMain().graphicsContainer.playerRightImages;
+                return new ArrayList<>(getMain().graphicsContainer.playerRightImages.subList(0,1));
             else
-                return getMain().graphicsContainer.playerUpImages;
+                return new ArrayList<>(getMain().graphicsContainer.playerUpImages.subList(0,1));
         }else
-            return getMain().graphicsContainer.bombImages;
+            return getMain().graphicsContainer.graveImages;
     }
 
     /**
@@ -348,9 +385,13 @@ public class Player extends MovingObject {
 
     public void throwBomb(){
 
+        if(throw_bombs_left==0)
+            return;
+
+        throw_bombs_left--;
+
         int X = this.X;
         int Y = this.Y;
-
 
         if(orientation == RIGHT && !isAlignedX())
             X++;
@@ -367,13 +408,21 @@ public class Player extends MovingObject {
                 if (bomb.touches(X, Y, 1))
                     new_bomb = false;
 
+            for (Explosion explosion : getObjectManager().explosion_list)
+                if (explosion.touches(X, Y, 1))
+                    new_bomb = false;
+
             if(new_bomb)
                 getObjectManager().addBomb(X, Y, orientation);
         }
-
     }
 
     public void putBomb(){
+
+        if(bombs_left==0)
+            return;
+
+        bombs_left--;
 
         int X, Y;
 
@@ -387,21 +436,30 @@ public class Player extends MovingObject {
         else
             Y = this.Y + 1;
 
-        boolean isBomb = false;
+        boolean new_bomb = true;
+
         for(Bomb bomb : getObjectManager().bomb_list)
             if(bomb.Y == Y && bomb.X == X)
-                isBomb = true;
+                new_bomb = false;
 
-        if(!isBomb && !getObjectManager().containsInstance(getObjectManager().all_objects[X][Y], Enemy.class))
+        for (Explosion explosion : getObjectManager().explosion_list)
+            if (explosion.touches(X, Y, 1))
+                new_bomb = false;
+
+        if(new_bomb && !getObjectManager().containsInstance(getObjectManager().all_objects[X][Y], Enemy.class))
             getObjectManager().addBomb(X, Y, NULL);
-
     }
 
     /**
      * Metoda zwiększająca prędkość gracza
      */
     public void increaseSpeed(){
+        if(speed<5)
         speed+=0.5;
+    }
+
+    public void addLife(){
+        lives++;
     }
 
     /**
@@ -414,7 +472,14 @@ public class Player extends MovingObject {
     /**
      * Metoda zwiększająca ilość bomb do położenia
      */
-    public void increaseBomb() { max_bombs++;}
+    public void increaseBomb() {
+        max_bombs++;
+        bombs_left++;
+    }
+    public void increaseThrowBomb() {
+        max_throw_bombs++;
+        throw_bombs_left++;
+    }
 
     public void slowDown(final int slow_down_time){
         saved_speed = speed;
@@ -430,5 +495,22 @@ public class Player extends MovingObject {
         saved_flame = flame_length;
         flame_length = 1;
         flame_down = flame_down_time;
+    }
+
+    public boolean isImmortal(){
+        return immortal!=-1;
+    }
+
+    public void setImmortal(int immortal){
+        this.immortal=immortal;
+    }
+
+    public void reduceLife(){
+        if(!player().isImmortal() && player().lives>0) {
+            frame.player.lives--;
+            setImmortal(IMMORTAL_TIME);
+        }
+        if(player().lives == 0)
+            getMain().setGameState(Main.STATE_PLAYER_DEAD);
     }
 }

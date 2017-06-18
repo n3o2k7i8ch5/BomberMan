@@ -30,7 +30,6 @@ public class InstantBomb extends PowerUp {
     @Override
     public void performBonus() {
         frame.player.instantBomb(INSTANT_BOMB_TIME);
-        getObjectManager().addBomb(frame.player.X, frame.player.Y, NULL);
     }
 
     @Override

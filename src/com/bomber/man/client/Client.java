@@ -1,8 +1,11 @@
 package com.bomber.man.client;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.Timer;
 
 /**
  * Created by Murspi on 13.06.2017.
@@ -13,6 +16,10 @@ public class Client {
     final int serverPort = 13102;
 
     boolean error = false;
+
+    Socket socket = null;
+    DataInputStream input = null;
+    DataOutputStream output = null;
 
     public Client(){
 
@@ -27,6 +34,7 @@ public class Client {
                 error = true;
             }
             in.close();
+
         }
         else
         {
@@ -38,72 +46,92 @@ public class Client {
     public int downloadMapCount(){
         try {
 
-            Socket socket = new Socket(serverIP, serverPort);//ip adress machine, port adress
-            DataInputStream input = new DataInputStream(socket.getInputStream());
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+            socket = new Socket(serverIP, serverPort);
+            input = new DataInputStream(socket.getInputStream());
+            output = new DataOutputStream(socket.getOutputStream());
 
-            String msgin, msgout;
-            int map_count;
+            int map_count = 0;
 
-            msgout = "MAPS";
-            output.writeUTF(msgout);
+            output.writeUTF("MAPS");
+            System.out.println("Client OUT: MAPS");
 
-            msgin = input.readUTF();
-            System.out.println(msgin);
+            System.out.println("Client IN: " + input.readUTF());
 
             map_count = input.readInt();
-            System.out.println(map_count);
+            System.out.println("Client IN: " + map_count);
+
+            if(socket!=null)
+                socket.close();
+            if(input!=null)
+                input.close();
+            if(output!=null)
+                output.close();
+
             return map_count;
         }catch (Exception e) {
             System.out.println("Błąd: " + e.getMessage());
         }
-        return 0;
+        return -1;
     }
 
     public boolean downloadMap(int map_numer) {
+
         try {
-            Socket socket = new Socket(serverIP, serverPort);//ip adress machine, port adress
-            DataInputStream input = new DataInputStream(socket.getInputStream());
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+
+            socket = new Socket(serverIP, serverPort);
+            input = new DataInputStream(socket.getInputStream());
+            output = new DataOutputStream(socket.getOutputStream());
 
             String msgin;
 
             output.writeUTF("MAP_" + Integer.toString(map_numer));
-            msgin = input.readUTF();
-            System.out.println(msgin);
+            System.out.println("Out: MAP_" + Integer.toString(map_numer));
 
             msgin = input.readUTF();
-            System.out.println(msgin);
+            System.out.println("In: " + msgin);
+
+            msgin = input.readUTF();
+            System.out.println("In: " + msgin);
 
             PrintWriter zapis = new PrintWriter("map" + Integer.toString(map_numer));
             zapis.println(msgin);
             zapis.close();
 
+            if(socket!=null)
+                socket.close();
+            if(input!=null)
+                input.close();
+            if(output!=null)
+                output.close();
+
             return true;
 
         } catch (Exception e) {
-            System.out.println("Brak połączenia.");
+            System.out.println(e.getMessage());
         }
         return false;
     }
 
-    public boolean downloadPlayer() {
+    public boolean downloadPlayer(int player_number) {
         try {
+
             Socket socket1 = new Socket(serverIP, serverPort);//ip adress machine , port adress
             DataInputStream input = new DataInputStream(socket1.getInputStream());
             DataOutputStream output = new DataOutputStream(socket1.getOutputStream());
             String msgin;
 
-            output.writeUTF("PLAYER_1");
+            output.writeUTF("PLAYER_" + Integer.toString(player_number));
 
             msgin = input.readUTF();
-            if (msgin.equals("RETURN_PLAYER_1")) {
+            if (msgin.equals("RETURN_PLAYER_" + Integer.toString(player_number))) {
                 System.out.println(msgin);
-                msgin = input.readUTF();
-                PrintWriter zapis = new PrintWriter("player_client");
-                zapis.println(msgin);
+                PrintWriter zapis = new PrintWriter("player_params_" + Integer.toString(player_number));
+                zapis.println(input.readDouble());
+                zapis.println(input.readInt());
+                zapis.println(input.readInt());
+                zapis.println(input.readInt());
+                zapis.println(input.readInt());
                 zapis.close();
-                System.out.println(msgin);
             }
             socket1.close();
             return true;
@@ -111,20 +139,30 @@ public class Client {
         }catch (Exception e) {
             System.out.println("Brak połączenia.");
         }
+        finally {
+            try {
+                if(socket!=null)
+                    socket.close();
+                if(input!=null)
+                    input.close();
+                if(output!=null)
+                    output.close();
+
+            }catch(IOException e){}
+        }
         return false;
     }
 
     public boolean downloadHighscores()
     {
 
-        Socket socket1 = null;
-        PrintWriter zapis = null;
-        DataInputStream input = null;
-        DataOutputStream output = null;
         try {
-            socket1 = new Socket(serverIP, serverPort);//ip adress machine , port adress
-            input = new DataInputStream(socket1.getInputStream());
-            output = new DataOutputStream(socket1.getOutputStream());
+
+            Socket socket1 = new Socket(serverIP, serverPort);//ip adress machine , port adress
+            DataInputStream input = new DataInputStream(socket1.getInputStream());
+            DataOutputStream output = new DataOutputStream(socket1.getOutputStream());
+            PrintWriter zapis = null;
+
             String msgin;
 
             output.writeUTF("HIGHSCORES");
@@ -133,21 +171,20 @@ public class Client {
                 System.out.println(msgin);
                 msgin = input.readUTF();
                 System.out.println(msgin);
-                zapis = new PrintWriter("highscores_clinet");
+                zapis = new PrintWriter("highscores");
                 zapis.println(msgin);
             }
+
+            if(zapis!=null)
+                zapis.close();
+            if(input!=null)
+                input.close();
+            if(socket1!=null)
+                socket1.close();
+
             return true;
         }catch (Exception e) {
             System.out.println("Brak połączenia.");
-        }finally {
-            try {
-                zapis.close();
-                input.close();
-                input.close();
-                socket1.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return false;
     }

@@ -1,7 +1,7 @@
 package com.bomber.man.power_ups;
 
 import com.bomber.man.GameFrame;
-import com.bomber.man.Player;
+import com.bomber.man.player.Player;
 
 import java.awt.*;
 import java.util.ArrayList;

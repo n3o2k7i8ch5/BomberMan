@@ -20,9 +20,9 @@ public abstract class PowerUp extends Object {
         powerUp = this;
         addPlayerColisionListener(new PlayerColisionListener(frame) {
             @Override
-            public void onColision(Iterator<Object> it) {
+            public void onColision(Iterator<Object> it_all_objects) {
                 performBonus();
-                it.remove();
+                it_all_objects.remove();
                 getObjectManager().powerup_list.remove(powerUp);
                 //getObjectManager().all_objects[powerUp.X][powerUp.Y].remove(powerUp);
             }

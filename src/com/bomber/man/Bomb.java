@@ -36,7 +36,7 @@ public class Bomb extends MovingObject {
     public Bomb(GameFrame frame, int X, int Y, boolean quick_explode) {
         super(frame, X, Y, 0, 1, true);
         this.destruct_time = quick_explode?BOMB_QUICK_DESTRUCT_TIME:BOMB_DESTRUCT_TIME;
-        this.flame_length = frame.player.flame_length;
+        this.flame_length = frame.player.flameLength();
         this.mooving_bomb = false;
 
         setExplosionListener();
@@ -52,7 +52,7 @@ public class Bomb extends MovingObject {
     public Bomb(GameFrame frame, int X, int Y) {
         super(frame, X, Y, 0, 1, true);
         this.destruct_time = BOMB_DESTRUCT_TIME;
-        this.flame_length = frame.player.flame_length;
+        this.flame_length = frame.player.flameLength();
         this.mooving_bomb = false;
 
         setExplosionListener();
@@ -62,7 +62,7 @@ public class Bomb extends MovingObject {
     public Bomb(GameFrame frame, int X, int Y, boolean quick_explode, direction dir) {
         super(frame, X, Y, SPEED, 1, true);
         this.destruct_time = quick_explode?BOMB_QUICK_DESTRUCT_TIME:BOMB_DESTRUCT_TIME;
-        this.flame_length = frame.player.flame_length;
+        this.flame_length = frame.player.flameLength();
         this.current_dir = dir;
         this.new_dir = dir;
         this.mooving_bomb = true;
@@ -74,7 +74,7 @@ public class Bomb extends MovingObject {
     public Bomb(GameFrame frame, int X, int Y, direction dir) {
         super(frame, X, Y, SPEED, 1, true);
         this.destruct_time = BOMB_DESTRUCT_TIME;
-        this.flame_length = frame.player.flame_length;
+        this.flame_length = frame.player.flameLength();
         this.current_dir = dir;
         this.new_dir = dir;
         this.mooving_bomb = true;
@@ -98,9 +98,9 @@ public class Bomb extends MovingObject {
                 flame_length, NULL);
 
         if(mooving_bomb)
-            player().throw_bombs_left++;
+            player().restoreThrowBomb();
         else
-            player().bombs_left++;
+            player().restoreBomb();
 
         for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
             enemy.bombDetonation(X, Y);
@@ -115,9 +115,9 @@ public class Bomb extends MovingObject {
                 flame_length, NULL);
 
         if(mooving_bomb)
-            player().throw_bombs_left++;
+            player().restoreThrowBomb();
         else
-            player().bombs_left++;
+            player().restoreBomb();
 
         for(SmartAssEnemy enemy : getObjectManager().smartass_enemy_list)
             enemy.bombDetonation(X, Y);

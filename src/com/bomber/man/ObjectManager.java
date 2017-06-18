@@ -2,6 +2,7 @@ package com.bomber.man;
 
 import com.bomber.man.enemies.*;
 import com.bomber.man.forest.Forest;
+import com.bomber.man.player.Player;
 import com.bomber.man.power_ups.*;
 import com.bomber.man.tiles.GrassDark;
 import com.bomber.man.tiles.GrassLight;
@@ -283,6 +284,12 @@ public class ObjectManager {
         FlameDown flameDown = new FlameDown(frame, X, Y);
         all_objects[X][Y].add(flameDown);
         powerup_list.add(flameDown);
+    }
+
+    void addDifferentDirection(int X, int Y){
+        DiffrentDirection diffrentDirection = new DiffrentDirection(frame, X, Y);
+        all_objects[X][Y].add(diffrentDirection);
+        powerup_list.add(diffrentDirection);
     }
 
     void addForest(int X, int Y){

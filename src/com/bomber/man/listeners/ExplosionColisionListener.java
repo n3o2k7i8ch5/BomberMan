@@ -24,6 +24,4 @@ public abstract class ExplosionColisionListener {
 
     public abstract void onColision(Explosion explosion, Iterator<Object> it);
 
-    //public abstract void onExplosionGone(Explosion explosion, Iterator<Object> it);
-
 }

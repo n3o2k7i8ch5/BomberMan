@@ -2,6 +2,7 @@ package com.bomber.man;
 
 import com.bomber.man.enemies.Enemy;
 import com.bomber.man.forest.Forest;
+import com.bomber.man.player.Player;
 import com.bomber.man.power_ups.PowerUp;
 import com.bomber.man.tiles.Tile;
 
@@ -18,11 +19,11 @@ public class GameFrame extends JPanel implements ActionListener {
 
     public Player player;
 
-    static final int FRAME_TIME = 10;
+    public static final int FRAME_TIME = 10;
     public long time = 0;
 
-    int x_map_shift = 0;
-    int y_map_shift = 0;
+    public int x_map_shift = 0;
+    public int y_map_shift = 0;
 
     public boolean pause = true;
 
@@ -66,7 +67,7 @@ public class GameFrame extends JPanel implements ActionListener {
         if(objectManager.portal!=null)
             objectManager.portal.draw(g2d);
 
-        if(player!=null && player.lives==0)
+        if(player!=null && player.lives()==0)
             player.draw(g2d);
 
         for(Object solid : objectManager.solid_list)
@@ -78,7 +79,7 @@ public class GameFrame extends JPanel implements ActionListener {
         for(Enemy enemy : objectManager.enemy_list)
             enemy.draw(g2d);
 
-        if(player!=null && player.lives>0)
+        if(player!=null && player.lives()>0)
             player.draw(g2d);
 
         for(Explosion explosion : objectManager.explosion_list)
@@ -103,7 +104,7 @@ public class GameFrame extends JPanel implements ActionListener {
         for(PowerUp powerUp : objectManager.powerup_list)
             powerUp.update(time);
 
-        if(player!=null && player.lives>0)
+        if(player!=null)
             player.update(time);
 
         for(LivingWall livingWall: new ArrayList<>(objectManager.living_wall_list))

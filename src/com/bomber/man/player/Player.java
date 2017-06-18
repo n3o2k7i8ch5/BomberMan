@@ -1,5 +1,7 @@
-package com.bomber.man;
+package com.bomber.man.player;
 
+import com.bomber.man.*;
+import com.bomber.man.Object;
 import com.bomber.man.enemies.Enemy;
 
 import java.awt.*;
@@ -24,16 +26,31 @@ public class Player extends MovingObject {
 
     private direction orientation = UP;
 
+    //public PlayerParams params;
+
     public int flame_length = 2;
-    int lives = 3;
-    int max_bombs = 3;
-    int bombs_left;
-    int max_throw_bombs = 0;
-    int throw_bombs_left;
+    public int flameLength(){return flame_length;}
+
+    private int lives = 3;
+    public int lives(){return lives;}
+
+    private int max_bombs = 3;
+    public int maxBombs(){return max_bombs;}
+
+    private int bombs_left;
+    public int bombsLeft(){return bombs_left;}
+    public void restoreBomb(){bombs_left++;}
+
+    private int max_throw_bombs = 0;
+    public int maxThrowBombs(){return max_throw_bombs;}
+
+    private int throw_bombs_left;
+    public int throwBombsLeft(){return throw_bombs_left;}
+    public void restoreThrowBomb(){throw_bombs_left++;}
 
     private int immortal = -1;
     private final int IMMORTAL_TIME = 3000;
-    public static final int IMMORTAL_SHIELD_TIME = 10000;
+    public static final int IMMORTAL_SHIELD_TIME = 12000;
 
     static final double SPEED = 2.5;
     private double saved_speed;
@@ -43,6 +60,9 @@ public class Player extends MovingObject {
 
     private int saved_flame;
     private int flame_down = -1;
+
+    public int changed_direction = -1;
+    public static final int CHANGE_DIRECTION_TIME = 10000;
 
     public Player(GameFrame frame, int X, int Y, int align_factor) {
         super(frame, X, Y, SPEED, align_factor);
@@ -83,11 +103,11 @@ public class Player extends MovingObject {
                 key2_pressed = RIGHT;
         }
         else if(key==KeyEvent.VK_SPACE){
-            if(getMain().gamestate==1)
+            if(getMain().getGameState()==1)
                 throwBomb();
         }
         else if(key==KeyEvent.VK_X){
-            if(getMain().gamestate==1)
+            if(getMain().getGameState()==1)
                 putBomb();
         }
     }
@@ -151,6 +171,21 @@ public class Player extends MovingObject {
     @Override
     protected void updateStep(long time) {
 
+        if(current_dir!=NULL)
+            orientation = current_dir;
+
+        if(current_dir!=NULL && !isDirFreeToGo(current_dir))
+            current_dir = NULL;
+        else
+            super.updateStep(time);
+
+    }
+
+    @Override
+    public void update(long time) {
+
+        checkNearbyCollisions();
+
         if(immortal>0) {
             immortal -= frame.FRAME_TIME;
             if(immortal < 0)
@@ -170,8 +205,7 @@ public class Player extends MovingObject {
 
         if(instant_bomb > 0) {
             instant_bomb -=frame.FRAME_TIME;
-            if(isAlignedX() && isAlignedY())
-                putBomb();
+            putBomb();
             if(instant_bomb<0)
                 instant_bomb = 0;
         }else if(instant_bomb==0){
@@ -187,20 +221,13 @@ public class Player extends MovingObject {
             flame_length = saved_flame;
         }
 
-        if(current_dir!=NULL)
-            orientation = current_dir;
-
-        if(current_dir!=NULL && !isDirFreeToGo(current_dir))
-            current_dir = NULL;
-        else
-            super.updateStep(time);
-
-    }
-
-    @Override
-    public void update(long time) {
-
-        checkNearbyCollisions();
+        if(changed_direction>0) {
+            changed_direction -= frame.FRAME_TIME;
+            if(changed_direction < 0)
+                changed_direction = 0;
+        }else if(changed_direction==0){
+            changed_direction = -1;
+        }
 
         if(current_dir==NULL)
             getDirectionFromKey();
@@ -224,72 +251,72 @@ public class Player extends MovingObject {
     private void checkNearbyCollisions(){
 
         if(X!=0 && Y!=0)
-            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y-1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
+            for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X-1][Y-1].iterator(); it_all_objects.hasNext(); ) {
+                Object object = it_all_objects.next();
                 if (object.playerColisionListener != null)
-                    object.playerColisionListener.checkColision(it);
+                    object.playerColisionListener.checkColision(it_all_objects);
             }
 
         if(Y!=0)
-            for (Iterator<Object> it = getObjectManager().all_objects[X][Y-1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
+            for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X][Y-1].iterator(); it_all_objects.hasNext(); ) {
+                Object object = it_all_objects.next();
                 if (object.playerColisionListener != null)
-                    object.playerColisionListener.checkColision(it);
+                    object.playerColisionListener.checkColision(it_all_objects);
             }
 
         if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=0)
-            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y-1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
+            for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X+1][Y-1].iterator(); it_all_objects.hasNext(); ) {
+                Object object = it_all_objects.next();
                 if (object.playerColisionListener != null)
-                    object.playerColisionListener.checkColision(it);
+                    object.playerColisionListener.checkColision(it_all_objects);
             }
 
         if(X!=0)
-            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y].iterator(); it.hasNext(); ) {
-                Object object = it.next();
+            for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X-1][Y].iterator(); it_all_objects.hasNext(); ) {
+                Object object = it_all_objects.next();
                 if (object.playerColisionListener != null)
-                    object.playerColisionListener.checkColision(it);
+                    object.playerColisionListener.checkColision(it_all_objects);
             }
 
-        for (Iterator<Object> it = getObjectManager().all_objects[X][Y].iterator(); it.hasNext(); ) {
-            Object object = it.next();
+        for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X][Y].iterator(); it_all_objects.hasNext(); ) {
+            Object object = it_all_objects.next();
             if (object.playerColisionListener != null)
-                object.playerColisionListener.checkColision(it);
+                object.playerColisionListener.checkColision(it_all_objects);
         }
 
         if(X!=getMain().ABS_W_MAP_SIZE-1)
-            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y].iterator(); it.hasNext(); ) {
-                Object object = it.next();
+            for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X+1][Y].iterator(); it_all_objects.hasNext(); ) {
+                Object object = it_all_objects.next();
                 if (object.playerColisionListener != null)
-                    object.playerColisionListener.checkColision(it);
+                    object.playerColisionListener.checkColision(it_all_objects);
             }
 
         if(X!=0 && Y!=getMain().ABS_H_MAP_SIZE-1)
-            for (Iterator<Object> it = getObjectManager().all_objects[X-1][Y+1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
+            for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X-1][Y+1].iterator(); it_all_objects.hasNext(); ) {
+                Object object = it_all_objects.next();
                 if (object.playerColisionListener != null)
-                    object.playerColisionListener.checkColision(it);
+                    object.playerColisionListener.checkColision(it_all_objects);
             }
 
         if(Y!=getMain().ABS_H_MAP_SIZE-1)
-            for (Iterator<Object> it = getObjectManager().all_objects[X][Y+1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
+            for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X][Y+1].iterator(); it_all_objects.hasNext(); ) {
+                Object object = it_all_objects.next();
                 if (object.playerColisionListener != null)
-                    object.playerColisionListener.checkColision(it);
+                    object.playerColisionListener.checkColision(it_all_objects);
             }
 
         if(X!=getMain().ABS_W_MAP_SIZE-1 && Y!=getMain().ABS_H_MAP_SIZE-1)
-            for (Iterator<Object> it = getObjectManager().all_objects[X+1][Y+1].iterator(); it.hasNext(); ) {
-                Object object = it.next();
+            for (Iterator<Object> it_all_objects = getObjectManager().all_objects[X+1][Y+1].iterator(); it_all_objects.hasNext(); ) {
+                Object object = it_all_objects.next();
                 if (object.playerColisionListener != null)
-                    object.playerColisionListener.checkColision(it);
+                    object.playerColisionListener.checkColision(it_all_objects);
             }
     }
 
     @Override
     protected ArrayList<Image> getImageUpList() {
 
-        if (lives != 0) {
+        if (lives() != 0) {
             if (immortal != -1 && (frame.time /10) % 4 == 0)
                 return getMain().graphicsContainer.emptyImages;
             else
@@ -302,7 +329,7 @@ public class Player extends MovingObject {
     @Override
     protected ArrayList<Image> getImageDownList() {
 
-        if(lives!=0) {
+        if(lives()!=0) {
             if(immortal!=-1 && (frame.time/10)%4==0)
                 return getMain().graphicsContainer.emptyImages;
             else
@@ -313,7 +340,7 @@ public class Player extends MovingObject {
     @Override
     protected ArrayList<Image> getImageLeftList() {
 
-        if (lives != 0){
+        if (lives() != 0){
             if (immortal != -1 && (frame.time/10) % 4 == 0)
                 return getMain().graphicsContainer.emptyImages;
             else
@@ -324,7 +351,7 @@ public class Player extends MovingObject {
     @Override
     protected ArrayList<Image> getImageRightList() {
 
-        if(lives!=0) {
+        if(lives()!=0) {
             if(immortal!=-1 && (frame.time/10)%4==0)
                 return getMain().graphicsContainer.emptyImages;
             else
@@ -335,7 +362,7 @@ public class Player extends MovingObject {
 
     @Override
     protected ArrayList<Image> getImageNullList() {
-        if(lives!=0) {
+        if(lives()!=0) {
             if(immortal!=-1 && (frame.time/10)%4==0)
                 return getMain().graphicsContainer.emptyImages;
 
@@ -357,6 +384,15 @@ public class Player extends MovingObject {
      * Metoda, określająca nowy kierunek poruszania się gracza na podstawie kontekstu mapy, oraz wciśnietych klawiszy.
      */
     private void getDirectionFromKey(){
+
+        direction key1_pressed = this.key1_pressed;
+        direction key2_pressed = this.key2_pressed;
+
+        if(changed_direction!=-1) {
+            key1_pressed = dirReverse(this.key1_pressed);
+            key2_pressed = dirReverse(this.key2_pressed);
+        }
+
         if(key2_pressed==NULL){
             if(isDirFreeToGo(key1_pressed))
                 new_dir = key1_pressed;
@@ -385,10 +421,8 @@ public class Player extends MovingObject {
 
     public void throwBomb(){
 
-        if(throw_bombs_left==0)
+        if(throwBombsLeft()==0)
             return;
-
-        throw_bombs_left--;
 
         int X = this.X;
         int Y = this.Y;
@@ -399,30 +433,27 @@ public class Player extends MovingObject {
         if(orientation == DOWN && !isAlignedY())
             Y++;
 
-        if(getObjectManager().bomb_list.size()==0)
+        if(getObjectManager().bomb_list.size()==0) {
             getObjectManager().addBomb(X, Y, orientation);
-        else {
-            boolean new_bomb = true;
-
+            throw_bombs_left--;
+        } else {
             for (Bomb bomb : getObjectManager().bomb_list)
                 if (bomb.touches(X, Y, 1))
-                    new_bomb = false;
+                    return;
 
             for (Explosion explosion : getObjectManager().explosion_list)
                 if (explosion.touches(X, Y, 1))
-                    new_bomb = false;
+                    return;
 
-            if(new_bomb)
-                getObjectManager().addBomb(X, Y, orientation);
+            getObjectManager().addBomb(X, Y, orientation);
+            throw_bombs_left--;
         }
     }
 
     public void putBomb(){
 
-        if(bombs_left==0)
+        if(bombsLeft()==0)
             return;
-
-        bombs_left--;
 
         int X, Y;
 
@@ -436,26 +467,32 @@ public class Player extends MovingObject {
         else
             Y = this.Y + 1;
 
-        boolean new_bomb = true;
-
         for(Bomb bomb : getObjectManager().bomb_list)
             if(bomb.Y == Y && bomb.X == X)
-                new_bomb = false;
+                return;
 
         for (Explosion explosion : getObjectManager().explosion_list)
             if (explosion.touches(X, Y, 1))
-                new_bomb = false;
+                return;
 
-        if(new_bomb && !getObjectManager().containsInstance(getObjectManager().all_objects[X][Y], Enemy.class))
-            getObjectManager().addBomb(X, Y, NULL);
+        for(Enemy enemy : getObjectManager().enemy_list)
+            if(enemy.touches(X, Y, 1))
+                return;
+
+        getObjectManager().addBomb(X, Y, NULL);
+        bombs_left--;
+
     }
 
     /**
      * Metoda zwiększająca prędkość gracza
      */
     public void increaseSpeed(){
-        if(speed<5.5)
-        speed+=0.5;
+        if(speed<5) {
+            speed += 0.5;
+            speed = speed;
+        }
+
     }
 
     public void addLife(){
@@ -492,9 +529,13 @@ public class Player extends MovingObject {
     }
 
     public void flameDown(final int flame_down_time){
-        saved_flame = flame_length;
+        saved_flame = flameLength();
         flame_length = 1;
         flame_down = flame_down_time;
+    }
+
+    public void changeDirection(int change_direction_time) {
+        changed_direction = change_direction_time;
     }
 
     public boolean isImmortal(){
@@ -506,11 +547,29 @@ public class Player extends MovingObject {
     }
 
     public void reduceLife(){
-        if(!player().isImmortal() && player().lives>0) {
-            frame.player.lives--;
+        if(!player().isImmortal() && player().lives()>0) {
+            lives--;
             setImmortal(IMMORTAL_TIME);
         }
-        if(player().lives == 0)
+        if(player().lives() == 0)
             getMain().setGameState(Main.STATE_PLAYER_DEAD);
+    }
+
+    public void setParams(PlayerParams params){
+        this.speed = params.speed;
+        this.lives = params.lives;
+        this.max_bombs = params.max_bombs;
+        bombs_left = params.max_bombs;
+        this.max_throw_bombs = params.max_throw_bombs;
+        throw_bombs_left = params.max_throw_bombs;
+        this.flame_length = params.flame_length;
+    }
+
+    public PlayerParams getParams(){
+        return new PlayerParams(speed, lives, max_bombs, max_throw_bombs, flameLength());
+    }
+
+    public void setDefaultParams(){
+        setParams(new PlayerParams(2.5, 3, 3, 0, 2));
     }
 }

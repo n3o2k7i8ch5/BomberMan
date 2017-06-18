@@ -17,14 +17,14 @@ public abstract class PlayerColisionListener {
         this.frame = frame;
     }
 
-    public void checkColision(Iterator<Object> it){
+    public void checkColision(Iterator<Object> it_all_objects){
         if(frame.player.touches(object, 0.9))
-            onColision(it);
+            onColision(it_all_objects);
     }
 
     public void assignToObject(Object object){
         this.object = object;
     }
 
-    public abstract void onColision(Iterator<Object> it);
+    public abstract void onColision(Iterator<Object> it_all_objects);
 }

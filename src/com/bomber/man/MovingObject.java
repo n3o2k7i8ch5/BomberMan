@@ -21,7 +21,7 @@ public abstract class MovingObject extends Object {
     public int old_y(){return (int)old_y;}
 
     protected int old_X, old_Y;
-    /*int*/ double speed;
+    protected double speed;
 
     int align_factor;
     private double element;

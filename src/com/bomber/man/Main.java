@@ -1,7 +1,9 @@
 package com.bomber.man;
 
 import com.bomber.man.client.Client;
+import com.bomber.man.menu.Highscore;
 import com.bomber.man.menu.Menu;
+import com.bomber.man.player.PlayerParams;
 import com.bomber.man.tiles.Tile;
 
 import javax.swing.*;
@@ -9,26 +11,34 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.*;
 
 public class Main extends JFrame{
 
     public static final int STATE_MENU = 0;
     public static final int STATE_PLAYER_DEAD = -1;
     public static final int NEXT_LEVEL = 1;
+    public static final int HIGHSCORES = 2;
+    public static final int WINNER = 3;
 
     static final int VISIB_MAP_SIZE = 13;
-    static final int CENTER_MAP = (int)Math.floor(VISIB_MAP_SIZE/2);
+    public static final int CENTER_MAP = (int)Math.floor(VISIB_MAP_SIZE/2);
     public static int ABS_H_MAP_SIZE = 20;
     public static int ABS_W_MAP_SIZE = 20;
 
-    static int INFO_WIDTH = 300;
-    static final int RESOLUTION = 64;
+    static int INFO_WIDTH = 240;
+    public static final int RESOLUTION = 64;
 
-    int gamestate;
+    private int game_state;
+    public int getGameState(){return game_state;}
 
-    private int current_level;
+    private int current_level = 0;
+    public int getCurrentLevel(){return current_level;}
+
     private int level_count = -1;
+    public int getLevelCount(){return level_count;}
 
     private GameFrame gameFrame;
 
@@ -42,8 +52,11 @@ public class Main extends JFrame{
 
     Client client;
 
+    Thread downloadMapCount;
     Thread downloadCurrentMap;
     Thread downloadNextMap;
+
+    public String player_name;
 
     public static void main(String[] args) {
 
@@ -67,16 +80,17 @@ public class Main extends JFrame{
 
     /**
      * Metoda ustawiająca dany stan gry. Gdy stan gry jest równy 0 to jest menu gdy stan gry jest 1 to jest gra gdy stan gry wynosi -1 to gameover
-     * @param gamestate stan gry
+     * @param game_state stan gry
      */
-    public void setGameState(int gamestate)
+    public void setGameState(int game_state)
     {
-        this.gamestate = gamestate;
+        this.game_state = game_state;
 
-        if(gamestate == STATE_MENU)
+        if(game_state == STATE_MENU)
         {
             main.getContentPane().removeAll();
 
+            main.setLayout(new BorderLayout());
             main.setTitle("BomberMan - Menu");
             main.setSize(800,600);
             main.setResizable(false);
@@ -85,7 +99,7 @@ public class Main extends JFrame{
             main.add(new Menu(main));
 
         }
-        else if(gamestate == NEXT_LEVEL) {
+        else if(game_state == NEXT_LEVEL) {
 
             main.getContentPane().removeAll();
 
@@ -97,22 +111,38 @@ public class Main extends JFrame{
             gameFrame = new GameFrame(main);
 
             current_level++;
+
             client = new Client();
+
             if(client.error())
                 setTitle("serverIP file error");
 
-            downloadNextMap = nextMapDownloader(current_level);
-            downloadCurrentMap = currentMapDownloader(current_level+1);
+            downloadMapCount = downloadMapCount();
+            downloadCurrentMap = currentMapDownloader(current_level);
+            Thread currentPlayerDownloader = currentPlayerDownloader(current_level);
             Thread startLevel = levelStarter(current_level);
+            downloadNextMap = nextMapDownloader(current_level+1);
+
+            if(downloadMapCount.isAlive())
+                downloadMapCount.interrupt();
+
+            downloadMapCount.start();
+            try {downloadMapCount.join(2000);
+            } catch (InterruptedException e) {}
+
+            if(downloadCurrentMap.isAlive())
+                downloadCurrentMap.interrupt();
 
             downloadCurrentMap.start();
-            try {
-                downloadCurrentMap.join();
+            try {downloadCurrentMap.join(2000);
+            } catch (InterruptedException e) {}
+
+            currentPlayerDownloader.start();
+            try {currentPlayerDownloader.join();
             } catch (InterruptedException e) {}
 
             startLevel.start();
-            try {
-                startLevel.join();
+            try {startLevel.join(2000);
             } catch (InterruptedException e) {}
 
             main.add(gameFrame);
@@ -136,12 +166,42 @@ public class Main extends JFrame{
             });
 
             gameFrame.pause = false;
+
+            if(downloadNextMap.isAlive())
+                downloadNextMap.interrupt();
+
             downloadNextMap.start();
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            try {executor.submit(downloadNextMap).get(3, TimeUnit.SECONDS);
+            } catch (Exception e) {}
+            executor.shutdown();
 
         }
-        else if(gamestate == STATE_PLAYER_DEAD)
+        else if(game_state == STATE_PLAYER_DEAD)
         {
             gameFrame.player.speed = 0;
+        }
+        else if(game_state == WINNER){
+            main.getContentPane().removeAll();
+
+            Thread scoreSetter = setScore("["+player_name + "]" + " " + infoBox.points);
+            scoreSetter.start();
+
+            try {scoreSetter.join(2000);
+            } catch (InterruptedException e) {e.printStackTrace();}
+
+            setGameState(HIGHSCORES);
+
+        }
+        else if(game_state == HIGHSCORES){
+            main.getContentPane().removeAll();
+            main.setLayout(new BorderLayout());
+
+            main.setTitle("BomberMan - Highscores");
+            main.setSize(800,600);
+            main.setResizable(false);
+            main.setLocationRelativeTo(null);
+            main.add(new Highscore(main));
         }
 
         main.setVisible(true);
@@ -164,8 +224,8 @@ public class Main extends JFrame{
     private void loadMap(String file_name) throws Exception{
 
         if(!new File(file_name).exists()) {
-            setTitle("Game file error: " + file_name);
-            return;
+            setTitle("No such file: " + file_name);
+            throw new Exception("No such file: " + file_name);
         }
 
         Scanner in = new Scanner(new FileReader(file_name));
@@ -242,6 +302,12 @@ public class Main extends JFrame{
 
     private void updateStaticImages(){
 
+        if(gameFrame==null)
+            return;
+
+        if(gameFrame.objectManager==null)
+            return;
+
         for(Tile tile: gameFrame.objectManager.tile_list)
             tile.updateImage();
 
@@ -249,38 +315,130 @@ public class Main extends JFrame{
             solid.updateImage();
     }
 
-    private Thread levelStarter(int level){
+    private Thread downloadMapCount(){
+
+       return new Thread(() -> {
+
+            if(level_count==-1)
+                level_count = client.downloadMapCount();
+
+            if(level_count==-1){
+                level_count = 0;
+                File folder = new File(".");
+                File[] listOfFiles = folder.listFiles();
+                for(File file : listOfFiles)
+                    if(file.getName().contains("map"))
+                        level_count++;
+                System.out.println("Server not available. MAPS = " + level_count);
+            }
+            System.out.println("downloadMapCount finished.");
+        });
+    }
+
+    private Thread currentPlayerDownloader(int level){
         return new Thread(() -> {
-            try {
-                loadMap("map" + Integer.toString(level));
-                gameFrame.setPortal();
-            } catch (Exception e) {e.printStackTrace();}
+
+            try {Thread.sleep(500);
+            } catch (Exception e) {System.out.println(e);}
+
+            System.out.println("currentPlayerDownloader " + level + " running.");
+            if(level_count>=level) {
+
+                File params = new File("player_params_" + Integer.toString(level));
+                if (!params.exists())
+                    client.downloadPlayer(level);
+            }
+            System.out.println("currentPlayerDownloader " + level + " finished.");
+
         });
     }
 
     private Thread currentMapDownloader(int level){
         return new Thread(() -> {
-            if(level_count>level) {
-                downloadNextMap.isAlive();
-                downloadNextMap.interrupt();
+
+            try {Thread.sleep(500);
+            } catch (Exception e) {System.out.println(e);}
+
+            System.out.println("currentMapDownloader " + level + " running.");
+            if(level_count>=level) {
+                if(downloadNextMap.isAlive())
+                    downloadNextMap.interrupt();
 
                 File map = new File("map" + Integer.toString(level));
-                if (!map.exists()) {
+                if (!map.exists())
                     client.downloadMap(level);
-                }
             }
+            System.out.println("currentMapDownloader " + level + " finished.");
+
+        });
+    }
+
+    private Thread levelStarter(int level){
+        return new Thread(() -> {
+            System.out.println("levelStarter " + level + " running.");
+
+            try {
+                loadMap("map" + Integer.toString(level));
+                gameFrame.setPortal();
+                PlayerParams params = getParams(level);
+                if(params != null)
+                    gameFrame.player.setParams(params);
+                else if(infoBox!=null && infoBox.params != null)
+                    gameFrame.player.setParams(infoBox.params);
+                else
+                    gameFrame.player.setDefaultParams();
+
+            } catch (Exception e) {System.out.println(e.getMessage());}
+            System.out.println("levelStarter " + level + " finished.");
+
         });
     }
 
     private Thread nextMapDownloader(int level){
         return new Thread(() -> {
-            if(level_count>level) {
+
+            try {Thread.sleep(500);
+            } catch (Exception e) {System.out.println(e);}
+
+            System.out.println("nextMapDownloader " + level + " running.");
+            if(level_count>=level) {
                 File map = new File("map" + Integer.toString(level));
                 if (!map.exists()) {
                     client.downloadMap(level);
                 }
             }
+            System.out.println("nextMapDownloader " + level + " finished.");
+
         });
     }
 
+    private Thread setScore(String score){
+        return new Thread(()->{
+            client.setScore(score);
+        });
+    }
+
+    private PlayerParams getParams(int level) {
+
+        Scanner in = null;
+        try {
+            File file = new File("player_params_" + Integer.toString(level));
+            if(!file.exists())
+                return null;
+
+            in = new Scanner(new FileReader("player_params_" + Integer.toString(level)));
+
+            return new PlayerParams(
+                    Double.parseDouble(in.nextLine()),
+                    Integer.parseInt(in.nextLine()),
+                    Integer.parseInt(in.nextLine()),
+                    Integer.parseInt(in.nextLine()),
+                    Integer.parseInt(in.nextLine()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

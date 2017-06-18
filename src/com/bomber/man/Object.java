@@ -2,6 +2,7 @@ package com.bomber.man;
 
 import com.bomber.man.listeners.ExplosionColisionListener;
 import com.bomber.man.listeners.PlayerColisionListener;
+import com.bomber.man.player.Player;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public abstract class Object extends Entity{
 
     public enum direction{UP, DOWN, RIGHT, LEFT, NULL}
 
-    PlayerColisionListener playerColisionListener = null;
-    ExplosionColisionListener explosionColisionListener = null;
+    public PlayerColisionListener playerColisionListener = null;
+    public ExplosionColisionListener explosionColisionListener = null;
 
     public Object(GameFrame frame, int X, int Y){
         this.frame = frame;

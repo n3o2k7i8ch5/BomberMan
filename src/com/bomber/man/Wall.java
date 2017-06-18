@@ -35,8 +35,10 @@ public class Wall extends Object {
                 else
                     leaveRandomPowerUp = false;
 
-                getObjectManager().removeSolid(wall);
-                getObjectManager().addInvisibleWall(X, Y, leaveRandomPowerUp);
+                if(!(wall instanceof InvisibleWall)) {
+                    getObjectManager().removeSolid(wall);
+                    getObjectManager().addInvisibleWall(X, Y, leaveRandomPowerUp);
+                }
             }
         });
     }

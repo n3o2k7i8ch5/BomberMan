@@ -1,5 +1,7 @@
 package com.bomber.man;
 
+import com.bomber.man.player.Player;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 

@@ -22,7 +22,12 @@ public class Portal extends Object {
                 if (!locked)
                     if (touches(player(), 0.1)) {
                         frame.pause = true;
-                        getMain().setGameState(Main.NEXT_LEVEL);
+                        if(getMain().getCurrentLevel() == getMain().getLevelCount())
+                            getMain().setGameState(Main.WINNER);
+                        else {
+                            getMain().infoBox.params = player().getParams();
+                            getMain().setGameState(Main.NEXT_LEVEL);
+                        }
                     }
             }
         });

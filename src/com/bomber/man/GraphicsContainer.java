@@ -13,49 +13,49 @@ public class GraphicsContainer {
 
     Main main;
 
-    static final String[] BOMB_PATH = {"/drawables/bomb/bomb_1.png","/drawables/bomb/bomb_2.png","/drawables/bomb/bomb_3.png", "/drawables/bomb/bomb_4.png", "/drawables/bomb/bomb_5.png"};
+    public static final String[] BOMB_PATH = {"/drawables/bomb/bomb_1.png","/drawables/bomb/bomb_2.png","/drawables/bomb/bomb_3.png", "/drawables/bomb/bomb_4.png", "/drawables/bomb/bomb_5.png"};
     public ArrayList<Image> bombImages = new ArrayList<>();
 
-    static final String[] GRASS_DARK_PATH = {"/drawables/grass.png"};
+    public static final String[] GRASS_DARK_PATH = {"/drawables/grass.png"};
     public ArrayList<Image> grassDarkImages = new ArrayList<>();
 
-    static final String[] GRASS_LIGHT_PATH = {"/drawables/grass_light.png"};
+    public static final String[] GRASS_LIGHT_PATH = {"/drawables/grass_light.png"};
     public ArrayList<Image> grassLightImages = new ArrayList<>();
 
-    static final String[] PLAYER_UP_PATH = {"/drawables/player/player_up_1.png", "/drawables/player/player_up_2.png", "/drawables/player/player_up_1.png", "/drawables/player/player_up_3.png"};
+    public static final String[] PLAYER_UP_PATH = {"/drawables/player/player_up_1.png", "/drawables/player/player_up_2.png", "/drawables/player/player_up_1.png", "/drawables/player/player_up_3.png"};
     public ArrayList<Image> playerUpImages = new ArrayList<>();
 
-    static final String[] PLAYER_DOWN_PATH = {"/drawables/player/player_down_1.png", "/drawables/player/player_down_2.png", "/drawables/player/player_down_1.png", "/drawables/player/player_down_3.png"};
+    public static final String[] PLAYER_DOWN_PATH = {"/drawables/player/player_down_1.png", "/drawables/player/player_down_2.png", "/drawables/player/player_down_1.png", "/drawables/player/player_down_3.png"};
     public ArrayList<Image> playerDownImages = new ArrayList<>();
 
-    static final String[] PLAYER_LEFT_PATH = {"/drawables/player/player_left_1.png", "/drawables/player/player_left_2.png", "/drawables/player/player_left_1.png", "/drawables/player/player_left_3.png"};
+    public static final String[] PLAYER_LEFT_PATH = {"/drawables/player/player_left_1.png", "/drawables/player/player_left_2.png", "/drawables/player/player_left_1.png", "/drawables/player/player_left_3.png"};
     public ArrayList<Image> playerLeftImages = new ArrayList<>();
 
-    static final String[] PLAYER_RIGHT_PATH = {"/drawables/player/player_right_1.png", "/drawables/player/player_right_2.png", "/drawables/player/player_right_1.png", "/drawables/player/player_right_3.png"};
+    public static final String[] PLAYER_RIGHT_PATH = {"/drawables/player/player_right_1.png", "/drawables/player/player_right_2.png", "/drawables/player/player_right_1.png", "/drawables/player/player_right_3.png"};
     public ArrayList<Image> playerRightImages = new ArrayList<>();
 
-    static final String[] GRAVE_PATH = {"/drawables/player/grave.png"};
+    public static final String[] GRAVE_PATH = {"/drawables/player/grave.png"};
     public ArrayList<Image> graveImages = new ArrayList<>();
 
-    static final String[] RANDOM_ENEMY_UP_PATH = {"/drawables/random_enemy/random_up.png"};
+    public static final String[] RANDOM_ENEMY_UP_PATH = {"/drawables/random_enemy/random_up.png"};
     public ArrayList<Image> randomEnemyUpImages = new ArrayList<>();
 
-    static final String[] RANDOM_ENEMY_DOWN_PATH = {"/drawables/random_enemy/random_down.png"};
+    public static final String[] RANDOM_ENEMY_DOWN_PATH = {"/drawables/random_enemy/random_down.png"};
     public ArrayList<Image> randomEnemyDownImages = new ArrayList<>();
 
-    static final String[] RANDOM_ENEMY_LEFT_PATH = {"/drawables/random_enemy/random_left.png"};
+    public static final String[] RANDOM_ENEMY_LEFT_PATH = {"/drawables/random_enemy/random_left.png"};
     public ArrayList<Image> randomEnemyLeftImages = new ArrayList<>();
 
-    static final String[] RANDOM_ENEMY_RIGHT_PATH = {"/drawables/random_enemy/random_right.png"};
+    public static final String[] RANDOM_ENEMY_RIGHT_PATH = {"/drawables/random_enemy/random_right.png"};
     public ArrayList<Image> randomEnemyRightImages = new ArrayList<>();
 
-    static final String SOFT_WALL_PATH[] = {"/drawables/wall_soft.png"};
+    public static final String SOFT_WALL_PATH[] = {"/drawables/wall_soft.png"};
     public ArrayList<Image> softWallImages = new ArrayList<>();
 
-    static final String HARD_WALL_PATH[] = {"/drawables/wall.png"};
+    public static final String HARD_WALL_PATH[] = {"/drawables/wall.png"};
     public ArrayList<Image> hardWallImages = new ArrayList<>();
 
-    static final String EXPLOSION_PATH[] = {"/drawables/explosion/explosion_1.png", "/drawables/explosion/explosion_2.png", "/drawables/explosion/explosion_3.png", "/drawables/explosion/explosion_4.png", "/drawables/explosion/explosion_5.png", "/drawables/explosion/explosion_6.png", "/drawables/explosion/explosion_7.png", "/drawables/explosion/explosion_8.png", "/drawables/explosion/explosion_9.png", "/drawables/explosion/explosion_10.png"};
+    public static final String EXPLOSION_PATH[] = {"/drawables/explosion/explosion_1.png", "/drawables/explosion/explosion_2.png", "/drawables/explosion/explosion_3.png", "/drawables/explosion/explosion_4.png", "/drawables/explosion/explosion_5.png", "/drawables/explosion/explosion_6.png", "/drawables/explosion/explosion_7.png", "/drawables/explosion/explosion_8.png", "/drawables/explosion/explosion_9.png", "/drawables/explosion/explosion_10.png"};
     public ArrayList<Image> explosionImages = new ArrayList<>();
 
     public static String STRAIGHT_ENEMY_LEFT_PATH[] = {"/drawables/straight_enemy/straight_enemy_left.png"};

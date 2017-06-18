@@ -165,13 +165,15 @@ public class Explosion extends Object {
         }else if(r==5) {
             getObjectManager().addThrowBombUp(X, Y);
         }else if(r==6){
-            int r1 = Math.abs(random.nextInt())%3;
-            if(r1==0)
+            int r1 = Math.abs(random.nextInt())%4;
+            if(r1==0) {
                 getObjectManager().addSlowDown(X, Y);
-            else if(r1==1)
+            }else if(r1==1) {
                 getObjectManager().addInstantBomb(X, Y);
-            else if(r1==2)
+            }else if(r1==2) {
                 getObjectManager().addFlameDown(X, Y);
+            }else if(r1==3)
+                getObjectManager().addDifferentDirection(X,Y);
         }
     }
 
